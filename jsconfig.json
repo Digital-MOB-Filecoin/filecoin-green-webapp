@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": "./src",
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "allowUmdGlobalAccess": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules"
+  ]
+}

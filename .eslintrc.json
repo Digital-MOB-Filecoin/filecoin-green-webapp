@@ -1,0 +1,32 @@
+{
+  "extends": ["prettier", "plugin:prettier/recommended", "plugin:css-modules/recommended"],
+  "plugins": ["prettier", "react", "react-hooks", "css-modules"],
+  "globals": {
+    "document": true,
+    "window": true,
+    "IntersectionObserver": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "camelcase": 0,
+    "no-plusplus": 0,
+    "prettier/prettier": ["warn"],
+    "import/prefer-default-export": 0,
+    "react/jsx-props-no-spreading": 0,
+    "react/jsx-curly-newline": 0,
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/jsx-one-expression-per-line": 0,
+    "react/prop-types": 0,
+    "css-modules/no-unused-class": [1, { "camelCase": true }],
+    "css-modules/no-undef-class": [1, { "camelCase": true }]
+  }
+}
+

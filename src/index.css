@@ -1,0 +1,59 @@
+/* https://www.color-blindness.com/color-name-hue/ */
+:root {
+  --color-black-pearl: #040505;
+  --color-solitude: #F2F4F6;
+  --color-lochinvar: #4EA394;
+
+  --theme-background: var(--color-solitude);
+  --theme-text: var(--color-black-pearl);
+  --theme-color-primary: var(--color-lochinvar);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button[disabled] {
+  cursor: not-allowed;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--theme-text);
+  background-color: var(--theme-background);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 80px;
+}
+
+.container {
+  padding: 0 16px;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 1070px;
+}
