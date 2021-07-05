@@ -1,12 +1,34 @@
 /* https://www.color-blindness.com/color-name-hue/ */
 :root {
+  --color-white: #fff;
   --color-black-pearl: #040505;
   --color-solitude: #F2F4F6;
+  --color-solitude-dark: #E0E5EA;
   --color-lochinvar: #4EA394;
+  --rgb-lochinvar: 78, 163, 148;
+  --color-kashmir-blue: #576C7E;
+  --color-link-water: #BCC7D1;
+  --color-nepal: #98A9B8;
+  --color-sunshade: #FF974D;
+  --rgb-sunshade: 255, 151, 77;
 
-  --theme-background: var(--color-solitude);
-  --theme-text: var(--color-black-pearl);
   --theme-color-primary: var(--color-lochinvar);
+  --theme-color-primary-rgb: var(--rgb-lochinvar);
+  --theme-color-secondary: var(--color-sunshade);
+  --theme-color-secondary-rgb: var(--rgb-sunshade);
+
+  --theme-background-primary: var(--color-solitude);
+  --theme-background-secondary: var(--color-white);
+
+  --theme-text-primary: var(--color-black-pearl);
+  --theme-text-secondary: var(--color-kashmir-blue);
+  --theme-text-inactive: var(--color-link-water);
+
+  --theme-input-placeholder-color: var(--color-nepal);
+  --theme-input-border: 1px solid var(--color-white);
+  --theme-input-border-active: 1px solid var(--theme-color-primary);
+
+  --theme-icon-color: var(--color-nepal);
 }
 
 *,
@@ -32,8 +54,8 @@ body {
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--theme-text);
-  background-color: var(--theme-background);
+  color: var(--theme-text-primary);
+  background-color: var(--theme-background-primary);
   font-size: 14px;
   line-height: 24px;
 }
@@ -48,12 +70,13 @@ main {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  padding-top: 40px;
   padding-bottom: 80px;
 }
 
 .container {
-  padding: 0 16px;
+  padding: 0 24px;
   width: 100%;
   margin: 0 auto;
-  max-width: 1070px;
+  max-width: 1118px;
 }

@@ -1,0 +1,29 @@
+.wrap {
+  background: var(--theme-background-primary);
+  border-radius: 8px;
+  padding: 4px;
+  display: inline-flex;
+}
+
+.button {
+  padding: 8px 24px;
+  border-radius: 8px;
+  background: var(--theme-background-primary);
+  border: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--theme-text-inactive);
+}
+
+.button:hover,
+.button:focus {
+  color: var(--theme-text-primary);
+}
+
+.button.active {
+  background: var(--theme-background-secondary);
+  color: var(--theme-text-primary);
+  box-shadow: 0 4px 8px rgba(4, 5, 5, 0.04);
+  cursor: default;
+}

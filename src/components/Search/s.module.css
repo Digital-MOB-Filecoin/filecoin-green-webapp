@@ -1,0 +1,40 @@
+.wrap {
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
+  color: var(--theme-icon-color);
+  pointer-events: none;
+}
+
+.input {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 24px 24px 24px 64px;
+  font-family: inherit;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: left;
+  color: var(--theme-text-primary);
+  border: var(--theme-input-border);
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--theme-input-placeholder-color);
+}
+
+.input:active,
+.input:focus {
+  border: var(--theme-input-border-active);
+}

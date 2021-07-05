@@ -1,3 +1,3 @@
 export default function AboutPage() {
-  return <div>about</div>;
+  return <div className="container">Awesome about page</div>;
 }
