@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { nanoid } from 'nanoid';
+import cn from 'classnames';
 import {
   AreaChart,
   Area,
@@ -11,13 +12,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { TimeIntervalButtons } from './TimeIntervalButtons';
+import format from 'date-fns/format';
+
+import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
+import { ExportButton } from 'components/ExportButton';
+import { convertBytesToIEC } from 'utils/bytes';
 
 import s from './s.module.css';
 
-const renderLegend = (props) => {
-  const { payload } = props;
-
+const renderLegend = ({ payload }) => {
   return (
     <div className={s.legend}>
       {payload.map((entry, idx) => (
@@ -33,9 +36,7 @@ const renderLegend = (props) => {
   );
 };
 
-const renderTooltip = (props) => {
-  const { payload } = props;
-
+const renderTooltip = ({ payload }) => {
   return (
     <div className={s.tooltip}>
       {payload.map((item, idx) => (
@@ -50,23 +51,68 @@ const renderTooltip = (props) => {
   );
 };
 
-export const Chart = ({ data, title }) => {
+export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
   const gradient1Id = useMemo(nanoid, []);
   const gradient2Id = useMemo(nanoid, []);
 
+  const colors = useMemo(
+    () => [
+      {
+        stroke: 'var(--theme-color-primary)',
+        fill: 'var(--theme-background-secondary)',
+        gradient: `url(#${gradient1Id})`,
+      },
+      {
+        stroke: 'var(--theme-color-secondary)',
+        fill: 'var(--theme-background-secondary)',
+        gradient: `url(#${gradient2Id})`,
+      },
+    ],
+    []
+  );
+
+  const getFormattedValue = (type, value) => {
+    switch (type) {
+      case 'date':
+        return format(new Date(value), 'MMMM uuuu');
+      case 'bytes':
+        return convertBytesToIEC(value);
+      default:
+        return value;
+    }
+  };
+
   return (
     <div className={s.wrap}>
-      <div className={s.header}>
-        <h2 className={s.title}>{title}</h2>
+      <div className={cn(s.header, { [s.withMeta]: meta })}>
+        <h2 className={cn('h2', s.title)}>{title}</h2>
         <TimeIntervalButtons />
+        <ExportButton className={s.exportButton} />
       </div>
+      {meta ? (
+        <div className={s.meta}>
+          {meta.map((item, idx) => {
+            const { value, unit } = convertBytesToIEC(item.value, {
+              output: 'object',
+            });
+
+            return (
+              <div className={s.metaItem} key={idx}>
+                <div className={s.metaTitle}>{item.title}</div>
+                <div className={s.metaValue}>
+                  <span>{value}</span>
+                  <span className={s.metaUnit}>{unit}</span>
+                  {item.percent ? (
+                    <span className={s.metaPercent}>{item.percent}%</span>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
       <ResponsiveContainer width="100%" aspect={2.5}>
-        <AreaChart
-          width={730}
-          height={250}
-          data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
+        <AreaChart data={data} margin={{ top: 10 }}>
           <defs>
             <linearGradient id={gradient1Id} x1="0" y1="0" x2="0" y2="1">
               <stop
@@ -93,17 +139,45 @@ export const Chart = ({ data, title }) => {
               />
             </linearGradient>
           </defs>
-          <XAxis
-            dataKey="name"
-            tickLine={false}
-            stroke="var(--color-nepal)"
-            y={1}
-          />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            stroke="var(--color-nepal)"
-          />
+          {XData.map((item) => (
+            <XAxis
+              key={nanoid()}
+              dataKey={item.key}
+              tickLine={false}
+              stroke="var(--color-nepal)"
+              tickFormatter={(value) => getFormattedValue(item.type, value)}
+              y={1}
+            />
+          ))}
+          {YData.map((item) => (
+            <YAxis
+              key={nanoid()}
+              dataKey={item.key}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value) => getFormattedValue(item.type, value)}
+              stroke="var(--color-nepal)"
+            />
+          ))}
+          {YData.map((item, idx) => {
+            return (
+              <Area
+                key={nanoid()}
+                dataKey={item.key}
+                name={item.title}
+                stroke={colors[idx].stroke}
+                strokeWidth={2}
+                activeDot={{
+                  stroke: colors[idx].stroke,
+                  fill: colors[idx].fill,
+                  strokeWidth: 2,
+                  r: 5,
+                }}
+                fillOpacity={1}
+                fill={colors[idx].gradient}
+              />
+            );
+          })}
           <CartesianGrid
             strokeDasharray="5 7"
             vertical={false}
@@ -120,36 +194,12 @@ export const Chart = ({ data, title }) => {
             offset={0}
             allowEscapeViewBox={{ x: true, y: true }}
             position={{ y: -100 }}
-            // wrapperStyle={{ width: 0, height: 0 }}
           />
-          <Legend content={renderLegend} />
-          <Area
-            dataKey="uv"
-            name="Used Capacity"
-            stroke="var(--theme-color-primary)"
-            strokeWidth={2}
-            activeDot={{
-              stroke: 'var(--theme-color-primary)',
-              fill: 'white',
-              strokeWidth: 2,
-              r: 5,
+          <Legend
+            content={renderLegend}
+            formatter={(value, entry, index) => {
+              return value;
             }}
-            fillOpacity={1}
-            fill={`url(#${gradient1Id})`}
-          />
-          <Area
-            dataKey="pv"
-            name="Commited Capacity"
-            stroke="var(--theme-color-secondary)"
-            strokeWidth={2}
-            activeDot={{
-              stroke: 'var(--theme-color-secondary)',
-              fill: 'white',
-              strokeWidth: 2,
-              r: 5,
-            }}
-            fillOpacity={1}
-            fill={`url(#${gradient2Id})`}
           />
         </AreaChart>
       </ResponsiveContainer>

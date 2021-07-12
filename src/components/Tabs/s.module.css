@@ -27,6 +27,7 @@
 
 .tab.active {
   color: var(--theme-text-primary);
+  cursor: default;
 }
 
 .tab.active::after {

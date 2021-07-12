@@ -3,7 +3,9 @@
   --color-white: #fff;
   --color-black-pearl: #040505;
   --color-solitude: #F2F4F6;
+  --rgb-solitude: 242, 244, 246;
   --color-solitude-dark: #E0E5EA;
+  --rgb-solitude-dark: 224, 226, 234;
   --color-lochinvar: #4EA394;
   --rgb-lochinvar: 78, 163, 148;
   --color-kashmir-blue: #576C7E;
@@ -23,12 +25,18 @@
   --theme-text-primary: var(--color-black-pearl);
   --theme-text-secondary: var(--color-kashmir-blue);
   --theme-text-inactive: var(--color-link-water);
+  --theme-text-primary-inverted: var(--color-white);
 
+  --theme-input-bg: var(--color-white);
   --theme-input-placeholder-color: var(--color-nepal);
   --theme-input-border: 1px solid var(--color-white);
   --theme-input-border-active: 1px solid var(--theme-color-primary);
 
   --theme-icon-color: var(--color-nepal);
+
+  --theme-table-th-color: var(--color-nepal);
+  --theme-table-td-color: var(--color-black-pearl);
+  --theme-table-row-bg: rgba(var(--rgb-solitude), 0.64);
 }
 
 *,
@@ -79,4 +87,16 @@ main {
   width: 100%;
   margin: 0 auto;
   max-width: 1118px;
+  position: relative;
+}
+
+.h2 {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: left;
+  color: var(--theme-text-primary);
+  margin: 0;
 }

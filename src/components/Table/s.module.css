@@ -1,0 +1,74 @@
+.wrap {
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  padding: 24px 8px;
+}
+
+.header {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table .alignRight {
+  text-align: right;
+}
+
+.table th {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--theme-table-th-color);
+  text-align: left;
+  padding: 16px;
+}
+
+.table td {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--theme-table-td-color);
+  padding: 14px 16px;
+}
+
+.table td:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.table td:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: var(--theme-table-row-bg);
+}
+
+.statisticsButton {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-text-primary-inverted);
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--theme-color-primary);
+  box-shadow: 0 8px 16px rgba(var(--theme-color-primary-rgb), 0.24);
+  opacity: 0;
+  transition: opacity 0.05s ease-out;
+}
+
+.statisticsButton:focus {
+  opacity: 1;
+}
+
+.table tr:hover .statisticsButton {
+  opacity: 1;
+}
+
+.entity {
+  width: 50%;
+}

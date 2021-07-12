@@ -3,6 +3,7 @@
   border-radius: 8px;
   padding: 4px;
   display: inline-flex;
+  border: 1px solid var(--theme-background-primary);
 }
 
 .button {

@@ -25,7 +25,7 @@
   text-align: left;
   color: var(--theme-text-primary);
   border: var(--theme-input-border);
-  background: var(--theme-background-secondary);
+  background: var(--theme-input-bg);
   border-radius: 8px;
   outline: none;
 }

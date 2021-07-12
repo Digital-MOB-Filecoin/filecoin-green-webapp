@@ -1,0 +1,18 @@
+.button {
+  border: 1px solid rgba(var(--rgb-lochinvar), 0.32);
+  box-sizing: border-box;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-color-primary);
+  background: var(--theme-background-secondary);
+}
+
+.button:hover,
+.button:focus {
+  border-color: var(--theme-color-primary);
+}

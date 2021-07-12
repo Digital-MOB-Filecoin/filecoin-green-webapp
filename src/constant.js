@@ -1,0 +1,1 @@
+export const MINERS_TABLE_ITEMS_COUNT = 5;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import s from './s.module.css';
 import cn from 'classnames';
+
+import s from './s.module.css';
 
 export const TimeIntervalButtons = () => {
   const [activeIdx, setActiveIdx] = useState(1);

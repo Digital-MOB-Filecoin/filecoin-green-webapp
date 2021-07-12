@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  margin-bottom: 40px;
+}
+
+.search {
+  margin-right: 24px;
+  flex-grow: 1;
+}
