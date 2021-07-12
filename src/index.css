@@ -37,6 +37,8 @@
   --theme-table-th-color: var(--color-nepal);
   --theme-table-td-color: var(--color-black-pearl);
   --theme-table-row-bg: rgba(var(--rgb-solitude), 0.64);
+
+  --theme-border-color: var(--color-solitude-dark);
 }
 
 *,

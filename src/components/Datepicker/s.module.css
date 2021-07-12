@@ -86,7 +86,7 @@
 }
 
 .footer {
-  background: rgba(224, 229, 234, 0.32);
+  background: rgba(var(--rgb-solitude-dark), 0.32);
   padding: 16px 24px;
   display: flex;
 }
@@ -124,7 +124,8 @@
   font-weight: 600;
   line-height: 24px;
   letter-spacing: 0;
-  color: var(--theme-text-secondary)
+  color: var(--theme-text-secondary);
+  margin-bottom: 16px;
 }
 
 .reactDatepicker :global(.react-datepicker__day) {
@@ -142,8 +143,8 @@
 }
 
 .reactDatepicker :global(.react-datepicker__day--in-range) {
-  background: rgba(224, 229, 234, 0.32);
-  color: #98A9B8;
+  background: rgba(var(--rgb-solitude-dark), 0.32);
+  color: var(--theme-input-placeholder-color);
   border-radius: 0;
   width: 40px;
   height: 32px;
@@ -152,8 +153,8 @@
 }
 
 .reactDatepicker :global(.react-datepicker__day--in-selecting-range) {
-  background: rgba(78, 163, 148, 0.12) !important;
-  color: #4EA394 !important;
+  background: rgba(var(--theme-color-primary-rgb), 0.12) !important;
+  color: var(--theme-color-primary) !important;
 }
 
 .reactDatepicker :global(.react-datepicker__day--selected),
@@ -177,7 +178,7 @@
   top: 0;
   bottom: 0;
   width: 12px;
-  background: rgba(78, 163, 148, 0.12);
+  background: rgba(var(--theme-color-primary-rgb), 0.12);
   z-index: 0;
 }
 
@@ -207,8 +208,8 @@
 
 .timeInput {
   font-family: inherit;
-  background: #FFFFFF;
-  border: 1px solid #E0E5EA;
+  background: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border-color);
   box-sizing: border-box;
   border-radius: 8px;
   width: 64px;
@@ -237,7 +238,7 @@
 .timeSeparator {
   display: inline-flex;
   margin: 0 4px;
-  color: #576C7E;
+  color: var(--theme-text-secondary);
 }
 
 .timeSeparator::before {
@@ -268,21 +269,21 @@
 
 .amLabel div,
 .pmLabel div {
-  background: #FFFFFF;
-  border: 1px solid #E0E5EA;
+  background: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border-color);
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
   padding: 8px;
-  color: #98A9B8;
+  color: var(--theme-text-secondary);
   cursor: pointer;
 }
 
 .amLabel input:checked ~ div,
 .pmLabel input:checked ~ div {
   border-color: var(--theme-color-primary);
-  color: #fff;
+  color: var(--theme-text-primary-inverted);
   background: var(--theme-color-primary);
   cursor: default;
 }
@@ -311,7 +312,7 @@
   font-weight: 600;
   font-size: 12px;
   line-height: 16px;
-  color: #576C7E;
+  color: var(--theme-text-secondary);
   margin-bottom: 4px;
 }
 
@@ -319,7 +320,7 @@
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
-  color: #040505;
+  color: var(--theme-text-primary);
 }
 
 .buttonsWarp {
@@ -341,12 +342,12 @@
 }
 
 .clearButton {
-  border: 1px solid #E0E5EA;
-  color: #576C7E;
+  border: 1px solid var(--theme-border-color);
+  color: var(--theme-text-secondary);
 }
 
 .applyButton {
-  color: #FFFFFF;
+  color: var(--theme-text-primary-inverted);
   background: var(--theme-color-primary);
   border-color: var(--theme-color-primary);
 }
@@ -362,7 +363,7 @@
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
-  color: #98A9B8;
+  color: var(--theme-input-placeholder-color);
   margin: 0;
   white-space: nowrap;
   background: transparent;
@@ -374,14 +375,14 @@
 }
 
 .rangeButton.custom {
-  margin-top: 28px;
+  margin-top: auto;
 }
 
 .rangeButton.active {
-  color: #040505;
+  color: var(--theme-text-primary);
 }
 
 .rangeButton:hover {
-  background: rgba(224, 229, 234, 0.32);
-  color: #040505;
+  background: rgba(var(--rgb-solitude-dark), 0.32);
+  color: var(--theme-text-primary);
 }
