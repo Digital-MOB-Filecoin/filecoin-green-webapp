@@ -13,6 +13,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "recharts": "^2.0.9",
+    "use-debounce": "^7.0.0",
     "use-query-params": "^1.2.2"
   },
   "devDependencies": {

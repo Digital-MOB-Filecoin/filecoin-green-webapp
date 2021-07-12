@@ -20,6 +20,17 @@ import { convertBytesToIEC } from 'utils/bytes';
 
 import s from './s.module.css';
 
+const getFormattedValue = (type, value) => {
+  switch (type) {
+    case 'date':
+      return format(new Date(value), 'MMMM uuuu');
+    case 'bytes':
+      return convertBytesToIEC(value);
+    default:
+      return value;
+  }
+};
+
 const renderLegend = ({ payload }) => {
   return (
     <div className={s.legend}>
@@ -36,17 +47,25 @@ const renderLegend = ({ payload }) => {
   );
 };
 
-const renderTooltip = ({ payload }) => {
+const renderTooltip = ({ payload, data }) => {
   return (
     <div className={s.tooltip}>
-      {payload.map((item, idx) => (
-        <div className={s.tooltipItem} key={idx}>
-          <span className={s.tooltipItemName} style={{ '--color': item.color }}>
-            {item.name}
-          </span>
-          <span className={s.tooltipItemValue}>{item.value}</span>
-        </div>
-      ))}
+      {payload.map((item, idx) => {
+        const { type } = data.find((el) => el.key === item.dataKey);
+        return (
+          <div className={s.tooltipItem} key={idx}>
+            <span
+              className={s.tooltipItemName}
+              style={{ '--color': item.color }}
+            >
+              {item.name}
+            </span>
+            <span className={s.tooltipItemValue}>
+              {getFormattedValue(type, item.value)}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -70,17 +89,6 @@ export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
     ],
     []
   );
-
-  const getFormattedValue = (type, value) => {
-    switch (type) {
-      case 'date':
-        return format(new Date(value), 'MMMM uuuu');
-      case 'bytes':
-        return convertBytesToIEC(value);
-      default:
-        return value;
-    }
-  };
 
   return (
     <div className={s.wrap}>
@@ -194,13 +202,9 @@ export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
             offset={0}
             allowEscapeViewBox={{ x: true, y: true }}
             position={{ y: -100 }}
+            data={YData}
           />
-          <Legend
-            content={renderLegend}
-            formatter={(value, entry, index) => {
-              return value;
-            }}
-          />
+          <Legend content={renderLegend} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
