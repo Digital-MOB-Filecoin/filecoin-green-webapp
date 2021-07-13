@@ -32,7 +32,7 @@ export const GeneralProvider = ({ children }) => {
 
   const fetchUsedCapacityData = async (abortController) => {
     return await api(
-      '/network',
+      'network',
       abortController ? { signal: abortController.signal } : {}
     );
   };
