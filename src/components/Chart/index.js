@@ -13,17 +13,27 @@ import {
 } from 'recharts';
 
 import format from 'date-fns/format';
+import isValid from 'date-fns/isValid';
 
+import { Spinner } from 'components/Spinner';
 import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
 import { ExportButton } from 'components/ExportButton';
 import { convertBytesToIEC } from 'utils/bytes';
+import { EPOCH_START_TIMESTAMP, EPOCH_DURATION } from 'constant';
 
 import s from './s.module.css';
 
 const getFormattedValue = (type, value) => {
+  let temp;
   switch (type) {
     case 'date':
-      return format(new Date(value), 'MMMM uuuu');
+      temp = new Date(value);
+      return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
+    case 'epoch':
+      temp = new Date(
+        (EPOCH_START_TIMESTAMP + Number(value) * EPOCH_DURATION) * 1000
+      );
+      return isValid(temp) ? format(temp, 'MMM d, yyyy hh:mm aa') : value;
     case 'bytes':
       return convertBytesToIEC(value);
     default:
@@ -32,6 +42,7 @@ const getFormattedValue = (type, value) => {
 };
 
 const renderLegend = ({ payload }) => {
+  if (!payload) return null;
   return (
     <div className={s.legend}>
       {payload.map((entry, idx) => (
@@ -48,8 +59,13 @@ const renderLegend = ({ payload }) => {
 };
 
 const renderTooltip = ({ payload, data }) => {
+  if (!payload) return null;
+
   return (
     <div className={s.tooltip}>
+      <div className={s.tooltipHeader}>
+        Epoch {payload?.[0]?.payload?.epoch}
+      </div>
       {payload.map((item, idx) => {
         const { type } = data.find((el) => el.key === item.dataKey);
         return (
@@ -70,7 +86,16 @@ const renderTooltip = ({ payload, data }) => {
   );
 };
 
-export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
+export const Chart = ({
+  data: {
+    data: { results, loading, failed },
+    meta,
+    XData,
+    YData,
+  },
+  exportData,
+  title,
+}) => {
   const gradient1Id = useMemo(nanoid, []);
   const gradient2Id = useMemo(nanoid, []);
 
@@ -95,7 +120,7 @@ export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
       <div className={cn(s.header, { [s.withMeta]: meta })}>
         <h2 className={cn('h2', s.title)}>{title}</h2>
         <TimeIntervalButtons />
-        <ExportButton className={s.exportButton} />
+        <ExportButton className={s.exportButton} data={exportData} />
       </div>
       {meta ? (
         <div className={s.meta}>
@@ -120,7 +145,7 @@ export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
         </div>
       ) : null}
       <ResponsiveContainer width="100%" aspect={2.5}>
-        <AreaChart data={data} margin={{ top: 10 }}>
+        <AreaChart data={results}>
           <defs>
             <linearGradient id={gradient1Id} x1="0" y1="0" x2="0" y2="1">
               <stop
@@ -207,6 +232,16 @@ export const Chart = ({ data: { data, meta, XData, YData }, title }) => {
           <Legend content={renderLegend} />
         </AreaChart>
       </ResponsiveContainer>
+      {loading ? (
+        <div className={s.loader}>
+          <Spinner className={s.spinner} width={40} height={40} />
+        </div>
+      ) : null}
+      {failed ? (
+        <div className={s.loader}>
+          <p className={s.failed}>Failed to Load Data.</p>
+        </div>
+      ) : null}
     </div>
   );
 };

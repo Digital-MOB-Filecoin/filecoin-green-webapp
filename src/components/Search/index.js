@@ -1,14 +1,40 @@
+import { useDebouncedCallback } from 'use-debounce';
+import { useQueryParam, StringParam } from 'use-query-params';
 import cn from 'classnames';
 
 import { Svg } from 'components/Svg';
 
 import s from './s.module.css';
 
-export const Search = ({ className, ...rest }) => {
+const inputName = 'search';
+
+export const Search = ({ className }) => {
+  const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
+
+  const handlerSetQuery = (value) => {
+    setMinerQuery(value || undefined);
+  };
+
+  const debounced = useDebouncedCallback(handlerSetQuery, 600);
+
+  const handlerSubmit = (event) => {
+    debounced.cancel();
+    const formData = new FormData(event.target);
+    event.preventDefault();
+
+    handlerSetQuery(formData.get(inputName));
+  };
+
   return (
-    <div className={cn(s.wrap, className)}>
+    <form className={cn(s.wrap, className)} onSubmit={handlerSubmit}>
       <Svg id="search" className={s.icon} />
-      <input type="search" className={s.input} {...rest} />
-    </div>
+      <input
+        type="search"
+        name={inputName}
+        className={s.input}
+        defaultValue={minerQuery || ''}
+        onChange={(e) => debounced(e.target.value)}
+      />
+    </form>
   );
 };

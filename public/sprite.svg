@@ -27,4 +27,9 @@
   <symbol id="icon__dropdown-arrow-down" viewBox="0 0 24 24" fill="none">
     <path d="M11.2929 14.2929L7.70708 10.7071C7.07712 10.0771 7.52329 9 8.41419 9L15.5858 9C16.4767 9 16.9228 10.0771 16.2929 10.7071L12.7071 14.2929C12.3166 14.6834 11.6834 14.6834 11.2929 14.2929Z" fill="currentColor" />
   </symbol>
+
+  <symbol id="icon__close" viewBox="0 0 16 16" fill="none">
+    <path d="M12.1484 12.1483L3.85163 3.85162" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M3.8516 12.1483L12.1483 3.8516" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
 </svg>

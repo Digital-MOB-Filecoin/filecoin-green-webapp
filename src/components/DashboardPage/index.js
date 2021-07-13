@@ -1,8 +1,12 @@
+import { useQueryParam, StringParam } from 'use-query-params';
+import { useGeneral } from 'context/general';
+
 import { Chart } from 'components/Chart';
 import { Table } from 'components/Table';
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
 import { Tabs } from 'components/Tabs';
+import { Svg } from 'components/Svg';
 import { getRandomNumber } from 'utils/numbers';
 
 import s from './s.module.css';
@@ -28,12 +32,27 @@ const getMockData = (LENGTH) => {
 };
 
 export default function DashboardPage() {
+  const { generalSelectors, generalActions } = useGeneral();
+  const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
+
   return (
     <div className="container">
       <div className={s.header}>
         <Search placeholder="Miner ID" className={s.search} />
         <Datepicker />
       </div>
+      {minerQuery ? (
+        <div className={s.searchContainer}>
+          <span>Miner {minerQuery}</span>
+          <button
+            type="button"
+            className={s.searchClear}
+            onClick={() => setMinerQuery(undefined)}
+          >
+            <Svg id="close" width={16} height={16} />
+          </button>
+        </div>
+      ) : null}
       <div>
         <Tabs
           tabs={[
@@ -58,13 +77,23 @@ export default function DashboardPage() {
       </div>
       <Chart
         title="Used Capacity vs Commited Capacity"
+        exportData={{
+          filename: 'usedVsCommitedCapacity.csv',
+          fetchFunction: generalActions.fetchUsedCapacityData,
+          table: [
+            { title: 'Epoch', key: 'epoch' },
+            { title: 'Commited Capacity (bytes)', key: 'commited' },
+            { title: 'Used Capacity (bytes)', key: 'used' },
+          ],
+        }}
         data={{
-          data: getMockData(50),
+          data: generalSelectors.usedCapacityData,
+          // data: { results: getMockData(10), loading: false, loaded: true },
           XData: [
             {
               key: 'epoch',
               title: 'Epoch',
-              type: 'date',
+              type: 'epoch',
             },
           ],
           YData: [
@@ -84,7 +113,7 @@ export default function DashboardPage() {
       <Chart
         title="Fraction Used"
         data={{
-          data: getMockData(10),
+          data: { results: getMockData(10), loading: false, failed: true },
           XData: [
             {
               key: 'epoch',
@@ -115,7 +144,7 @@ export default function DashboardPage() {
       <Chart
         title="Sealed capacity added per block"
         data={{
-          data: getMockData(3),
+          data: { results: getMockData(3), loading: false, failed: true },
           XData: [
             {
               key: 'epoch',

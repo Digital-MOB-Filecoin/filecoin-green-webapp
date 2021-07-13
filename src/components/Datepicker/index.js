@@ -85,26 +85,31 @@ export const Datepicker = ({ className }) => {
         setIsCustomRangeOpen(false);
         generalActions.setStartDate(sub(dateNow, { days: 7 }));
         generalActions.setEndDate(dateNow);
+        setIsOpen(false);
         break;
       case '30d':
         setIsCustomRangeOpen(false);
         generalActions.setStartDate(sub(dateNow, { days: 30 }));
         generalActions.setEndDate(dateNow);
+        setIsOpen(false);
         break;
       case '3m':
         setIsCustomRangeOpen(false);
         generalActions.setStartDate(sub(dateNow, { months: 3 }));
         generalActions.setEndDate(dateNow);
+        setIsOpen(false);
         break;
       case '6m':
         setIsCustomRangeOpen(false);
         generalActions.setStartDate(sub(dateNow, { months: 6 }));
         generalActions.setEndDate(dateNow);
+        setIsOpen(false);
         break;
       case '1y':
         setIsCustomRangeOpen(false);
         generalActions.setStartDate(sub(dateNow, { years: 1 }));
         generalActions.setEndDate(dateNow);
+        setIsOpen(false);
         break;
       default:
         return;
@@ -119,6 +124,7 @@ export const Datepicker = ({ className }) => {
   const handlerApply = () => {
     generalActions.setStartDate(calendarStartDate);
     generalActions.setEndDate(calendarEndDate);
+    setIsOpen(false);
   };
 
   return (

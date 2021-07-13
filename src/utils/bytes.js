@@ -1,10 +1,15 @@
+import BigNumber from 'bignumber.js';
 import filesize from 'filesize';
 
 export const convertBytesToIEC = (bytes, options = {}) => {
-  return isFinite(Number(bytes) || null)
-    ? filesize(Number(bytes), {
-        standard: 'iec',
-        ...options,
-      })
-    : 'N/A';
+  const bytesBN = new BigNumber(bytes);
+
+  if (bytesBN.isNaN() || !bytesBN.isFinite()) {
+    return 'N/A';
+  }
+
+  return filesize(bytesBN.toNumber(), {
+    standard: 'iec',
+    ...options,
+  });
 };

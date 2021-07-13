@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { getRandomNumber } from 'utils/numbers';
 import { convertBytesToIEC } from 'utils/bytes';
 import { Pagination } from './Pagination';
@@ -15,6 +16,15 @@ const mockData = Array.from({ length: MINERS_TABLE_ITEMS_COUNT }).map(
 );
 
 export const Table = () => {
+  const generateLinkUrl = (id) => {
+    return (location) => {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set('miner', String(id));
+
+      return `${location.pathname}?${queryParams.toString()}`;
+    };
+  };
+
   return (
     <div className={s.wrap}>
       <div className={s.header}>
@@ -41,13 +51,12 @@ export const Table = () => {
                   {convertBytesToIEC(item.capacity)}
                 </td>
                 <td className={s.alignRight}>
-                  <button
-                    type="button"
-                    onClick={undefined}
+                  <Link
+                    to={generateLinkUrl(item.miner)}
                     className={s.statisticsButton}
                   >
                     View statistics
-                  </button>
+                  </Link>
                 </td>
               </tr>
             );

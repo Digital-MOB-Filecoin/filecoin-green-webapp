@@ -10,9 +10,26 @@
   line-height: 24px;
   color: var(--theme-color-primary);
   background: var(--theme-background-secondary);
+  position: relative;
 }
 
 .button:hover,
 .button:focus {
   border-color: var(--theme-color-primary);
+}
+
+.spinnerWrap {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+}
+
+.spinner {
+  margin: auto;
+  color: var(--theme-color-primary);
 }
