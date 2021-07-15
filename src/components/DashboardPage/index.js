@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useQueryParam, StringParam } from 'use-query-params';
 
+import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
+
+import { convertTimestampToEpoch, convertEpochToTimestamp } from 'utils/dates';
 import { Chart } from 'components/Chart';
 import { Table } from 'components/Table';
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
 import { Tabs } from 'components/Tabs';
 import { Svg } from 'components/Svg';
-import { getRandomNumber } from 'utils/numbers';
+
+import sub from 'date-fns/sub';
 
 import s from './s.module.css';
-import sub from 'date-fns/sub';
-import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
 const defaultDataState = {
   results: {},
@@ -24,15 +26,19 @@ export default function DashboardPage() {
   const [fractionData, setFractionData] = useState(defaultDataState);
   const [sealedData, setSealedData] = useState(defaultDataState);
 
-  const [startDate, setStartDate] = useState(sub(new Date(), { months: 6 }));
-  const [endDate, setEndDate] = useState(new Date());
+  const [startEpoch, setStartEpoch] = useState(
+    convertTimestampToEpoch(sub(new Date(), { months: 6 }).getTime())
+  );
+  const [endEpoch, setEndEpoch] = useState(
+    convertTimestampToEpoch(new Date().getTime())
+  );
 
   const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    fetchCapacity(abortController, { all: true })
+    fetchCapacity(abortController, { start: startEpoch, end: endEpoch })
       .then((results) => {
         setCapacityData({
           ...defaultDataState,
@@ -48,7 +54,7 @@ export default function DashboardPage() {
         });
       });
 
-    fetchFraction(abortController, { all: true })
+    fetchFraction(abortController, { start: startEpoch, end: endEpoch })
       .then((results) => {
         setFractionData({
           ...defaultDataState,
@@ -64,7 +70,7 @@ export default function DashboardPage() {
         });
       });
 
-    fetchSealed(abortController, { all: true })
+    fetchSealed(abortController, { start: startEpoch, end: endEpoch })
       .then((results) => {
         setSealedData({
           ...defaultDataState,
@@ -80,20 +86,20 @@ export default function DashboardPage() {
         });
       });
 
-    return function cancel() {
+    return () => {
       abortController.abort();
     };
-  }, [startDate.getTime(), endDate.getTime()]);
+  }, [startEpoch, endEpoch]);
 
   return (
     <div className="container">
       <div className={s.header}>
         <Search placeholder="Miner ID" className={s.search} />
         <Datepicker
-          startDate={startDate}
-          endDate={endDate}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
+          startDate={new Date(convertEpochToTimestamp(startEpoch))}
+          endDate={new Date(convertEpochToTimestamp(endEpoch))}
+          setStartDate={(date) => setStartEpoch(convertTimestampToEpoch(date))}
+          setEndDate={(date) => setEndEpoch(convertTimestampToEpoch(date))}
         />
       </div>
       {minerQuery ? (
@@ -172,14 +178,14 @@ export default function DashboardPage() {
             {
               key: 'epoch',
               title: 'Epoch',
-              type: 'date',
+              type: 'epoch',
             },
           ],
           YData: [
             {
               key: 'fraction',
               title: 'Used Capacity',
-              type: 'fraction',
+              type: 'percent',
             },
           ],
           // meta: [
@@ -210,7 +216,7 @@ export default function DashboardPage() {
             {
               key: 'total',
               title: 'Sealing rate Used',
-              type: 'number',
+              type: 'bytes/block',
             },
           ],
         }}

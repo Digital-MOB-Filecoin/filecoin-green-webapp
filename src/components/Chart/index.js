@@ -34,6 +34,10 @@ const getFormattedValue = (type, value) => {
       return isValid(temp) ? format(temp, 'MMM d, yyyy hh:mm aa') : value;
     case 'bytes':
       return convertBytesToIEC(value);
+    case 'bytes/block':
+      return `${convertBytesToIEC(value)}/block`;
+    case 'percent':
+      return `${value * 100}%`;
     default:
       return value;
   }
@@ -61,9 +65,9 @@ const renderTooltip = ({ payload, data }) => {
 
   return (
     <div className={s.tooltip}>
-      <div className={s.tooltipHeader}>
-        Epoch {payload?.[0]?.payload?.epoch}
-      </div>
+      {/*<div className={s.tooltipHeader}>*/}
+      {/*  Epoch {payload?.[0]?.payload?.epoch}*/}
+      {/*</div>*/}
       {payload.map((item, idx) => {
         const { type } = data.find((el) => el.key === item.dataKey);
         return (
