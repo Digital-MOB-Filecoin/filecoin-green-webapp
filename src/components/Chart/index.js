@@ -19,7 +19,7 @@ import { Spinner } from 'components/Spinner';
 import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
 import { ExportButton } from 'components/ExportButton';
 import { convertBytesToIEC } from 'utils/bytes';
-import { EPOCH_START_TIMESTAMP, EPOCH_DURATION } from 'constant';
+import { convertEpochToTimestamp } from 'utils/dates';
 
 import s from './s.module.css';
 
@@ -30,9 +30,7 @@ const getFormattedValue = (type, value) => {
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
     case 'epoch':
-      temp = new Date(
-        (EPOCH_START_TIMESTAMP + Number(value) * EPOCH_DURATION) * 1000
-      );
+      temp = new Date(convertEpochToTimestamp(value));
       return isValid(temp) ? format(temp, 'MMM d, yyyy hh:mm aa') : value;
     case 'bytes':
       return convertBytesToIEC(value);

@@ -12,7 +12,7 @@ export const TimeIntervalButtons = () => {
 
   return (
     <div className={s.wrap}>
-      {['Epoch', 'Day', 'Week', 'Month'].map((children, idx) => (
+      {['Day', 'Week', 'Month'].map((children, idx) => (
         <button
           key={idx}
           type="button"

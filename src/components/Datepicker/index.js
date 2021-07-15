@@ -9,22 +9,22 @@ import sub from 'date-fns/sub';
 
 import { Svg } from 'components/Svg';
 import { CalendarContainer } from './CalendarContainer';
-import { useGeneral } from 'context/general';
 
 import 'react-datepicker/dist/react-datepicker.css';
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './s.module.css';
 
-export const Datepicker = ({ className }) => {
-  const { generalSelectors, generalActions } = useGeneral();
+export const Datepicker = ({
+  className,
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);
-  const [calendarStartDate, setCalendarStartDate] = useState(
-    generalSelectors.startDate
-  );
-  const [calendarEndDate, setCalendarEndDate] = useState(
-    generalSelectors.endDate
-  );
+  const [calendarStartDate, setCalendarStartDate] = useState(startDate);
+  const [calendarEndDate, setCalendarEndDate] = useState(endDate);
 
   const checkActiveRange = (range) => {
     if (isCustomRangeOpen && range !== 'custom') {
@@ -35,40 +35,15 @@ export const Datepicker = ({ className }) => {
       case 'custom':
         return isCustomRangeOpen;
       case '7d':
-        return (
-          differenceInCalendarDays(
-            generalSelectors.endDate,
-            generalSelectors.startDate
-          ) === 7
-        );
+        return differenceInCalendarDays(endDate, startDate) === 7;
       case '30d':
-        return (
-          differenceInCalendarDays(
-            generalSelectors.endDate,
-            generalSelectors.startDate
-          ) === 30
-        );
+        return differenceInCalendarDays(endDate, startDate) === 30;
       case '3m':
-        return (
-          differenceInCalendarMonths(
-            generalSelectors.endDate,
-            generalSelectors.startDate
-          ) === 3
-        );
+        return differenceInCalendarMonths(endDate, startDate) === 3;
       case '6m':
-        return (
-          differenceInCalendarMonths(
-            generalSelectors.endDate,
-            generalSelectors.startDate
-          ) === 6
-        );
+        return differenceInCalendarMonths(endDate, startDate) === 6;
       case '1y':
-        return (
-          differenceInCalendarMonths(
-            generalSelectors.endDate,
-            generalSelectors.startDate
-          ) === 12
-        );
+        return differenceInCalendarMonths(endDate, startDate) === 12;
       default:
         return false;
     }
@@ -83,32 +58,32 @@ export const Datepicker = ({ className }) => {
         break;
       case '7d':
         setIsCustomRangeOpen(false);
-        generalActions.setStartDate(sub(dateNow, { days: 7 }));
-        generalActions.setEndDate(dateNow);
+        setStartDate(sub(dateNow, { days: 7 }));
+        setEndDate(dateNow);
         setIsOpen(false);
         break;
       case '30d':
         setIsCustomRangeOpen(false);
-        generalActions.setStartDate(sub(dateNow, { days: 30 }));
-        generalActions.setEndDate(dateNow);
+        setStartDate(sub(dateNow, { days: 30 }));
+        setEndDate(dateNow);
         setIsOpen(false);
         break;
       case '3m':
         setIsCustomRangeOpen(false);
-        generalActions.setStartDate(sub(dateNow, { months: 3 }));
-        generalActions.setEndDate(dateNow);
+        setStartDate(sub(dateNow, { months: 3 }));
+        setEndDate(dateNow);
         setIsOpen(false);
         break;
       case '6m':
         setIsCustomRangeOpen(false);
-        generalActions.setStartDate(sub(dateNow, { months: 6 }));
-        generalActions.setEndDate(dateNow);
+        setStartDate(sub(dateNow, { months: 6 }));
+        setEndDate(dateNow);
         setIsOpen(false);
         break;
       case '1y':
         setIsCustomRangeOpen(false);
-        generalActions.setStartDate(sub(dateNow, { years: 1 }));
-        generalActions.setEndDate(dateNow);
+        setStartDate(sub(dateNow, { years: 1 }));
+        setEndDate(dateNow);
         setIsOpen(false);
         break;
       default:
@@ -117,13 +92,13 @@ export const Datepicker = ({ className }) => {
   };
 
   const handlerClear = () => {
-    setCalendarStartDate(generalSelectors.startDate);
-    setCalendarEndDate(generalSelectors.endDate);
+    setCalendarStartDate(startDate);
+    setCalendarEndDate(endDate);
   };
 
   const handlerApply = () => {
-    generalActions.setStartDate(calendarStartDate);
-    generalActions.setEndDate(calendarEndDate);
+    setStartDate(calendarStartDate);
+    setEndDate(calendarEndDate);
     setIsOpen(false);
   };
 
@@ -134,9 +109,9 @@ export const Datepicker = ({ className }) => {
         onClick={() => setIsOpen((prevState) => !prevState)}
         className={cn(s.button, { [s.active]: isOpen })}
       >
-        {format(generalSelectors.startDate, 'LLL d, yyyy')}
+        {format(startDate, 'LLL d, yyyy')}
         <span className={s.dateSeparator}>-</span>
-        {format(generalSelectors.endDate, 'LLL d, yyyy')}
+        {format(endDate, 'LLL d, yyyy')}
       </button>
       <Svg
         id="dropdown-arrow-down"

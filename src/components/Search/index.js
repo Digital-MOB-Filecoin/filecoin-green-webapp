@@ -8,7 +8,7 @@ import s from './s.module.css';
 
 const inputName = 'search';
 
-export const Search = ({ className }) => {
+export const Search = ({ className, ...rest }) => {
   const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
 
   const handlerSetQuery = (value) => {
@@ -34,6 +34,7 @@ export const Search = ({ className }) => {
         className={s.input}
         defaultValue={minerQuery || ''}
         onChange={(e) => debounced(e.target.value)}
+        {...rest}
       />
     </form>
   );

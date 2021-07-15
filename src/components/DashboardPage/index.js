@@ -1,5 +1,5 @@
+import { useState, useEffect } from 'react';
 import { useQueryParam, StringParam } from 'use-query-params';
-import { useGeneral } from 'context/general';
 
 import { Chart } from 'components/Chart';
 import { Table } from 'components/Table';
@@ -10,36 +10,91 @@ import { Svg } from 'components/Svg';
 import { getRandomNumber } from 'utils/numbers';
 
 import s from './s.module.css';
+import sub from 'date-fns/sub';
+import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
-const getMockData = (LENGTH) => {
-  return Array.from({ length: LENGTH })
-    .map((_, idx) => {
-      const randomNumber = getRandomNumber(
-        (idx + 1) * 1000,
-        (idx + 1 + LENGTH * 30) * 1000
-      );
-      const randomNumber2 = getRandomNumber(0, 2)
-        ? ((idx * LENGTH) / 5) * 100
-        : ((idx * LENGTH) / -5) * 100;
-
-      return {
-        epoch: new Date().getTime() - LENGTH * (idx + 1) * 10000000,
-        commited: randomNumber,
-        used: randomNumber + randomNumber2,
-      };
-    })
-    .sort((a, b) => a.epoch - b.epoch);
+const defaultDataState = {
+  results: {},
+  loading: false,
+  failed: false,
 };
 
 export default function DashboardPage() {
-  const { generalSelectors, generalActions } = useGeneral();
+  const [capacityData, setCapacityData] = useState(defaultDataState);
+  const [fractionData, setFractionData] = useState(defaultDataState);
+  const [sealedData, setSealedData] = useState(defaultDataState);
+
+  const [startDate, setStartDate] = useState(sub(new Date(), { months: 6 }));
+  const [endDate, setEndDate] = useState(new Date());
+
   const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    fetchCapacity(abortController, { all: true })
+      .then((results) => {
+        setCapacityData({
+          ...defaultDataState,
+          results,
+          loaded: true,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setCapacityData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    fetchFraction(abortController, { all: true })
+      .then((results) => {
+        setFractionData({
+          ...defaultDataState,
+          results,
+          loaded: true,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setFractionData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    fetchSealed(abortController, { all: true })
+      .then((results) => {
+        setSealedData({
+          ...defaultDataState,
+          results,
+          loaded: true,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setSealedData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    return function cancel() {
+      abortController.abort();
+    };
+  }, [startDate.getTime(), endDate.getTime()]);
 
   return (
     <div className="container">
       <div className={s.header}>
         <Search placeholder="Miner ID" className={s.search} />
-        <Datepicker />
+        <Datepicker
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+        />
       </div>
       {minerQuery ? (
         <div className={s.searchContainer}>
@@ -79,7 +134,7 @@ export default function DashboardPage() {
         title="Used Capacity vs Commited Capacity"
         exportData={{
           filename: 'usedVsCommitedCapacity.csv',
-          fetchFunction: generalActions.fetchUsedCapacityData,
+          fetchFunction: fetchCapacity,
           table: [
             { title: 'Epoch', key: 'epoch' },
             { title: 'Commited Capacity (bytes)', key: 'commited' },
@@ -87,8 +142,7 @@ export default function DashboardPage() {
           ],
         }}
         data={{
-          data: generalSelectors.usedCapacityData,
-          // data: { results: getMockData(10), loading: false, loaded: true },
+          data: capacityData,
           XData: [
             {
               key: 'epoch',
@@ -113,7 +167,7 @@ export default function DashboardPage() {
       <Chart
         title="Fraction Used"
         data={{
-          data: { results: getMockData(10), loading: false, failed: true },
+          data: fractionData,
           XData: [
             {
               key: 'epoch',
@@ -123,45 +177,40 @@ export default function DashboardPage() {
           ],
           YData: [
             {
-              key: 'used',
+              key: 'fraction',
               title: 'Used Capacity',
-              type: 'bytes',
+              type: 'fraction',
             },
           ],
-          meta: [
-            {
-              title: 'Total capacity',
-              value: '230003230003230003230003',
-            },
-            {
-              title: 'Used capacity',
-              value: '230003230003230003230003',
-              percent: '50',
-            },
-          ],
+          // meta: [
+          //   {
+          //     title: 'Total capacity',
+          //     value: '230003230003230003230003',
+          //   },
+          //   {
+          //     title: 'Used capacity',
+          //     value: '230003230003230003230003',
+          //     percent: '50',
+          //   },
+          // ],
         }}
       />
       <Chart
         title="Sealed capacity added per block"
         data={{
-          data: { results: getMockData(3), loading: false, failed: true },
+          data: sealedData,
           XData: [
             {
               key: 'epoch',
               title: 'Epoch',
-              type: 'date',
+              type: 'epoch',
             },
           ],
           YData: [
             {
-              key: 'commited',
+              key: 'total',
               title: 'Sealing rate Used',
-              type: 'bytes',
-            },
-            {
-              key: 'used',
-              title: 'Sealing rate Commited',
-              type: 'bytes',
+              type: 'number',
             },
           ],
         }}
