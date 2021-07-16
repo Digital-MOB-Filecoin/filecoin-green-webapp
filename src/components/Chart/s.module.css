@@ -149,13 +149,6 @@
   z-index: -1;
 }
 
-.tooltipHeader {
-  color: var(--theme-text-primary-inverted);
-  text-align: center;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
 .tooltipItem {
   display: flex;
   justify-content: space-between;

@@ -1,3 +1,5 @@
+import BN from 'bignumber.js';
+
 import { EPOCH_DURATION, EPOCH_START_TIMESTAMP } from 'constant';
 
 export const convertEpochToTimestamp = (epoch) => {
@@ -5,7 +7,8 @@ export const convertEpochToTimestamp = (epoch) => {
 };
 
 export const convertTimestampToEpoch = (timestamp) => {
-  return Math.ceil(
-    (Number(timestamp) - EPOCH_START_TIMESTAMP) / EPOCH_DURATION
-  );
+  return new BN(timestamp)
+    .minus(EPOCH_START_TIMESTAMP)
+    .dividedToIntegerBy(EPOCH_DURATION)
+    .toNumber();
 };

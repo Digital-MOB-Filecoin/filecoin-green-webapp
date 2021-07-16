@@ -170,8 +170,8 @@
   margin: 4px;
 }
 
-.reactDatepicker :global(.react-datepicker__day--selected.react-datepicker__day--selecting-range-start)::after,
-.reactDatepicker :global(.react-datepicker__day--selected.react-datepicker__day--selecting-range-end)::before {
+.reactDatepicker :global(.react-datepicker__day--in-selecting-range.react-datepicker__day--selecting-range-start)::after,
+.reactDatepicker :global(.react-datepicker__day--in-selecting-range.react-datepicker__day--selecting-range-end)::before {
   content: '';
   display: block;
   position: absolute;
@@ -192,110 +192,6 @@
 
 .reactDatepicker :global(.react-datepicker__day--disabled) {
   opacity: 0.2;
-}
-
-.timeControlsWrap {
-  display: flex;
-  align-items: center;
-  padding-top: 16px;
-  margin-top: auto;
-}
-
-.timeWrap {
-  display: inline-flex;
-  align-items: center;
-}
-
-.timeInput {
-  font-family: inherit;
-  background: var(--theme-background-secondary);
-  border: 1px solid var(--theme-border-color);
-  box-sizing: border-box;
-  border-radius: 8px;
-  width: 64px;
-  padding: 8px 12px;
-  outline: none;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--theme-text-primary);
-}
-
-.timeInput::placeholder {
-  color: var(--theme-input-placeholder-color);
-}
-
-.timeInput:focus,
-.timeInput:active {
-  border-color: var(--theme-color-primary);
-}
-
-.timeInput:invalid {
-  border-color: red;
-}
-
-.timeSeparator {
-  display: inline-flex;
-  margin: 0 4px;
-  color: var(--theme-text-secondary);
-}
-
-.timeSeparator::before {
-  content: ':';
-}
-
-.ampmWrap {
-  display: inline-flex;
-  margin-left: 12px;
-}
-
-.amLabel,
-.pmLabel {
-  position: relative;
-}
-
-.amLabel input,
-.pmLabel input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  visibility: hidden;
-  opacity: 0;
-  overflow: hidden;
-}
-
-.amLabel div,
-.pmLabel div {
-  background: var(--theme-background-secondary);
-  border: 1px solid var(--theme-border-color);
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 8px;
-  color: var(--theme-text-secondary);
-  cursor: pointer;
-}
-
-.amLabel input:checked ~ div,
-.pmLabel input:checked ~ div {
-  border-color: var(--theme-color-primary);
-  color: var(--theme-text-primary-inverted);
-  background: var(--theme-color-primary);
-  cursor: default;
-}
-
-.amLabel div {
-  border-radius: 8px 0 0 8px;
-
-}
-
-.pmLabel div{
-  border-radius: 0 8px 8px 0;
-
 }
 
 .selectedDate {

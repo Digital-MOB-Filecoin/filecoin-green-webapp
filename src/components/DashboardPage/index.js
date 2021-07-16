@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const [sealedData, setSealedData] = useState(defaultDataState);
 
   const [startEpoch, setStartEpoch] = useState(
-    convertTimestampToEpoch(sub(new Date(), { months: 6 }).getTime())
+    convertTimestampToEpoch(sub(new Date(), { months: 4 }).getTime())
   );
   const [endEpoch, setEndEpoch] = useState(
     convertTimestampToEpoch(new Date().getTime())
@@ -37,8 +37,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const abortController = new AbortController();
+    const defaultQueryParams = {
+      capacity: { start: startEpoch, end: endEpoch },
+      fraction: { start: startEpoch, end: endEpoch },
+      sealed: { start: startEpoch, end: endEpoch },
+    };
+    setCapacityData({
+      ...defaultDataState,
+      loading: true,
+    });
+    setFractionData({
+      ...defaultDataState,
+      loading: true,
+    });
+    setSealedData({
+      ...defaultDataState,
+      loading: true,
+    });
 
-    fetchCapacity(abortController, { start: startEpoch, end: endEpoch })
+    fetchCapacity(abortController, { ...defaultQueryParams.capacity })
       .then((results) => {
         setCapacityData({
           ...defaultDataState,
@@ -54,7 +71,7 @@ export default function DashboardPage() {
         });
       });
 
-    fetchFraction(abortController, { start: startEpoch, end: endEpoch })
+    fetchFraction(abortController, { ...defaultQueryParams.fraction })
       .then((results) => {
         setFractionData({
           ...defaultDataState,
@@ -70,7 +87,7 @@ export default function DashboardPage() {
         });
       });
 
-    fetchSealed(abortController, { start: startEpoch, end: endEpoch })
+    fetchSealed(abortController, { ...defaultQueryParams.sealed })
       .then((results) => {
         setSealedData({
           ...defaultDataState,
@@ -98,8 +115,12 @@ export default function DashboardPage() {
         <Datepicker
           startDate={new Date(convertEpochToTimestamp(startEpoch))}
           endDate={new Date(convertEpochToTimestamp(endEpoch))}
-          setStartDate={(date) => setStartEpoch(convertTimestampToEpoch(date))}
-          setEndDate={(date) => setEndEpoch(convertTimestampToEpoch(date))}
+          setStartDate={(date) => {
+            setStartEpoch(convertTimestampToEpoch(date.getTime()));
+          }}
+          setEndDate={(date) => {
+            setEndEpoch(convertTimestampToEpoch(date.getTime()));
+          }}
         />
       </div>
       {minerQuery ? (

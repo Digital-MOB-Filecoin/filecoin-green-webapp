@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import BN from 'bignumber.js';
 
 import format from 'date-fns/format';
 import isValid from 'date-fns/isValid';
@@ -37,7 +38,7 @@ const getFormattedValue = (type, value) => {
     case 'bytes/block':
       return `${convertBytesToIEC(value)}/block`;
     case 'percent':
-      return `${value * 100}%`;
+      return `${new BN(value).multipliedBy(100)}%`;
     default:
       return value;
   }
@@ -65,9 +66,6 @@ const renderTooltip = ({ payload, data }) => {
 
   return (
     <div className={s.tooltip}>
-      {/*<div className={s.tooltipHeader}>*/}
-      {/*  Epoch {payload?.[0]?.payload?.epoch}*/}
-      {/*</div>*/}
       {payload.map((item, idx) => {
         const { type } = data.find((el) => el.key === item.dataKey);
         return (
@@ -146,104 +144,112 @@ export const Chart = ({
           })}
         </div>
       ) : null}
-      <ResponsiveContainer width="100%" aspect={2.5}>
-        <AreaChart data={results}>
-          <defs>
-            <linearGradient id={gradient1Id} x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0"
-                stopColor="var(--theme-color-primary)"
-                stopOpacity={0.12}
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--theme-color-primary)"
-                stopOpacity={0}
-              />
-            </linearGradient>
-            <linearGradient id={gradient2Id} x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor="var(--theme-color-secondary)"
-                stopOpacity={0.12}
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--theme-color-secondary)"
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-          {XData.map((item) => (
-            <XAxis
-              key={nanoid()}
-              dataKey={item.key}
-              tickLine={false}
-              stroke="var(--color-nepal)"
-              tickFormatter={(value) => getFormattedValue(item.type, value)}
-              y={1}
-            />
-          ))}
-          {YData.map((item) => (
-            <YAxis
-              key={nanoid()}
-              dataKey={item.key}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={(value) => getFormattedValue(item.type, value)}
-              stroke="var(--color-nepal)"
-            />
-          ))}
-          {YData.map((item, idx) => {
-            return (
-              <Area
+      <div style={{ position: 'relative' }}>
+        <ResponsiveContainer width="100%" aspect={2.5}>
+          <AreaChart data={results}>
+            <defs>
+              <linearGradient id={gradient1Id} x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="0"
+                  stopColor="var(--theme-color-primary)"
+                  stopOpacity={0.12}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--theme-color-primary)"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+              <linearGradient id={gradient2Id} x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="0%"
+                  stopColor="var(--theme-color-secondary)"
+                  stopOpacity={0.12}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--theme-color-secondary)"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
+            {XData.map((item) => (
+              <XAxis
                 key={nanoid()}
                 dataKey={item.key}
-                name={item.title}
-                stroke={colors[idx].stroke}
-                strokeWidth={2}
-                activeDot={{
-                  stroke: colors[idx].stroke,
-                  fill: colors[idx].fill,
-                  strokeWidth: 2,
-                  r: 5,
-                }}
-                fillOpacity={1}
-                fill={colors[idx].gradient}
+                tickLine={false}
+                stroke="var(--color-nepal)"
+                tickFormatter={(value) => getFormattedValue(item.type, value)}
+                y={1}
               />
-            );
-          })}
-          <CartesianGrid
-            strokeDasharray="5 7"
-            vertical={false}
-            stroke="var(--color-solitude-dark)"
-          />
-          <Tooltip
-            cursor={{
-              stroke: 'var(--color-nepal)',
-              strokeWidth: 2,
-              strokeDasharray: '5 7',
-            }}
-            isAnimationActive={false}
-            content={renderTooltip}
-            offset={0}
-            allowEscapeViewBox={{ x: true, y: true }}
-            position={{ y: -100 }}
-            data={YData}
-          />
-          <Legend content={renderLegend} />
-        </AreaChart>
-      </ResponsiveContainer>
-      {loading ? (
-        <div className={s.loader}>
-          <Spinner className={s.spinner} width={40} height={40} />
-        </div>
-      ) : null}
-      {failed ? (
-        <div className={s.loader}>
-          <p className={s.failed}>Failed to Load Data.</p>
-        </div>
-      ) : null}
+            ))}
+            {YData.map((item) => (
+              <YAxis
+                key={nanoid()}
+                dataKey={item.key}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => getFormattedValue(item.type, value)}
+                stroke="var(--color-nepal)"
+              />
+            ))}
+            {YData.map((item, idx) => {
+              return (
+                <Area
+                  key={nanoid()}
+                  dataKey={item.key}
+                  name={item.title}
+                  stroke={colors[idx].stroke}
+                  strokeWidth={2}
+                  isAnimationActive={false}
+                  activeDot={{
+                    stroke: colors[idx].stroke,
+                    fill: colors[idx].fill,
+                    strokeWidth: 2,
+                    r: 5,
+                  }}
+                  fillOpacity={1}
+                  fill={colors[idx].gradient}
+                />
+              );
+            })}
+            <CartesianGrid
+              strokeDasharray="5 7"
+              vertical={false}
+              stroke="var(--color-solitude-dark)"
+            />
+            <Tooltip
+              cursor={{
+                stroke: 'var(--color-nepal)',
+                strokeWidth: 2,
+                strokeDasharray: '5 7',
+              }}
+              isAnimationActive={false}
+              content={renderTooltip}
+              offset={0}
+              allowEscapeViewBox={{ x: true, y: true }}
+              position={{ y: -100 }}
+              data={YData}
+            />
+            <Legend content={renderLegend} />
+          </AreaChart>
+        </ResponsiveContainer>
+        {loading ? (
+          <div className={s.loader}>
+            <Spinner className={s.spinner} width={40} height={40} />
+          </div>
+        ) : null}
+        {failed ? (
+          <div className={s.loader}>
+            <p className={s.failed}>Failed to Load Data.</p>
+          </div>
+        ) : null}
+        {!loading && !failed && !results.length ? (
+          <div className={s.loader}>
+            <p className={s.failed}>No data for selected date range.</p>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

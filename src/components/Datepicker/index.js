@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import ReactDatePicker from 'react-datepicker';
 import cn from 'classnames';
+import outy from 'outy';
 
 import format from 'date-fns/format';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
@@ -8,11 +9,18 @@ import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import sub from 'date-fns/sub';
 
 import { Svg } from 'components/Svg';
-import { CalendarContainer } from './CalendarContainer';
 
 import 'react-datepicker/dist/react-datepicker.css';
-// eslint-disable-next-line css-modules/no-unused-class
 import s from './s.module.css';
+
+const RANGES = {
+  WEEK: 'week',
+  MONTH: 'month',
+  QUARTER: 'quarter',
+  HALF_YEAR: 'half_year',
+  YEAR: 'year',
+  CUSTOM: 'custom',
+};
 
 export const Datepicker = ({
   className,
@@ -25,70 +33,68 @@ export const Datepicker = ({
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);
   const [calendarStartDate, setCalendarStartDate] = useState(startDate);
   const [calendarEndDate, setCalendarEndDate] = useState(endDate);
+  const wrapRef = useRef();
 
-  const checkActiveRange = (range) => {
-    if (isCustomRangeOpen && range !== 'custom') {
-      return false;
+  const activeRange = useMemo(() => {
+    if (differenceInCalendarDays(endDate, startDate) === 7) {
+      return RANGES.WEEK;
+    }
+    if (differenceInCalendarMonths(endDate, startDate) === 1) {
+      return RANGES.MONTH;
+    }
+    if (differenceInCalendarMonths(endDate, startDate) === 3) {
+      return RANGES.QUARTER;
+    }
+    if (differenceInCalendarMonths(endDate, startDate) === 6) {
+      return RANGES.HALF_YEAR;
+    }
+    if (differenceInCalendarMonths(endDate, startDate) === 12) {
+      return RANGES.YEAR;
     }
 
-    switch (range) {
-      case 'custom':
-        return isCustomRangeOpen;
-      case '7d':
-        return differenceInCalendarDays(endDate, startDate) === 7;
-      case '30d':
-        return differenceInCalendarDays(endDate, startDate) === 30;
-      case '3m':
-        return differenceInCalendarMonths(endDate, startDate) === 3;
-      case '6m':
-        return differenceInCalendarMonths(endDate, startDate) === 6;
-      case '1y':
-        return differenceInCalendarMonths(endDate, startDate) === 12;
-      default:
-        return false;
-    }
-  };
+    setIsCustomRangeOpen(true);
+    return RANGES.CUSTOM;
+  }, [calendarStartDate.getTime(), calendarEndDate.getTime(), isOpen]);
+
+  useEffect(() => {
+    const outsideTap = outy([wrapRef.current], ['click', 'touchend'], () =>
+      setIsOpen(false)
+    );
+
+    return () => outsideTap.remove();
+  }, []);
 
   const handlerSetRange = (range) => {
-    const dateNow = new Date();
+    let newStartDate = calendarStartDate;
+    let newEndDate = new Date();
 
     switch (range) {
-      case 'custom':
-        setIsCustomRangeOpen(true);
+      case RANGES.WEEK:
+        newStartDate = sub(new Date(), { weeks: 1 });
         break;
-      case '7d':
-        setIsCustomRangeOpen(false);
-        setStartDate(sub(dateNow, { days: 7 }));
-        setEndDate(dateNow);
-        setIsOpen(false);
+      case RANGES.MONTH:
+        newStartDate = sub(new Date(), { months: 1 });
         break;
-      case '30d':
-        setIsCustomRangeOpen(false);
-        setStartDate(sub(dateNow, { days: 30 }));
-        setEndDate(dateNow);
-        setIsOpen(false);
+      case RANGES.QUARTER:
+        newStartDate = sub(new Date(), { months: 3 });
         break;
-      case '3m':
-        setIsCustomRangeOpen(false);
-        setStartDate(sub(dateNow, { months: 3 }));
-        setEndDate(dateNow);
-        setIsOpen(false);
+      case RANGES.HALF_YEAR:
+        newStartDate = sub(new Date(), { months: 6 });
         break;
-      case '6m':
-        setIsCustomRangeOpen(false);
-        setStartDate(sub(dateNow, { months: 6 }));
-        setEndDate(dateNow);
-        setIsOpen(false);
+      case RANGES.YEAR:
+        newStartDate = sub(new Date(), { years: 1 });
         break;
-      case '1y':
-        setIsCustomRangeOpen(false);
-        setStartDate(sub(dateNow, { years: 1 }));
-        setEndDate(dateNow);
-        setIsOpen(false);
+      case RANGES.CUSTOM:
+        newEndDate = calendarEndDate;
         break;
       default:
         return;
     }
+
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    setIsCustomRangeOpen(false);
+    setIsOpen(false);
   };
 
   const handlerClear = () => {
@@ -96,14 +102,8 @@ export const Datepicker = ({
     setCalendarEndDate(endDate);
   };
 
-  const handlerApply = () => {
-    setStartDate(calendarStartDate);
-    setEndDate(calendarEndDate);
-    setIsOpen(false);
-  };
-
   return (
-    <div className={cn(s.wrap, className)}>
+    <div className={cn(s.wrap, className)} ref={wrapRef}>
       <Svg id="calendar" className={s.iconCalendar} />
       <button
         onClick={() => setIsOpen((prevState) => !prevState)}
@@ -127,15 +127,9 @@ export const Datepicker = ({
                 selectsStart
                 startDate={calendarStartDate}
                 endDate={calendarEndDate}
+                maxDate={endDate}
                 inline
                 calendarClassName={s.reactDatepicker}
-                calendarContainer={(props) => (
-                  <CalendarContainer
-                    date={calendarStartDate}
-                    setDate={setCalendarStartDate}
-                    {...props}
-                  />
-                )}
               />
               <ReactDatePicker
                 selected={calendarEndDate}
@@ -146,13 +140,6 @@ export const Datepicker = ({
                 minDate={calendarStartDate}
                 inline
                 calendarClassName={s.reactDatepicker}
-                calendarContainer={(props) => (
-                  <CalendarContainer
-                    date={calendarEndDate}
-                    setDate={setCalendarEndDate}
-                    {...props}
-                  />
-                )}
                 maxDate={new Date()}
                 maxTime={new Date()}
               />
@@ -161,55 +148,55 @@ export const Datepicker = ({
           <div className={s.rangeWrap}>
             <button
               className={cn(s.rangeButton, {
-                [s.active]: checkActiveRange('7d'),
+                [s.active]: activeRange === RANGES.WEEK,
               })}
               type="button"
-              onClick={() => handlerSetRange('7d')}
+              onClick={() => handlerSetRange(RANGES.WEEK)}
             >
               7 days
             </button>
             <button
               className={cn(s.rangeButton, {
-                [s.active]: checkActiveRange('30d'),
+                [s.active]: activeRange === RANGES.MONTH,
               })}
               type="button"
-              onClick={() => handlerSetRange('30d')}
+              onClick={() => handlerSetRange(RANGES.MONTH)}
             >
               30 days
             </button>
             <button
               className={cn(s.rangeButton, {
-                [s.active]: checkActiveRange('3m'),
+                [s.active]: activeRange === RANGES.QUARTER,
               })}
               type="button"
-              onClick={() => handlerSetRange('3m')}
+              onClick={() => handlerSetRange(RANGES.QUARTER)}
             >
               3 months
             </button>
             <button
               className={cn(s.rangeButton, {
-                [s.active]: checkActiveRange('6m'),
+                [s.active]: activeRange === RANGES.HALF_YEAR,
               })}
               type="button"
-              onClick={() => handlerSetRange('6m')}
+              onClick={() => handlerSetRange(RANGES.HALF_YEAR)}
             >
               6 months
             </button>
             <button
               className={cn(s.rangeButton, {
-                [s.active]: checkActiveRange('1y'),
+                [s.active]: activeRange === RANGES.YEAR,
               })}
               type="button"
-              onClick={() => handlerSetRange('1y')}
+              onClick={() => handlerSetRange(RANGES.YEAR)}
             >
               Last year
             </button>
             <button
               className={cn(s.rangeButton, s.custom, {
-                [s.active]: checkActiveRange('custom'),
+                [s.active]: activeRange === RANGES.CUSTOM,
               })}
               type="button"
-              onClick={() => handlerSetRange('custom')}
+              onClick={() => setIsCustomRangeOpen(true)}
             >
               Custom range
             </button>
@@ -240,7 +227,7 @@ export const Datepicker = ({
               <button
                 type="button"
                 className={s.applyButton}
-                onClick={handlerApply}
+                onClick={() => handlerSetRange(RANGES.CUSTOM)}
               >
                 Apply
               </button>
