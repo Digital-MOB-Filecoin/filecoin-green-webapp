@@ -69,9 +69,9 @@ export const fetchSealed = async (abortController, query) => {
     })
       .then((data) =>
         resolve(
-          data.map(({ epoch, total }) => ({
+          data.map(({ epoch, sealed }) => ({
             epoch: Number(epoch),
-            total: Number(total),
+            sealed: Number(sealed),
           }))
         )
       )

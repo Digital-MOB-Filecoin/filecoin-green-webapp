@@ -12,3 +12,7 @@ export const convertTimestampToEpoch = (timestamp) => {
     .dividedToIntegerBy(EPOCH_DURATION)
     .toNumber();
 };
+
+export const convertTimestampToDate = (timestamp) => {
+  return (timestamp.getFullYear() + '-' + (timestamp.getMonth() + 1) + '-' + timestamp.getDate());
+};

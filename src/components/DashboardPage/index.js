@@ -3,7 +3,7 @@ import { useQueryParam, StringParam } from 'use-query-params';
 
 import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
-import { convertTimestampToEpoch, convertEpochToTimestamp } from 'utils/dates';
+import { convertTimestampToEpoch, convertEpochToTimestamp, convertTimestampToDate } from 'utils/dates';
 import { Chart } from 'components/Chart';
 import { Table } from 'components/Table';
 import { Search } from 'components/Search';
@@ -27,10 +27,10 @@ export default function DashboardPage() {
   const [sealedData, setSealedData] = useState(defaultDataState);
 
   const [startEpoch, setStartEpoch] = useState(
-    convertTimestampToEpoch(sub(new Date(), { months: 4 }).getTime())
+    convertTimestampToDate(sub(new Date(), { months: 4 }))
   );
   const [endEpoch, setEndEpoch] = useState(
-    convertTimestampToEpoch(new Date().getTime())
+    convertTimestampToDate(new Date())
   );
 
   const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
@@ -113,13 +113,13 @@ export default function DashboardPage() {
       <div className={s.header}>
         <Search placeholder="Miner ID" className={s.search} />
         <Datepicker
-          startDate={new Date(convertEpochToTimestamp(startEpoch))}
-          endDate={new Date(convertEpochToTimestamp(endEpoch))}
+          startDate={new Date(startEpoch)}
+          endDate={new Date(endEpoch)}
           setStartDate={(date) => {
-            setStartEpoch(convertTimestampToEpoch(date.getTime()));
+            setStartEpoch(convertTimestampToDate(date));
           }}
           setEndDate={(date) => {
-            setEndEpoch(convertTimestampToEpoch(date.getTime()));
+            setEndEpoch(convertTimestampToDate(date));
           }}
         />
       </div>
@@ -181,12 +181,12 @@ export default function DashboardPage() {
             {
               key: 'commited',
               title: 'Commited Capacity',
-              type: 'bytes',
+              type: 'GiB',
             },
             {
               key: 'used',
               title: 'Used Capacity',
-              type: 'bytes',
+              type: 'GiB',
             },
           ],
         }}
@@ -223,7 +223,7 @@ export default function DashboardPage() {
         }}
       />
       <Chart
-        title="Sealed capacity added per block"
+        title="Sealed capacity added per day"
         data={{
           data: sealedData,
           XData: [
@@ -235,9 +235,9 @@ export default function DashboardPage() {
           ],
           YData: [
             {
-              key: 'total',
+              key: 'sealed',
               title: 'Sealing rate Used',
-              type: 'bytes/block',
+              type: 'GiB/day',
             },
           ],
         }}
