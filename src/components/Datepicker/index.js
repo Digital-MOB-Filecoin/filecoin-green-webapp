@@ -4,8 +4,8 @@ import cn from 'classnames';
 import outy from 'outy';
 
 import format from 'date-fns/format';
-import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
-import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
+import DICD from 'date-fns/differenceInCalendarDays';
+import DICM from 'date-fns/differenceInCalendarMonths';
 import sub from 'date-fns/sub';
 
 import { Svg } from 'components/Svg';
@@ -22,39 +22,34 @@ const RANGES = {
   CUSTOM: 'custom',
 };
 
-export const Datepicker = ({
-  className,
-  startDate,
-  endDate,
-  setStartDate,
-  setEndDate,
-}) => {
+export const Datepicker = ({ className, dateInterval, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);
-  const [calendarStartDate, setCalendarStartDate] = useState(startDate);
-  const [calendarEndDate, setCalendarEndDate] = useState(endDate);
+  const [calendarDateInterval, setCalendarDateInterval] = useState(
+    dateInterval
+  );
   const wrapRef = useRef();
 
   const activeRange = useMemo(() => {
-    if (differenceInCalendarDays(endDate, startDate) === 7) {
+    if (DICD(dateInterval.end, dateInterval.start) === 7) {
       return RANGES.WEEK;
     }
-    if (differenceInCalendarMonths(endDate, startDate) === 1) {
+    if (DICM(dateInterval.end, dateInterval.start) === 1) {
       return RANGES.MONTH;
     }
-    if (differenceInCalendarMonths(endDate, startDate) === 3) {
+    if (DICM(dateInterval.end, dateInterval.start) === 3) {
       return RANGES.QUARTER;
     }
-    if (differenceInCalendarMonths(endDate, startDate) === 6) {
+    if (DICM(dateInterval.end, dateInterval.start) === 6) {
       return RANGES.HALF_YEAR;
     }
-    if (differenceInCalendarMonths(endDate, startDate) === 12) {
+    if (DICM(dateInterval.end, dateInterval.start) === 12) {
       return RANGES.YEAR;
     }
 
     setIsCustomRangeOpen(true);
     return RANGES.CUSTOM;
-  }, [calendarStartDate.getTime(), calendarEndDate.getTime(), isOpen]);
+  }, [isOpen]);
 
   useEffect(() => {
     const outsideTap = outy([wrapRef.current], ['click', 'touchend'], () =>
@@ -65,7 +60,7 @@ export const Datepicker = ({
   }, []);
 
   const handlerSetRange = (range) => {
-    let newStartDate = calendarStartDate;
+    let newStartDate = calendarDateInterval.start;
     let newEndDate = new Date();
 
     switch (range) {
@@ -85,21 +80,19 @@ export const Datepicker = ({
         newStartDate = sub(new Date(), { years: 1 });
         break;
       case RANGES.CUSTOM:
-        newEndDate = calendarEndDate;
+        newEndDate = calendarDateInterval.end;
         break;
       default:
         return;
     }
 
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
+    onChange({ start: newStartDate, end: newEndDate });
     setIsCustomRangeOpen(false);
     setIsOpen(false);
   };
 
   const handlerClear = () => {
-    setCalendarStartDate(startDate);
-    setCalendarEndDate(endDate);
+    setCalendarDateInterval(dateInterval);
   };
 
   return (
@@ -109,9 +102,9 @@ export const Datepicker = ({
         onClick={() => setIsOpen((prevState) => !prevState)}
         className={cn(s.button, { [s.active]: isOpen })}
       >
-        {format(startDate, 'LLL d, yyyy')}
+        {format(dateInterval.start, 'LLL d, yyyy')}
         <span className={s.dateSeparator}>-</span>
-        {format(endDate, 'LLL d, yyyy')}
+        {format(dateInterval.end, 'LLL d, yyyy')}
       </button>
       <Svg
         id="dropdown-arrow-down"
@@ -122,22 +115,32 @@ export const Datepicker = ({
           {isCustomRangeOpen ? (
             <>
               <ReactDatePicker
-                selected={calendarStartDate}
-                onChange={(date) => setCalendarStartDate(date)}
+                selected={calendarDateInterval.start}
+                onChange={(start) =>
+                  setCalendarDateInterval((prevInterval) => ({
+                    ...prevInterval,
+                    start,
+                  }))
+                }
                 selectsStart
-                startDate={calendarStartDate}
-                endDate={calendarEndDate}
-                maxDate={endDate}
+                startDate={calendarDateInterval.start}
+                endDate={calendarDateInterval.nd}
+                maxDate={dateInterval.end}
                 inline
                 calendarClassName={s.reactDatepicker}
               />
               <ReactDatePicker
-                selected={calendarEndDate}
-                onChange={(date) => setCalendarEndDate(date)}
+                selected={calendarDateInterval.end}
+                onChange={(end) =>
+                  setCalendarDateInterval((prevInterval) => ({
+                    ...prevInterval,
+                    end,
+                  }))
+                }
                 selectsEnd
-                startDate={calendarStartDate}
-                endDate={calendarEndDate}
-                minDate={calendarStartDate}
+                startDate={calendarDateInterval.start}
+                endDate={calendarDateInterval.end}
+                minDate={calendarDateInterval.start}
                 inline
                 calendarClassName={s.reactDatepicker}
                 maxDate={new Date()}
@@ -207,13 +210,13 @@ export const Datepicker = ({
             <div className={s.selectedDate}>
               <div className={s.selectedDateTitle}>From</div>
               <div className={s.selectedDateValue}>
-                {format(calendarStartDate, 'MMM d, yyyy hh:mm aa')}
+                {format(calendarDateInterval.start, 'MMM d, yyyy hh:mm aa')}
               </div>
             </div>
             <div className={s.selectedDate}>
               <div className={s.selectedDateTitle}>To</div>
               <div className={s.selectedDateValue}>
-                {format(calendarEndDate, 'MMM d, yyyy hh:mm aa')}
+                {format(calendarDateInterval.end, 'MMM d, yyyy hh:mm aa')}
               </div>
             </div>
             <div className={s.buttonsWarp}>

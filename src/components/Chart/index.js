@@ -11,7 +11,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import BN from 'bignumber.js';
 
 import format from 'date-fns/format';
 import isValid from 'date-fns/isValid';
@@ -21,6 +20,7 @@ import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
 import { ExportButton } from 'components/ExportButton';
 import { convertBytesToIEC } from 'utils/bytes';
 import { convertEpochToTimestamp } from 'utils/dates';
+import { convertNumberToPercent } from 'utils/numbers';
 
 import s from './s.module.css';
 
@@ -38,7 +38,9 @@ const getFormattedValue = (type, value) => {
     case 'bytes/block':
       return `${convertBytesToIEC(value)}/block`;
     case 'percent':
-      return `${new BN(value).multipliedBy(100)}%`;
+      return convertNumberToPercent(value);
+    case 'gib':
+      return convertBytesToIEC(value);
     default:
       return value;
   }
@@ -93,6 +95,7 @@ export const Chart = ({
     XData,
     YData,
   },
+  rangeKey,
   exportData,
   title,
 }) => {
@@ -119,7 +122,7 @@ export const Chart = ({
     <div className={s.wrap}>
       <div className={cn(s.header, { [s.withMeta]: meta })}>
         <h2 className={cn('h2', s.title)}>{title}</h2>
-        <TimeIntervalButtons />
+        <TimeIntervalButtons queryKey={rangeKey} />
         <ExportButton className={s.exportButton} data={exportData} />
       </div>
       {meta ? (

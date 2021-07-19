@@ -1,26 +1,40 @@
-import { useState } from 'react';
-import cn from 'classnames';
+import { NavLink } from 'react-router-dom';
 
 import s from './s.module.css';
 
-export const TimeIntervalButtons = () => {
-  const [activeIdx, setActiveIdx] = useState(1);
+const RANGE = {
+  DAY: { title: 'Day', queryValue: 'day' },
+  WEEK: { title: 'Week', queryValue: 'week', default: true },
+  MONTH: { title: 'Month', queryValue: 'month' },
+};
 
-  const handlerClick = (e, idx) => {
-    setActiveIdx(idx);
+export const TimeIntervalButtons = ({ queryKey }) => {
+  const generateLinkUrl = (queryValue) => {
+    return (location) => {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set(queryKey, queryValue);
+
+      return `${location.pathname}?${queryParams.toString()}`;
+    };
   };
 
   return (
     <div className={s.wrap}>
-      {['Day', 'Week', 'Month'].map((children, idx) => (
-        <button
-          key={idx}
-          type="button"
-          className={cn(s.button, { [s.active]: idx === activeIdx })}
-          onClick={(e) => handlerClick(e, idx)}
+      {Object.values(RANGE).map((item) => (
+        <NavLink
+          key={item.queryValue}
+          to={() => generateLinkUrl(item.queryValue)}
+          className={s.button}
+          activeClassName={s.active}
+          isActive={(match, location) => {
+            const queryParams = new URLSearchParams(location.search);
+            return queryParams.has(queryKey)
+              ? queryParams.get(queryKey) === item.queryValue
+              : item.default;
+          }}
         >
-          {children}
-        </button>
+          {item.title}
+        </NavLink>
       ))}
     </div>
   );

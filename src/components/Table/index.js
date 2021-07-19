@@ -16,10 +16,10 @@ const mockData = Array.from({ length: MINERS_TABLE_ITEMS_COUNT }).map(
 );
 
 export const Table = () => {
-  const generateLinkUrl = (id) => {
+  const generateMinerUrl = (minerId) => {
     return (location) => {
       const queryParams = new URLSearchParams(location.search);
-      queryParams.set('miner', String(id));
+      queryParams.set('miner', minerId);
 
       return `${location.pathname}?${queryParams.toString()}`;
     };
@@ -52,7 +52,8 @@ export const Table = () => {
                 </td>
                 <td className={s.alignRight}>
                   <Link
-                    to={generateLinkUrl(item.miner)}
+                    to={generateMinerUrl(item.miner)}
+                    onClick={() => window.scroll({ top: 0 })}
                     className={s.statisticsButton}
                   >
                     View statistics

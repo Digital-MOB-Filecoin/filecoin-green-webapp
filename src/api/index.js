@@ -22,59 +22,101 @@ const api = async (url, { headers = {}, data, ...restOptions } = {}) => {
 };
 
 export const fetchCapacity = async (abortController, query) => {
-  const queryParams = query ? `?${queryString.stringify(query)}` : '';
+  let resource = 'network';
+  let queryParams = '';
+
+  if (query) {
+    if (query.miner) {
+      resource = 'miner';
+    }
+    queryParams = `?${queryString.stringify(query)}`;
+  }
 
   return new Promise((resolve, reject) => {
-    api(`network/capacity${queryParams}`, {
+    api(`${resource}/capacity${queryParams}`, {
       signal: abortController.signal,
     })
-      .then((data) =>
-        resolve(
-          data.map(({ epoch, commited, used }) => ({
-            epoch: Number(epoch),
-            commited: Number(commited),
-            used: Number(used),
-          }))
-        )
-      )
+      .then((data) => {
+        return data.map(({ date, commited, used }) => ({
+          date,
+          commited: Number(commited),
+          used: Number(used),
+        }));
+      })
+      .then(resolve)
+      .catch(reject);
+  });
+};
+
+export const fetchCSVCapacity = async (abortController, query) => {
+  let resource = 'network';
+  let queryParams = '';
+
+  if (query) {
+    if (query.miner) {
+      resource = 'miner';
+    }
+    queryParams = `?${queryString.stringify(query)}`;
+  }
+
+  return new Promise((resolve, reject) => {
+    api(`${resource}/capacity${queryParams}`, {
+      signal: abortController.signal,
+    })
+      .then((data) => data)
+      .then(resolve)
       .catch(reject);
   });
 };
 
 export const fetchFraction = async (abortController, query) => {
-  const queryParams = query ? `?${queryString.stringify(query)}` : '';
+  let resource = 'network';
+  let queryParams = '';
+
+  if (query) {
+    if (query.miner) {
+      resource = 'miner';
+    }
+    queryParams = `?${queryString.stringify(query)}`;
+  }
 
   return new Promise((resolve, reject) => {
-    api(`network/fraction${queryParams}`, {
+    api(`${resource}/fraction${queryParams}`, {
       signal: abortController.signal,
     })
-      .then((data) =>
-        resolve(
-          data.map(({ epoch, fraction }) => ({
-            epoch: Number(epoch),
-            fraction: Number(fraction),
-          }))
-        )
-      )
+      .then((data) => {
+        return data.map(({ date, fraction }) => ({
+          date,
+          fraction: Number(fraction),
+        }));
+      })
+      .then(resolve)
       .catch(reject);
   });
 };
 
 export const fetchSealed = async (abortController, query) => {
-  const queryParams = query ? `?${queryString.stringify(query)}` : '';
+  let resource = 'network';
+  let queryParams = '';
+
+  if (query) {
+    if (query.miner) {
+      resource = 'miner';
+    }
+    queryParams = `?${queryString.stringify(query)}`;
+  }
 
   return new Promise((resolve, reject) => {
-    api(`network/sealed${queryParams}`, {
+    api(`${resource}/sealed${queryParams}`, {
       signal: abortController.signal,
     })
-      .then((data) =>
-        resolve(
-          data.map(({ epoch, total }) => ({
-            epoch: Number(epoch),
-            total: Number(total),
-          }))
-        )
-      )
+      .then((data) => {
+        return data.map(({ date, sealed }) => ({
+          date,
+          sealed: Number(sealed),
+        }));
+      })
+      .then(resolve)
       .catch(reject);
   });
 };

@@ -3,7 +3,26 @@ import cn from 'classnames';
 
 import s from './s.module.css';
 
-export const Tabs = ({ tabs, className }) => {
+export const Tabs = ({
+  tabs = [
+    {
+      to: '/',
+      exact: true,
+      children: 'Capacity Committed and Used',
+    },
+    {
+      to: '/energy',
+      children: 'Energy',
+      disabled: true,
+    },
+    {
+      to: '/carbon',
+      children: 'Carbon intensity',
+      disabled: true,
+    },
+  ],
+  className,
+}) => {
   return (
     <nav className={cn(s.wrap, className)}>
       {tabs.map((tab, idx) => {

@@ -14,11 +14,19 @@ export const ExportButton = ({ className, data }) => {
 
     try {
       setLoading(true);
-      const results = await fetchFunction();
+      const results = await fetchFunction(new AbortController(), {
+        all: true,
+      });
 
-      const headerString = table.map((item) => `"${item.title}"`).join(',');
+      const headerString = table.map((header) => `"${header.title}"`).join(',');
       const dataString = results
-        .map((item) => table.map(({ key }) => item[key]).join(','))
+        .map((row) =>
+          table
+            .map(({ key, format }) => {
+              return `"${format ? format(row[key]) : row[key]}"`;
+            })
+            .join(',')
+        )
         .join('\r\n');
       const resultString = `${headerString}\r\n${dataString}`;
 

@@ -8,6 +8,7 @@ export const convertBytesToIEC = (bytes, options = {}) => {
     return 'N/A';
   }
 
+  // 1 GiB = 1073741824 bytes
   return filesize(bytesBN.toNumber(), {
     standard: 'iec',
     ...options,
