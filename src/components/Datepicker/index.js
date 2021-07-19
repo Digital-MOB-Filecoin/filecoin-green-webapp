@@ -124,7 +124,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
                 }
                 selectsStart
                 startDate={calendarDateInterval.start}
-                endDate={calendarDateInterval.nd}
+                endDate={calendarDateInterval.end}
                 maxDate={dateInterval.end}
                 inline
                 calendarClassName={s.reactDatepicker}
