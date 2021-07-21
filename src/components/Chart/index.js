@@ -72,17 +72,21 @@ const renderLegend = ({ payload }) => {
   );
 };
 
-const renderTooltip = ({ payload, data }) => {
+const renderTooltip = ({ payload, data, interval, dataFormatType }) => {
   if (!payload) return null;
+
+  const date =
+    interval === 'day'
+      ? getFormattedValue('day', payload[0]?.payload.start_date)
+      : `${getFormattedValue(
+          'day',
+          payload[0]?.payload.start_date
+        )} – ${getFormattedValue('day', payload[0]?.payload.end_date)}`;
 
   return (
     <div className={s.tooltip}>
-      <div className={s.tooltipDate}>
-        {getFormattedValue('day', payload[0]?.payload.start_date)} –{' '}
-        {getFormattedValue('day', payload[0]?.payload.end_date)}
-      </div>
+      <div className={s.tooltipDate}>{date}</div>
       {payload.map((item, idx) => {
-        const { type } = data.find((el) => el.key === item.dataKey);
         return (
           <div className={s.tooltipItem} key={idx}>
             <span
@@ -92,7 +96,7 @@ const renderTooltip = ({ payload, data }) => {
               {item.name}
             </span>
             <span className={s.tooltipItemValue}>
-              {getFormattedValue(type, item.value)}
+              {getFormattedValue(dataFormatType, item.value)}
             </span>
           </div>
         );
@@ -114,9 +118,10 @@ const renderTooltip = ({ payload, data }) => {
 export const Chart = ({
   data: {
     data: { results, loading, failed },
-    meta,
-    XData,
-    YData,
+    // meta,
+    xData,
+    yData,
+    area,
   },
   rangeKey,
   exportData,
@@ -144,12 +149,12 @@ export const Chart = ({
 
   return (
     <div className={s.wrap}>
-      <div className={cn(s.header, { [s.withMeta]: meta })}>
+      <div className={cn(s.header /* , { [s.withMeta]: meta } */)}>
         <h2 className={cn('h2', s.title)}>{title}</h2>
         <TimeIntervalButtons queryKey={rangeKey} />
         <ExportButton className={s.exportButton} data={exportData} />
       </div>
-      {meta ? (
+      {/* {meta ? (
         <div className={s.meta}>
           {meta.map((item, idx) => {
             const { value, unit } = formatBytes(item.value, {
@@ -171,7 +176,7 @@ export const Chart = ({
             );
           })}
         </div>
-      ) : null}
+      ) : null} */}
       <div style={{ position: 'relative' }}>
         <ResponsiveContainer width="100%" aspect={2.5}>
           <AreaChart data={results}>
@@ -201,30 +206,23 @@ export const Chart = ({
                 />
               </linearGradient>
             </defs>
-            {XData.map((item) => (
-              <XAxis
-                key={nanoid()}
-                dataKey={item.key}
-                tickLine={false}
-                stroke="var(--color-nepal)"
-                tickFormatter={(value) => getFormattedValue(interval, value)}
-                y={1}
-              />
-            ))}
-            {YData.map((item) => (
-              <YAxis
-                key={nanoid()}
-                dataKey={item.key}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(value) => getFormattedValue(item.type, value)}
-                stroke="var(--color-nepal)"
-              />
-            ))}
-            {YData.map((item, idx) => {
+            <XAxis
+              dataKey={xData.key}
+              tickLine={false}
+              stroke="var(--color-nepal)"
+              tickFormatter={(value) => getFormattedValue(interval, value)}
+              y={1}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value) => getFormattedValue(yData.type, value)}
+              stroke="var(--color-nepal)"
+            />
+            {area.map((item, idx) => {
               return (
                 <Area
-                  key={nanoid()}
+                  key={`area-${item.key}`}
                   dataKey={item.key}
                   name={item.title}
                   stroke={colors[idx].stroke}
@@ -257,7 +255,9 @@ export const Chart = ({
               offset={0}
               allowEscapeViewBox={{ x: true, y: true }}
               position={{ y: -100 }}
-              data={YData}
+              data={area}
+              interval={interval}
+              dataFormatType={yData.type}
             />
             <Legend content={renderLegend} />
           </AreaChart>

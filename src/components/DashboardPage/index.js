@@ -194,23 +194,22 @@ const CapacityChart = ({ start, end, miner, filter }) => {
       }}
       data={{
         data: capacityData,
-        XData: [
-          {
-            key: 'start_date',
-            title: 'Timestamp',
-            type: 'date',
-          },
-        ],
-        YData: [
+        xData: {
+          key: 'start_date',
+        },
+        yData: {
+          type: 'gib',
+        },
+        area: [
           {
             key: 'commited',
             title: 'Commited Capacity',
-            type: 'gib',
+            // type: 'gib',
           },
           {
             key: 'used',
             title: 'Used Capacity',
-            type: 'gib',
+            // type: 'gib',
           },
         ],
       }}
@@ -288,18 +287,17 @@ const FractionChart = ({ start, end, miner, filter }) => {
       }}
       data={{
         data: fractionData,
-        XData: [
-          {
-            key: 'start_date',
-            title: 'Date',
-            type: 'date',
-          },
-        ],
-        YData: [
+        xData: {
+          key: 'start_date',
+        },
+
+        yData: {
+          type: 'percent',
+        },
+        area: [
           {
             key: 'fraction',
             title: 'Used Capacity',
-            type: 'percent',
           },
         ],
         // meta: [
@@ -388,18 +386,16 @@ const SealedChart = ({ start, end, miner, filter }) => {
       }}
       data={{
         data: sealedData,
-        XData: [
-          {
-            key: 'start_date',
-            title: 'Date',
-            type: 'date',
-          },
-        ],
-        YData: [
+        xData: {
+          key: 'start_date',
+        },
+        yData: {
+          type: 'bytes/day',
+        },
+        area: [
           {
             key: 'sealed',
             title: 'Sealing rate Used',
-            type: 'bytes/day',
           },
         ],
       }}

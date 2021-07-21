@@ -10002,10 +10002,10 @@
   dependencies:
     "decimal.js-light" "^2.4.1"
 
-"recharts@^2.0.9":
-  "integrity" "sha512-JNsXE80PuF3hugUCE7JqDOMSvu5xQLxtjOaqFKKZI2pCJ1PVJzhwDv4TWk0nO4AvADbeWzYEHbg8C5Hcrh42UA=="
-  "resolved" "https://registry.npmjs.org/recharts/-/recharts-2.0.9.tgz"
-  "version" "2.0.9"
+"recharts@2.0.10":
+  "integrity" "sha512-yVIlHXPiSgxg8z+qApVnBcGVCLpluqNbXJenK3jKxsCb/FJzh77wyEztS6kXLXSC1RCZa7UABmBPBhqspMCF+g=="
+  "resolved" "https://registry.npmjs.org/recharts/-/recharts-2.0.10.tgz"
+  "version" "2.0.10"
   dependencies:
     "@types/d3-scale" "^3.0.0"
     "@types/d3-shape" "^2.0.0"
