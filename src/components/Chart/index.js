@@ -32,7 +32,7 @@ const getFormattedValue = (type, value) => {
       return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
     case 'week':
       temp = new Date(value);
-      return isValid(temp) ? format(temp, 'wo yyyy') : value;
+      return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'month':
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
