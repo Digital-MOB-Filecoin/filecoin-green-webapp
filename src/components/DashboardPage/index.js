@@ -198,18 +198,16 @@ const CapacityChart = ({ start, end, miner, filter }) => {
           key: 'start_date',
         },
         yData: {
-          type: 'gib',
+          type: 'bytes',
         },
         area: [
           {
             key: 'commited',
             title: 'Commited Capacity',
-            // type: 'gib',
           },
           {
             key: 'used',
             title: 'Used Capacity',
-            // type: 'gib',
           },
         ],
       }}
@@ -390,7 +388,7 @@ const SealedChart = ({ start, end, miner, filter }) => {
           key: 'start_date',
         },
         yData: {
-          type: 'bytes/day',
+          type: 'bytes',
         },
         area: [
           {

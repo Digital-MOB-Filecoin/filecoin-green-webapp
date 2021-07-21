@@ -24,7 +24,7 @@ import { convertNumberToPercent } from 'utils/numbers';
 
 import s from './s.module.css';
 
-const getFormattedValue = (type, value) => {
+const getFormattedValue = (type, value, precision = 2) => {
   let temp;
   switch (type) {
     case 'day':
@@ -43,13 +43,9 @@ const getFormattedValue = (type, value) => {
       temp = new Date(convertEpochToTimestamp(value));
       return isValid(temp) ? format(temp, 'MMM d, yyyy hh:mm aa') : value;
     case 'bytes':
-      return formatBytes(value, { inputUnit: 'GiB', precision: 2 });
-    case 'bytes/day':
-      return `${formatBytes(value, { inputUnit: 'GiB', precision: 2 })}/day`;
+      return formatBytes(value, { inputUnit: 'GiB', precision });
     case 'percent':
       return convertNumberToPercent(value);
-    case 'gib':
-      return formatBytes(value, { inputUnit: 'GiB', precision: 2 });
     default:
       return value;
   }
@@ -72,7 +68,7 @@ const renderLegend = ({ payload }) => {
   );
 };
 
-const renderTooltip = ({ payload, data, interval, dataFormatType }) => {
+const renderTooltip = ({ payload }, interval, dataFormatType) => {
   if (!payload) return null;
 
   const date =
@@ -216,7 +212,8 @@ export const Chart = ({
             <YAxis
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => getFormattedValue(yData.type, value)}
+              // width={100}
+              tickFormatter={(value) => getFormattedValue(yData.type, value, 0)}
               stroke="var(--color-nepal)"
             />
             {area.map((item, idx) => {
@@ -251,13 +248,12 @@ export const Chart = ({
                 strokeDasharray: '5 7',
               }}
               isAnimationActive={false}
-              content={renderTooltip}
+              content={(content) =>
+                renderTooltip(content, interval, yData.type)
+              }
               offset={0}
               allowEscapeViewBox={{ x: true, y: true }}
               position={{ y: -100 }}
-              data={area}
-              interval={interval}
-              dataFormatType={yData.type}
             />
             <Legend content={renderLegend} />
           </AreaChart>
