@@ -27,12 +27,15 @@ import s from './s.module.css';
 const getFormattedValue = (type, value) => {
   let temp;
   switch (type) {
-    case 'datewithday':
-      temp = new Date(value);
-      return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
     case 'day':
       temp = new Date(value);
-      return isValid(temp) ? format(temp, 'd') : value;
+      return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
+    case 'week':
+      temp = new Date(value);
+      return isValid(temp) ? format(temp, 'wo yyyy') : value;
+    case 'month':
+      temp = new Date(value);
+      return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'date':
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
@@ -75,7 +78,8 @@ const renderTooltip = ({ payload, data }) => {
   return (
     <div className={s.tooltip}>
       <div className={s.tooltipDate}>
-        {getFormattedValue('datewithday', payload[0]?.payload.date)}
+        {getFormattedValue('day', payload[0]?.payload.start_date)} –{' '}
+        {getFormattedValue('day', payload[0]?.payload.end_date)}
       </div>
       {payload.map((item, idx) => {
         const { type } = data.find((el) => el.key === item.dataKey);
@@ -97,6 +101,16 @@ const renderTooltip = ({ payload, data }) => {
   );
 };
 
+/**
+ *
+ * @param {Object} params
+ * @param {Object} params.data
+ * @param {string} params.rangeKey
+ * @param {Object} params.exportData
+ * @param {string} params.title
+ * @param {'day' | 'week' | 'month'} params.interval
+ * @returns
+ */
 export const Chart = ({
   data: {
     data: { results, loading, failed },
@@ -107,6 +121,7 @@ export const Chart = ({
   rangeKey,
   exportData,
   title,
+  interval,
 }) => {
   const gradient1Id = useMemo(nanoid, []);
   const gradient2Id = useMemo(nanoid, []);
@@ -192,7 +207,7 @@ export const Chart = ({
                 dataKey={item.key}
                 tickLine={false}
                 stroke="var(--color-nepal)"
-                tickFormatter={(value) => getFormattedValue(item.type, value)}
+                tickFormatter={(value) => getFormattedValue(interval, value)}
                 y={1}
               />
             ))}

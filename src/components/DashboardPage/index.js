@@ -146,10 +146,10 @@ const CapacityChart = ({ start, end, miner, filter }) => {
       filter,
     })
       .then((data) => {
-        const results = data.map(({ date, commited, used }) => ({
-          date,
+        const results = data.map(({ commited, used, ...rest }) => ({
           commited: Number(commited),
           used: Number(used),
+          ...rest,
         }));
 
         setCapacityData({
@@ -175,6 +175,7 @@ const CapacityChart = ({ start, end, miner, filter }) => {
     <Chart
       title="Used Capacity vs Commited Capacity"
       rangeKey="capacity"
+      interval={filter}
       exportData={{
         filename: `usedVsCommitedCapacity${miner ? `-${miner}` : ''}.csv`,
         fetchFunction: () =>
@@ -195,7 +196,7 @@ const CapacityChart = ({ start, end, miner, filter }) => {
         data: capacityData,
         XData: [
           {
-            key: 'date',
+            key: 'start_date',
             title: 'Timestamp',
             type: 'date',
           },
@@ -232,9 +233,9 @@ const FractionChart = ({ start, end, miner, filter }) => {
       filter,
     })
       .then((data) => {
-        const results = data.map(({ date, fraction }) => ({
-          date,
+        const results = data.map(({ fraction, ...rest }) => ({
           fraction: Number(fraction),
+          ...rest,
         }));
 
         setFractionData({
@@ -260,6 +261,7 @@ const FractionChart = ({ start, end, miner, filter }) => {
     <Chart
       title="Fraction Used"
       rangeKey="fraction"
+      interval={filter}
       exportData={{
         filename: `fractionUsed${miner ? `-${miner}` : ''}.csv`,
         fetchFunction: () =>
@@ -288,7 +290,7 @@ const FractionChart = ({ start, end, miner, filter }) => {
         data: fractionData,
         XData: [
           {
-            key: 'date',
+            key: 'start_date',
             title: 'Date',
             type: 'date',
           },
@@ -331,9 +333,9 @@ const SealedChart = ({ start, end, miner, filter }) => {
       filter,
     })
       .then((data) => {
-        const results = data.map(({ date, sealed }) => ({
-          date,
+        const results = data.map(({ sealed, ...rest }) => ({
           sealed: Number(sealed),
+          ...rest,
         }));
 
         setSealedData({
@@ -359,6 +361,7 @@ const SealedChart = ({ start, end, miner, filter }) => {
     <Chart
       title="Sealed capacity added per day"
       rangeKey="sealed"
+      interval={filter}
       exportData={{
         filename: `sealedCapacityAddedPerBlock${miner ? `-${miner}` : ''}.csv`,
         fetchFunction: () =>
@@ -387,7 +390,7 @@ const SealedChart = ({ start, end, miner, filter }) => {
         data: sealedData,
         XData: [
           {
-            key: 'date',
+            key: 'start_date',
             title: 'Date',
             type: 'date',
           },
