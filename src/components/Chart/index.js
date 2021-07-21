@@ -18,7 +18,7 @@ import isValid from 'date-fns/isValid';
 import { Spinner } from 'components/Spinner';
 import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
 import { ExportButton } from 'components/ExportButton';
-import { convertBytesToIEC } from 'utils/bytes';
+import { formatBytes } from 'utils/bytes';
 import { convertEpochToTimestamp } from 'utils/dates';
 import { convertNumberToPercent } from 'utils/numbers';
 
@@ -27,6 +27,12 @@ import s from './s.module.css';
 const getFormattedValue = (type, value) => {
   let temp;
   switch (type) {
+    case 'datewithday':
+      temp = new Date(value);
+      return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
+    case 'day':
+      temp = new Date(value);
+      return isValid(temp) ? format(temp, 'd') : value;
     case 'date':
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
@@ -34,13 +40,13 @@ const getFormattedValue = (type, value) => {
       temp = new Date(convertEpochToTimestamp(value));
       return isValid(temp) ? format(temp, 'MMM d, yyyy hh:mm aa') : value;
     case 'bytes':
-      return convertBytesToIEC(value);
-    case 'bytes/block':
-      return `${convertBytesToIEC(value)}/block`;
+      return formatBytes(value, { inputUnit: 'GiB', precision: 2 });
+    case 'bytes/day':
+      return `${formatBytes(value, { inputUnit: 'GiB', precision: 2 })}/day`;
     case 'percent':
       return convertNumberToPercent(value);
     case 'gib':
-      return convertBytesToIEC(value);
+      return formatBytes(value, { inputUnit: 'GiB', precision: 2 });
     default:
       return value;
   }
@@ -68,6 +74,9 @@ const renderTooltip = ({ payload, data }) => {
 
   return (
     <div className={s.tooltip}>
+      <div className={s.tooltipDate}>
+        {getFormattedValue('datewithday', payload[0]?.payload.date)}
+      </div>
       {payload.map((item, idx) => {
         const { type } = data.find((el) => el.key === item.dataKey);
         return (
@@ -128,8 +137,9 @@ export const Chart = ({
       {meta ? (
         <div className={s.meta}>
           {meta.map((item, idx) => {
-            const { value, unit } = convertBytesToIEC(item.value, {
+            const { value, unit } = formatBytes(item.value, {
               output: 'object',
+              inputUnit: 'GiB',
             });
 
             return (

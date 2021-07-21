@@ -3,13 +3,9 @@ import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 
 import sub from 'date-fns/sub';
 import lightFormat from 'date-fns/lightFormat';
+import parse from 'date-fns/parse';
 
-import {
-  fetchCapacity,
-  fetchCSVCapacity,
-  fetchFraction,
-  fetchSealed,
-} from 'api';
+import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
 import { Chart } from 'components/Chart';
 import { Table } from 'components/Table';
@@ -27,23 +23,23 @@ const defaultDataState = {
 };
 
 export default function DashboardPage() {
-  const [capacityData, setCapacityData] = useState(defaultDataState);
-  const [fractionData, setFractionData] = useState(defaultDataState);
-  const [sealedData, setSealedData] = useState(defaultDataState);
-
-  const [dateInterval, setDateInterval] = useState({
-    start: sub(new Date(), { months: 1 }),
-    end: new Date(),
-  });
-
   const [query, setQuery] = useQueryParams({
     miner: StringParam,
-    page: NumberParam,
+    limit: NumberParam,
+    offset: NumberParam,
+    total: NumberParam,
     start: StringParam,
     end: StringParam,
     capacity: StringParam,
     fraction: StringParam,
     sealed: StringParam,
+  });
+
+  const [dateInterval, setDateInterval] = useState({
+    start: query.start
+      ? parse(query.start, 'yyyy-MM-dd', new Date())
+      : sub(new Date(), { months: 1 }),
+    end: query.end ? parse(query.end, 'yyyy-MM-dd', new Date()) : new Date(),
   });
 
   const defaultQueryParams = useMemo(
@@ -56,133 +52,6 @@ export default function DashboardPage() {
     }),
     [query.start, query.end]
   );
-  // f0100786
-  const handlerFetchCapacity = (abortController, query) => {
-    setCapacityData({ ...defaultDataState, loading: true });
-
-    fetchCapacity(abortController, query)
-      .then((results) => {
-        setCapacityData({
-          ...defaultDataState,
-          results,
-          loaded: true,
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-        setCapacityData({
-          ...defaultDataState,
-          failed: true,
-        });
-      });
-  };
-
-  const handlerFetchFraction = (abortController, query) => {
-    setFractionData({ ...defaultDataState, loading: true });
-
-    fetchFraction(abortController, query)
-      .then((results) => {
-        setFractionData({
-          ...defaultDataState,
-          results,
-          loaded: true,
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-        setFractionData({
-          ...defaultDataState,
-          failed: true,
-        });
-      });
-  };
-
-  const handlerFetchSealed = (abortController, query) => {
-    setSealedData({ ...defaultDataState, loading: true });
-
-    fetchSealed(abortController, query)
-      .then((results) => {
-        setSealedData({
-          ...defaultDataState,
-          results,
-          loaded: true,
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-        setSealedData({
-          ...defaultDataState,
-          failed: true,
-        });
-      });
-  };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const capacityQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.capacity || 'week',
-    };
-    const fractionQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.fraction || 'week',
-    };
-    const sealedQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.sealed || 'week',
-    };
-
-    handlerFetchCapacity(abortController, capacityQueryParams);
-    handlerFetchFraction(abortController, fractionQueryParams);
-    handlerFetchSealed(abortController, sealedQueryParams);
-
-    return () => {
-      abortController.abort();
-    };
-  }, [query.start, query.end, query.miner]);
-
-  useEffect(() => {
-    if (!capacityData.results.length) return;
-
-    const abortController = new AbortController();
-    const capacityQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.capacity || 'week',
-    };
-
-    handlerFetchCapacity(abortController, capacityQueryParams);
-  }, [query.capacity]);
-
-  useEffect(() => {
-    if (!fractionData.results.length) return;
-
-    const abortController = new AbortController();
-    const capacityQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.fraction || 'week',
-    };
-
-    handlerFetchFraction(abortController, capacityQueryParams);
-  }, [query.fraction]);
-
-  useEffect(() => {
-    if (!sealedData.results.length) return;
-
-    const abortController = new AbortController();
-    const capacityQueryParams = {
-      ...query,
-      ...defaultQueryParams,
-      filter: query.sealed || 'week',
-    };
-
-    handlerFetchSealed(abortController, capacityQueryParams);
-  }, [query.sealed]);
 
   const handlerSetDateInterval = (newDateInterval) => {
     setDateInterval(newDateInterval);
@@ -223,128 +92,314 @@ export default function DashboardPage() {
       <div>
         <Tabs className={s.tabs} />
       </div>
-      <Chart
-        title="Used Capacity vs Commited Capacity"
-        rangeKey="capacity"
-        exportData={{
-          filename: 'usedVsCommitedCapacity.csv',
-          fetchFunction: fetchCSVCapacity,
-          table: [
-            { title: 'Epoch', key: 'epoch' },
-            { title: 'Timestamp', key: 'timestamp' },
-            { title: 'Commited Capacity (GiB)', key: 'commited' },
-            { title: 'Used Capacity (GiB)', key: 'used' },
-          ],
-        }}
-        data={{
-          data: capacityData,
-          XData: [
-            {
-              key: 'date',
-              title: 'Timestamp',
-              type: 'date',
-            },
-          ],
-          YData: [
-            {
-              key: 'commited',
-              title: 'Commited Capacity',
-              type: 'gib',
-            },
-            {
-              key: 'used',
-              title: 'Used Capacity',
-              type: 'gib',
-            },
-          ],
+      <CapacityChart
+        miner={query.miner}
+        start={query.start ?? defaultQueryParams.start}
+        end={query.end ?? defaultQueryParams.end}
+        filter={query.capacity ?? 'week'}
+      />
+      <FractionChart
+        miner={query.miner}
+        start={query.start ?? defaultQueryParams.start}
+        end={query.end ?? defaultQueryParams.end}
+        filter={query.fraction ?? 'week'}
+      />
+      <SealedChart
+        miner={query.miner}
+        start={query.start ?? defaultQueryParams.start}
+        end={query.end ?? defaultQueryParams.end}
+        filter={query.sealed ?? 'week'}
+      />
+      <Table
+        limit={query.limit ?? 10}
+        offset={query.offset ?? 0}
+        total={query.total ?? 0}
+        setTotal={(total) =>
+          setQuery((prevQuery) => ({
+            ...prevQuery,
+            total,
+          }))
+        }
+        pageHandler={(page) => {
+          setQuery((prevQuery) => ({
+            ...prevQuery,
+            offset: (page - 1) * (query.limit ?? 10),
+          }));
         }}
       />
-      <Chart
-        title="Fraction Used"
-        rangeKey="fraction"
-        exportData={{
-          filename: 'fractionUsed.csv',
-          fetchFunction: handlerFetchFraction,
-          table: [
-            {
-              title: 'Epoch',
-              key: 'epoch',
-            },
-            {
-              title: 'Timestamp',
-              key: 'date',
-            },
-            {
-              title: 'Used Capacity (used/total)',
-              key: 'fraction',
-            },
-          ],
-        }}
-        data={{
-          data: fractionData,
-          XData: [
-            {
-              key: 'date',
-              title: 'Date',
-              type: 'date',
-            },
-          ],
-          YData: [
-            {
-              key: 'fraction',
-              title: 'Used Capacity',
-              type: 'percent',
-            },
-          ],
-          // meta: [
-          //   {
-          //     title: 'Total capacity',
-          //     value: '230003230003230003230003',
-          //   },
-          //   {
-          //     title: 'Used capacity',
-          //     value: '230003230003230003230003',
-          //     percent: '50',
-          //   },
-          // ],
-        }}
-      />
-      <Chart
-        title="Sealed capacity added per block"
-        rangeKey="sealed"
-        exportData={{
-          filename: 'sealedCapacityAddedPerBlock.csv',
-          fetchFunction: fetchSealed,
-          table: [
-            {
-              title: 'Timestamp',
-              key: 'date',
-            },
-            {
-              title: 'Sealing rate Used (bytes/block)',
-              key: 'total',
-            },
-          ],
-        }}
-        data={{
-          data: sealedData,
-          XData: [
-            {
-              key: 'date',
-              title: 'Date',
-              type: 'date',
-            },
-          ],
-          YData: [
-            {
-              key: 'sealed',
-              title: 'Sealing rate Used',
-              type: 'bytes/block',
-            },
-          ],
-        }}
-      />
-      <Table />
     </div>
   );
 }
+
+const CapacityChart = ({ start, end, miner, filter }) => {
+  const [capacityData, setCapacityData] = useState(defaultDataState);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setCapacityData({ ...defaultDataState, loading: true });
+
+    fetchCapacity(abortController, {
+      start,
+      end,
+      miner,
+      filter,
+    })
+      .then((data) => {
+        const results = data.map(({ date, commited, used }) => ({
+          date,
+          commited: Number(commited),
+          used: Number(used),
+        }));
+
+        setCapacityData({
+          ...defaultDataState,
+          results,
+          failed: false,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setCapacityData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [start, end, miner, filter]);
+
+  return (
+    <Chart
+      title="Used Capacity vs Commited Capacity"
+      rangeKey="capacity"
+      exportData={{
+        filename: `usedVsCommitedCapacity${miner ? `-${miner}` : ''}.csv`,
+        fetchFunction: () =>
+          fetchCapacity(new AbortController(), {
+            start,
+            end,
+            miner,
+            all: true,
+          }),
+        table: [
+          { title: 'Epoch', key: 'epoch' },
+          { title: 'Timestamp', key: 'timestamp' },
+          { title: 'Commited Capacity (GiB)', key: 'commited' },
+          { title: 'Used Capacity (GiB)', key: 'used' },
+        ],
+      }}
+      data={{
+        data: capacityData,
+        XData: [
+          {
+            key: 'date',
+            title: 'Timestamp',
+            type: 'date',
+          },
+        ],
+        YData: [
+          {
+            key: 'commited',
+            title: 'Commited Capacity',
+            type: 'gib',
+          },
+          {
+            key: 'used',
+            title: 'Used Capacity',
+            type: 'gib',
+          },
+        ],
+      }}
+    />
+  );
+};
+
+const FractionChart = ({ start, end, miner, filter }) => {
+  const [fractionData, setFractionData] = useState(defaultDataState);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setFractionData({ ...defaultDataState, loading: true });
+
+    fetchFraction(abortController, {
+      start,
+      end,
+      miner,
+      filter,
+    })
+      .then((data) => {
+        const results = data.map(({ date, fraction }) => ({
+          date,
+          fraction: Number(fraction),
+        }));
+
+        setFractionData({
+          ...defaultDataState,
+          results,
+          failed: false,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setFractionData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [start, end, miner, filter]);
+
+  return (
+    <Chart
+      title="Fraction Used"
+      rangeKey="fraction"
+      exportData={{
+        filename: `fractionUsed${miner ? `-${miner}` : ''}.csv`,
+        fetchFunction: () =>
+          fetchFraction(new AbortController(), {
+            start,
+            end,
+            miner,
+            all: true,
+          }),
+        table: [
+          {
+            title: 'Epoch',
+            key: 'epoch',
+          },
+          {
+            title: 'Timestamp',
+            key: 'timestamp',
+          },
+          {
+            title: 'Used Capacity (used/total)',
+            key: 'fraction',
+          },
+        ],
+      }}
+      data={{
+        data: fractionData,
+        XData: [
+          {
+            key: 'date',
+            title: 'Date',
+            type: 'date',
+          },
+        ],
+        YData: [
+          {
+            key: 'fraction',
+            title: 'Used Capacity',
+            type: 'percent',
+          },
+        ],
+        // meta: [
+        //   {
+        //     title: 'Total capacity',
+        //     value: '230003230003230003230003',
+        //   },
+        //   {
+        //     title: 'Used capacity',
+        //     value: '230003230003230003230003',
+        //     percent: '50',
+        //   },
+        // ],
+      }}
+    />
+  );
+};
+
+const SealedChart = ({ start, end, miner, filter }) => {
+  const [sealedData, setSealedData] = useState(defaultDataState);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setSealedData({ ...defaultDataState, loading: true });
+
+    fetchSealed(abortController, {
+      start,
+      end,
+      miner,
+      filter,
+    })
+      .then((data) => {
+        const results = data.map(({ date, sealed }) => ({
+          date,
+          sealed: Number(sealed),
+        }));
+
+        setSealedData({
+          ...defaultDataState,
+          results,
+          failed: false,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        setSealedData({
+          ...defaultDataState,
+          failed: true,
+        });
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [start, end, miner, filter]);
+
+  return (
+    <Chart
+      title="Sealed capacity added per day"
+      rangeKey="sealed"
+      exportData={{
+        filename: `sealedCapacityAddedPerBlock${miner ? `-${miner}` : ''}.csv`,
+        fetchFunction: () =>
+          fetchSealed(new AbortController(), {
+            start,
+            end,
+            miner,
+            all: true,
+          }),
+        table: [
+          {
+            title: 'Epoch',
+            key: 'epoch',
+          },
+          {
+            title: 'Timestamp',
+            key: 'timestamp',
+          },
+          {
+            title: 'Sealing rate Used (GiB/day)',
+            key: 'sealed',
+          },
+        ],
+      }}
+      data={{
+        data: sealedData,
+        XData: [
+          {
+            key: 'date',
+            title: 'Date',
+            type: 'date',
+          },
+        ],
+        YData: [
+          {
+            key: 'sealed',
+            title: 'Sealing rate Used',
+            type: 'bytes/day',
+          },
+        ],
+      }}
+    />
+  );
+};

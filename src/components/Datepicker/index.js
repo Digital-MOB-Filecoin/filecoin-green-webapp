@@ -22,6 +22,14 @@ const RANGES = {
   CUSTOM: 'custom',
 };
 
+/**
+ *
+ * @param {Object} params
+ * @param {string} [params.className]
+ * @param {Object} params.dateInterval
+ * @param {Function} params.onChange
+ * @returns {JSX.Element}
+ */
 export const Datepicker = ({ className, dateInterval, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);

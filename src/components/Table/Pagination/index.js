@@ -1,21 +1,15 @@
-import { Link } from 'react-router-dom';
 import cn from 'classnames';
-import { useQueryParam, NumberParam } from 'use-query-params';
 
 import { Svg } from 'components/Svg';
 
 import s from './s.module.css';
 
-function pagination(current, last, delta = 1) {
+function pagination(current, last, delta = 2) {
   const left = current - delta;
   const right = current + delta + 1;
   const range = [];
   const rangeWithDots = [];
   let l;
-
-  if (last < 5) {
-    return Array.from({ length: last }, (v, k) => k + 1);
-  }
 
   range.push(1);
   for (let i = current - delta; i <= current + delta; i++) {
@@ -40,46 +34,28 @@ function pagination(current, last, delta = 1) {
   return rangeWithDots;
 }
 
-function generateLinkUrl(page, paramName) {
-  return (location) => {
-    const queryParams = new URLSearchParams(location.search);
-
-    if (page === 1) {
-      queryParams.delete(paramName);
-    } else {
-      queryParams.set(paramName, String(page));
-    }
-
-    return `${location.pathname}?${queryParams.toString()}`;
-  };
-}
-
-export function Pagination({ totalItems, paramName, itemsPerPage }) {
-  const [page] = useQueryParam(paramName, NumberParam);
-
-  const currentPage = page || 1;
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const paginationList = pagination(currentPage, totalPages);
+export function Pagination({ skip, take, total, pageHandler }) {
+  const currentPage = skip / take + 1;
+  const pages = Math.ceil(total / take);
+  const paginationList = pagination(currentPage, pages);
 
   return (
     <ol className={s.pagination}>
       <li>
-        <Link
-          to={generateLinkUrl(currentPage - 1, paramName)}
+        <button
+          onClick={() => pageHandler(currentPage - 1)}
           className={s.arrowLink}
           disabled={currentPage <= 1}
-          tabIndex={currentPage <= 1 ? -1 : 0}
         >
           <Svg id="navigation-left" aria-label="Previous page" />
-        </Link>
+        </button>
       </li>
       {paginationList.map((item, idx) => {
         if (item === 0) return null;
         return (
           <li key={idx}>
-            <Link
-              to={generateLinkUrl(item, paramName)}
+            <button
+              onClick={() => pageHandler(item)}
               className={cn(s.pageLink, {
                 [s.pageLinkActive]: currentPage === item,
               })}
@@ -87,19 +63,18 @@ export function Pagination({ totalItems, paramName, itemsPerPage }) {
               tabIndex={!item || currentPage === item ? -1 : 0}
             >
               {item || '...'}
-            </Link>
+            </button>
           </li>
         );
       })}
       <li>
-        <Link
-          to={generateLinkUrl(currentPage + 1, paramName)}
+        <button
+          onClick={() => pageHandler(currentPage + 1)}
           className={s.arrowLink}
-          disabled={currentPage >= totalPages}
-          tabIndex={currentPage >= totalPages ? -1 : 0}
+          disabled={currentPage >= pages}
         >
           <Svg id="navigation-right" aria-label="Next page" />
-        </Link>
+        </button>
       </li>
     </ol>
   );

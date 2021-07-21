@@ -1,29 +1,57 @@
 import { Link } from 'react-router-dom';
-import { getRandomNumber } from 'utils/numbers';
-import { convertBytesToIEC } from 'utils/bytes';
+import { formatBytes } from 'utils/bytes';
 import { Pagination } from './Pagination';
-import { MINERS_TABLE_ITEMS_COUNT } from 'constant';
+import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 
 import s from './s.module.css';
+import { useEffect, useState } from 'react';
+import { fetchMiners } from 'api';
 
-const mockData = Array.from({ length: MINERS_TABLE_ITEMS_COUNT }).map(
-  (_, idx) => ({
-    id: idx,
-    miner: `f${getRandomNumber(1000000, 9999999)}`,
-    rawPower: `${getRandomNumber(1000000, 9999999999999)}`,
-    capacity: `${getRandomNumber(1000000, 9999999999999)}`,
-  })
-);
+const generateMinerUrl = (minerId) => {
+  return (location) => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set('miner', minerId);
 
-export const Table = () => {
-  const generateMinerUrl = (minerId) => {
-    return (location) => {
-      const queryParams = new URLSearchParams(location.search);
-      queryParams.set('miner', minerId);
-
-      return `${location.pathname}?${queryParams.toString()}`;
-    };
+    return `${location.pathname}?${queryParams.toString()}`;
   };
+};
+
+const defaultDataState = {
+  results: [],
+  loading: false,
+  failed: false,
+};
+
+export const Table = ({ limit, offset, total, setTotal, pageHandler }) => {
+  const [data, setData] = useState(defaultDataState);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setData({ ...defaultDataState, loading: true });
+
+    fetchMiners(abortController, {
+      limit,
+      offset,
+    })
+      .then((data) => {
+        setData({
+          results: data.miners,
+          loading: false,
+          failed: false,
+        });
+
+        setTotal(data.pagination.total);
+      })
+      .catch((e) => {
+        console.error(e);
+        setData({
+          results: [],
+          loading: false,
+          failed: true,
+        });
+      });
+  }, [limit, offset]);
 
   return (
     <div className={s.wrap}>
@@ -40,19 +68,29 @@ export const Table = () => {
           </tr>
         </thead>
         <tbody>
-          {mockData.map((item) => {
+          {data.results.map((item) => {
             return (
               <tr key={item.id}>
-                <td className={s.entity}>{item.miner}</td>
+                <td className={s.entity}>{item.address}</td>
                 <td className={s.alignRight}>
-                  {convertBytesToIEC(item.rawPower)}
+                  {item.rawPower
+                    ? formatBytes(item.rawPower, {
+                        // inputUnit: 'GiB',
+                        precision: 2,
+                      })
+                    : 'N/A'}
                 </td>
                 <td className={s.alignRight}>
-                  {convertBytesToIEC(item.capacity)}
+                  {item.freeSpace
+                    ? formatBytes(item.freeSpace, {
+                        // inputUnit: 'GiB',
+                        precision: 2,
+                      })
+                    : 'N/A'}
                 </td>
                 <td className={s.alignRight}>
                   <Link
-                    to={generateMinerUrl(item.miner)}
+                    to={generateMinerUrl(item.address)}
                     onClick={() => window.scroll({ top: 0 })}
                     className={s.statisticsButton}
                   >
@@ -65,9 +103,10 @@ export const Table = () => {
         </tbody>
       </table>
       <Pagination
-        totalItems={MINERS_TABLE_ITEMS_COUNT * 10}
-        paramName="page"
-        itemsPerPage={MINERS_TABLE_ITEMS_COUNT}
+        skip={offset}
+        take={limit}
+        total={total}
+        pageHandler={pageHandler}
       />
     </div>
   );

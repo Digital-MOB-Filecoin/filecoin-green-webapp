@@ -14,9 +14,7 @@ export const ExportButton = ({ className, data }) => {
 
     try {
       setLoading(true);
-      const results = await fetchFunction(new AbortController(), {
-        all: true,
-      });
+      const results = await fetchFunction();
 
       const headerString = table.map((header) => `"${header.title}"`).join(',');
       const dataString = results
