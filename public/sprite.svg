@@ -32,4 +32,12 @@
     <path d="M12.1484 12.1483L3.85163 3.85162" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
     <path d="M3.8516 12.1483L12.1483 3.8516" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   </symbol>
+
+  <symbol id="icon__sort-asc" viewBox="0 0 14 8" fill="none">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.10188 8C0.672304 8 0.442716 7.49404 0.725595 7.17075L6.24742 0.860087C6.64584 0.40476 7.35417 0.404761 7.75258 0.860088L13.2744 7.17075C13.5573 7.49404 13.3277 8 12.8981 8L1.10188 8Z" fill="currentColor" />
+  </symbol>
+
+  <symbol id="icon__sort-desc" viewBox="0 0 14 8" fill="none">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.8981 0C13.3277 0 13.5573 0.505961 13.2744 0.829252L7.75258 7.13991C7.35416 7.59524 6.64583 7.59524 6.24742 7.13991L0.725595 0.829251C0.442715 0.50596 0.672305 0 1.10188 0H12.8981Z" fill="currentColor" />
+  </symbol>
 </svg>

@@ -33,6 +33,8 @@ export default function DashboardPage() {
     capacity: StringParam,
     fraction: StringParam,
     sealed: StringParam,
+    sortBy: StringParam,
+    order: StringParam,
   });
 
   const [dateInterval, setDateInterval] = useState({
@@ -114,6 +116,8 @@ export default function DashboardPage() {
         limit={query.limit ?? 10}
         offset={query.offset ?? 0}
         total={query.total ?? 0}
+        sortBy={query.sortBy ?? undefined}
+        order={query.order ?? undefined}
         setTotal={(total) =>
           setQuery((prevQuery) => ({
             ...prevQuery,

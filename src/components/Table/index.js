@@ -1,11 +1,13 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatBytes } from 'utils/bytes';
-import { Pagination } from './Pagination';
-import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 
-import s from './s.module.css';
-import { useEffect, useState } from 'react';
 import { fetchMiners } from 'api';
+
+import { Spinner } from 'components/Spinner';
+import { Pagination } from './Pagination';
+import { SortButton } from './SortButton';
+import s from './s.module.css';
 
 const generateMinerUrl = (minerId) => {
   return (location) => {
@@ -22,7 +24,15 @@ const defaultDataState = {
   failed: false,
 };
 
-export const Table = ({ limit, offset, total, setTotal, pageHandler }) => {
+export const Table = ({
+  limit,
+  offset,
+  total,
+  sortBy,
+  order,
+  setTotal,
+  pageHandler,
+}) => {
   const [data, setData] = useState(defaultDataState);
 
   useEffect(() => {
@@ -33,6 +43,8 @@ export const Table = ({ limit, offset, total, setTotal, pageHandler }) => {
     fetchMiners(abortController, {
       limit,
       offset,
+      sortBy,
+      order,
     })
       .then((data) => {
         setData({
@@ -51,7 +63,7 @@ export const Table = ({ limit, offset, total, setTotal, pageHandler }) => {
           failed: true,
         });
       });
-  }, [limit, offset]);
+  }, [limit, offset, sortBy, order]);
 
   return (
     <div className={s.wrap}>
@@ -62,44 +74,62 @@ export const Table = ({ limit, offset, total, setTotal, pageHandler }) => {
         <thead>
           <tr>
             <th className={s.entity}>Entity</th>
-            <th className={s.alignRight}>Total raw power</th>
-            <th className={s.alignRight}>Commited capacity</th>
+            <th className={s.alignRight}>
+              <SortButton sortKey="rawPower">Total raw power</SortButton>
+            </th>
+            <th className={s.alignRight}>
+              <SortButton sortKey="freeSpace">Commited capacity</SortButton>
+            </th>
             <th className={s.alignRight} />
           </tr>
         </thead>
         <tbody>
-          {data.results.map((item) => {
-            return (
-              <tr key={item.id}>
-                <td className={s.entity}>{item.address}</td>
-                <td className={s.alignRight}>
-                  {item.rawPower
-                    ? formatBytes(item.rawPower, {
-                        // inputUnit: 'GiB',
-                        precision: 2,
-                      })
-                    : 'N/A'}
-                </td>
-                <td className={s.alignRight}>
-                  {item.freeSpace
-                    ? formatBytes(item.freeSpace, {
-                        // inputUnit: 'GiB',
-                        precision: 2,
-                      })
-                    : 'N/A'}
-                </td>
-                <td className={s.alignRight}>
-                  <Link
-                    to={generateMinerUrl(item.address)}
-                    onClick={() => window.scroll({ top: 0 })}
-                    className={s.statisticsButton}
-                  >
-                    View statistics
-                  </Link>
-                </td>
-              </tr>
-            );
-          })}
+          {data.loading ? (
+            <tr>
+              <td colSpan={4}>
+                <div style={{ display: 'flex' }}>
+                  <Spinner style={{ margin: 'auto' }} />
+                </div>
+              </td>
+            </tr>
+          ) : data.failed ? (
+            <tr>
+              <td colSpan={4}>Failed to Load Data.</td>
+            </tr>
+          ) : (
+            data.results.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td className={s.entity}>{item.address}</td>
+                  <td className={s.alignRight}>
+                    {item.rawPower
+                      ? formatBytes(item.rawPower, {
+                          // inputUnit: 'GiB',
+                          precision: 2,
+                        })
+                      : 'N/A'}
+                  </td>
+                  <td className={s.alignRight}>
+                    {item.freeSpace
+                      ? formatBytes(item.freeSpace, {
+                          // inputUnit: 'GiB',
+                          precision: 2,
+                        })
+                      : 'N/A'}
+                  </td>
+                  <td className={s.alignRight}>
+                    <Link
+                      to={generateMinerUrl(item.address)}
+                      onClick={() => window.scroll({ top: 0 })}
+                      className={s.statisticsButton}
+                    >
+                      View statistics
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
       <Pagination

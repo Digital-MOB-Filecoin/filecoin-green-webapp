@@ -70,14 +70,10 @@ export const fetchSealed = async (abortController, query) => {
 };
 
 export const fetchMiners = async (abortController, query) => {
-  var url = new URL('https://api.repsys.d.interplanetary.one/api/miners');
-
-  Object.entries(query).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-
   return api(
-    url, // `https://api.repsys.d.interplanetary.one/api/miners?limit=10&offset=0&order=desc&sortBy=rawPower`,
+    `https://api.repsys.d.interplanetary.one/api/miners?${queryString.stringify(
+      query
+    )}`,
     {
       signal: abortController.signal,
     }
