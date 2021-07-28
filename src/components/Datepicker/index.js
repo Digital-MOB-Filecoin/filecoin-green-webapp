@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
-import ReactDatePicker from 'react-datepicker';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { DateRangePicker } from 'react-date-range';
 import cn from 'classnames';
 import outy from 'outy';
 
@@ -7,10 +7,14 @@ import format from 'date-fns/format';
 import DICD from 'date-fns/differenceInCalendarDays';
 import DICM from 'date-fns/differenceInCalendarMonths';
 import sub from 'date-fns/sub';
+import isValid from 'date-fns/isValid';
 
 import { Svg } from 'components/Svg';
 
-import 'react-datepicker/dist/react-datepicker.css';
+import { EPOCH_START_TIMESTAMP } from 'constant';
+
+import 'react-date-range/dist/styles.css';
+import './picker.css';
 import s from './s.module.css';
 
 const RANGES = {
@@ -103,6 +107,10 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
     setCalendarDateInterval(dateInterval);
   };
 
+  useEffect(() => {
+    handlerClear();
+  }, [dateInterval.start.getTime(), dateInterval.end.getTime()]);
+
   return (
     <div className={cn(s.wrap, className)} ref={wrapRef}>
       <Svg id="calendar" className={s.iconCalendar} />
@@ -110,9 +118,13 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
         onClick={() => setIsOpen((prevState) => !prevState)}
         className={cn(s.button, { [s.active]: isOpen })}
       >
-        {format(dateInterval.start, 'LLL d, yyyy')}
+        {isValid(dateInterval.start)
+          ? format(dateInterval.start, 'LLL d, yyyy')
+          : '--'}
         <span className={s.dateSeparator}>-</span>
-        {format(dateInterval.end, 'LLL d, yyyy')}
+        {isValid(dateInterval.end)
+          ? format(dateInterval.end, 'LLL d, yyyy')
+          : '--'}
       </button>
       <Svg
         id="dropdown-arrow-down"
@@ -121,41 +133,68 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
       <div className={cn(s.datePickerWrap, { [s.active]: isOpen })}>
         <div className={s.calendarsWrap}>
           {isCustomRangeOpen ? (
-            <>
-              <ReactDatePicker
-                selected={calendarDateInterval.start}
-                onChange={(start) =>
-                  setCalendarDateInterval((prevInterval) => ({
-                    ...prevInterval,
-                    start,
-                  }))
-                }
-                selectsStart
-                startDate={calendarDateInterval.start}
-                endDate={calendarDateInterval.end}
-                maxDate={dateInterval.end}
-                inline
-                calendarClassName={s.reactDatepicker}
-              />
-              <ReactDatePicker
-                selected={calendarDateInterval.end}
-                onChange={(end) =>
-                  setCalendarDateInterval((prevInterval) => ({
-                    ...prevInterval,
-                    end,
-                  }))
-                }
-                selectsEnd
-                startDate={calendarDateInterval.start}
-                endDate={calendarDateInterval.end}
-                minDate={calendarDateInterval.start}
-                inline
-                calendarClassName={s.reactDatepicker}
-                maxDate={new Date()}
-                maxTime={new Date()}
-              />
-            </>
-          ) : null}
+            <DateRangePicker
+              months={2}
+              direction="horizontal"
+              className={s.reactDatepicker}
+              // showMonthAndYearPickers={false}
+              ranges={[
+                {
+                  startDate: calendarDateInterval.start,
+                  endDate: calendarDateInterval.end,
+                  key: 'main',
+                },
+              ]}
+              onChange={({ main }) => {
+                setCalendarDateInterval({
+                  start: main.startDate,
+                  end: main.endDate,
+                });
+              }}
+              staticRanges={[]}
+              inputRanges={[]}
+              renderStaticRangeLabel={() => null}
+              minDate={new Date(EPOCH_START_TIMESTAMP)}
+              maxDate={new Date()}
+              showDateDisplay={false}
+              weekdayDisplayFormat="EEEEE"
+              color="currentColor"
+            />
+          ) : // <>
+          //   <ReactDatePicker
+          //     selected={calendarDateInterval.start}
+          //     onChange={(start) =>
+          //       setCalendarDateInterval((prevInterval) => ({
+          //         ...prevInterval,
+          //         start,
+          //       }))
+          //     }
+          //     selectsStart
+          //     startDate={calendarDateInterval.start}
+          //     endDate={calendarDateInterval.end}
+          //     maxDate={dateInterval.end}
+          //     inline
+          //     calendarClassName={s.reactDatepicker}
+          //   />
+          //   <ReactDatePicker
+          //     selected={calendarDateInterval.end}
+          //     onChange={(end) =>
+          //       setCalendarDateInterval((prevInterval) => ({
+          //         ...prevInterval,
+          //         end,
+          //       }))
+          //     }
+          //     selectsEnd
+          //     startDate={calendarDateInterval.start}
+          //     endDate={calendarDateInterval.end}
+          //     minDate={calendarDateInterval.start}
+          //     inline
+          //     calendarClassName={s.reactDatepicker}
+          //     maxDate={new Date()}
+          //     maxTime={new Date()}
+          //   />
+          // </>
+          null}
           <div className={s.rangeWrap}>
             <button
               className={cn(s.rangeButton, {
@@ -218,13 +257,17 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
             <div className={s.selectedDate}>
               <div className={s.selectedDateTitle}>From</div>
               <div className={s.selectedDateValue}>
-                {format(calendarDateInterval.start, 'MMM d, yyyy hh:mm aa')}
+                {isValid(calendarDateInterval.start)
+                  ? format(calendarDateInterval.start, 'MMM d, yyyy hh:mm aa')
+                  : '--'}
               </div>
             </div>
             <div className={s.selectedDate}>
               <div className={s.selectedDateTitle}>To</div>
               <div className={s.selectedDateValue}>
-                {format(calendarDateInterval.end, 'MMM d, yyyy hh:mm aa')}
+                {isValid(calendarDateInterval.end)
+                  ? format(calendarDateInterval.end, 'MMM d, yyyy hh:mm aa')
+                  : '--'}
               </div>
             </div>
             <div className={s.buttonsWarp}>

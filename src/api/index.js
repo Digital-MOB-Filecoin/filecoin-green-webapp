@@ -70,10 +70,10 @@ export const fetchSealed = async (abortController, query) => {
 };
 
 export const fetchMiners = async (abortController, query) => {
+  const queryParams = `?${queryString.stringify(query)}`;
+
   return api(
-    `https://api.repsys.d.interplanetary.one/api/miners?${queryString.stringify(
-      query
-    )}`,
+    `https://api.repsys.d.interplanetary.one/api/miners${queryParams}`,
     {
       signal: abortController.signal,
     }
