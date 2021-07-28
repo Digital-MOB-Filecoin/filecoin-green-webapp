@@ -137,7 +137,6 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
               months={2}
               direction="horizontal"
               className={s.reactDatepicker}
-              // showMonthAndYearPickers={false}
               ranges={[
                 {
                   startDate: calendarDateInterval.start,
@@ -160,41 +159,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
               weekdayDisplayFormat="EEEEE"
               color="currentColor"
             />
-          ) : // <>
-          //   <ReactDatePicker
-          //     selected={calendarDateInterval.start}
-          //     onChange={(start) =>
-          //       setCalendarDateInterval((prevInterval) => ({
-          //         ...prevInterval,
-          //         start,
-          //       }))
-          //     }
-          //     selectsStart
-          //     startDate={calendarDateInterval.start}
-          //     endDate={calendarDateInterval.end}
-          //     maxDate={dateInterval.end}
-          //     inline
-          //     calendarClassName={s.reactDatepicker}
-          //   />
-          //   <ReactDatePicker
-          //     selected={calendarDateInterval.end}
-          //     onChange={(end) =>
-          //       setCalendarDateInterval((prevInterval) => ({
-          //         ...prevInterval,
-          //         end,
-          //       }))
-          //     }
-          //     selectsEnd
-          //     startDate={calendarDateInterval.start}
-          //     endDate={calendarDateInterval.end}
-          //     minDate={calendarDateInterval.start}
-          //     inline
-          //     calendarClassName={s.reactDatepicker}
-          //     maxDate={new Date()}
-          //     maxTime={new Date()}
-          //   />
-          // </>
-          null}
+          ) : null}
           <div className={s.rangeWrap}>
             <button
               className={cn(s.rangeButton, {
