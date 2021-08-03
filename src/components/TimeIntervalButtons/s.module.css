@@ -1,4 +1,20 @@
 .wrap {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: left;
+  color: var(--theme-text-secondary);
+  margin-right: 16px;
+}
+
+.rangeWrap {
   background: var(--theme-background-primary);
   border-radius: 8px;
   padding: 4px;

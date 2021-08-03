@@ -68,7 +68,7 @@ export const Table = ({
   return (
     <div className={s.wrap}>
       <div className={s.header}>
-        <h2 className="h2">Miners</h2>
+        <h2 className="h2">Storage Providers</h2>
       </div>
       <table className={s.table}>
         <thead>

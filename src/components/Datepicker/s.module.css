@@ -80,28 +80,10 @@
   display: flex;
 }
 
-.calendarsWrap  > div {
-  display: inline-flex;
-  flex-direction: column;
-}
-
 .footer {
   background: rgba(var(--rgb-solitude-dark), 0.32);
   padding: 16px 24px;
   display: flex;
-}
-
-.wrap .reactDatepicker {
-  font-family: inherit;
-  color: var(--theme-text-secondary);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  letter-spacing: 0;
-  border: 0;
-  position: relative;
-  margin: 24px;
 }
 
 .selectedDate {
@@ -177,7 +159,7 @@
   text-align: left;
   border-radius: 8px;
   padding: 16px;
-  width: 100%;
+  display: flex;
 }
 
 .rangeButton.custom {

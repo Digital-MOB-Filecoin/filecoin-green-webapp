@@ -40,7 +40,7 @@ export default function DashboardPage() {
   const [dateInterval, setDateInterval] = useState({
     start: query.start
       ? parse(query.start, 'yyyy-MM-dd', new Date())
-      : sub(new Date(), { months: 1 }),
+      : sub(new Date(), { years: 1 }),
     end: query.end ? parse(query.end, 'yyyy-MM-dd', new Date()) : new Date(),
   });
 
@@ -68,7 +68,7 @@ export default function DashboardPage() {
   return (
     <div className="container">
       <div className={s.header}>
-        <Search placeholder="Miner ID" className={s.search} />
+        <Search placeholder="Storage Provider ID" className={s.search} />
         <Datepicker
           dateInterval={dateInterval}
           onChange={handlerSetDateInterval}
@@ -76,7 +76,7 @@ export default function DashboardPage() {
       </div>
       {query.miner ? (
         <div className={s.searchContainer}>
-          <span>Miner {query.miner}</span>
+          <span>Storage Provider {query.miner}</span>
           <button
             type="button"
             className={s.searchClear}
@@ -359,11 +359,11 @@ const SealedChart = ({ start, end, miner, filter }) => {
 
   return (
     <Chart
-      title="Sealed capacity added per day"
+      title="Committed capacity added per day"
       rangeKey="sealed"
       interval={filter}
       exportData={{
-        filename: `sealedCapacityAddedPerBlock${miner ? `-${miner}` : ''}.csv`,
+        filename: `committedCapacityAddedPerDay${miner ? `-${miner}` : ''}.csv`,
         fetchFunction: () =>
           fetchSealed(new AbortController(), {
             start,
@@ -381,7 +381,7 @@ const SealedChart = ({ start, end, miner, filter }) => {
             key: 'timestamp',
           },
           {
-            title: 'Sealing rate Used (GiB/day)',
+            title: 'Capacity per day (GiB/day)',
             key: 'sealed',
           },
         ],
@@ -397,7 +397,7 @@ const SealedChart = ({ start, end, miner, filter }) => {
         area: [
           {
             key: 'sealed',
-            title: 'Sealing rate Used',
+            title: 'Capacity per day',
           },
         ],
       }}

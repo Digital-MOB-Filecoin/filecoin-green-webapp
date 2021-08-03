@@ -1,5 +1,4 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { DateRangePicker } from 'react-date-range';
 import cn from 'classnames';
 import outy from 'outy';
 
@@ -11,10 +10,7 @@ import isValid from 'date-fns/isValid';
 
 import { Svg } from 'components/Svg';
 
-import { EPOCH_START_TIMESTAMP } from 'constant';
-
-import 'react-date-range/dist/styles.css';
-import './picker.css';
+import { DateRangePicker } from './DateRangePicker';
 import s from './s.module.css';
 
 const RANGES = {
@@ -134,30 +130,8 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
         <div className={s.calendarsWrap}>
           {isCustomRangeOpen ? (
             <DateRangePicker
-              months={2}
-              direction="horizontal"
-              className={s.reactDatepicker}
-              ranges={[
-                {
-                  startDate: calendarDateInterval.start,
-                  endDate: calendarDateInterval.end,
-                  key: 'main',
-                },
-              ]}
-              onChange={({ main }) => {
-                setCalendarDateInterval({
-                  start: main.startDate,
-                  end: main.endDate,
-                });
-              }}
-              staticRanges={[]}
-              inputRanges={[]}
-              renderStaticRangeLabel={() => null}
-              minDate={new Date(EPOCH_START_TIMESTAMP)}
-              maxDate={new Date()}
-              showDateDisplay={false}
-              weekdayDisplayFormat="EEEEE"
-              color="currentColor"
+              interval={calendarDateInterval}
+              onChange={setCalendarDateInterval}
             />
           ) : null}
           <div className={s.rangeWrap}>

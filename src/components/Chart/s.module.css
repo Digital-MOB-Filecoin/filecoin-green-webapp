@@ -12,9 +12,9 @@
   margin-bottom: 32px;
 }
 
-.header.withMeta {
-  margin-bottom: 12px;
-}
+/*.header.withMeta {*/
+/*  margin-bottom: 12px;*/
+/*}*/
 
 .title {
   margin-right: auto;
@@ -24,59 +24,59 @@
   margin-left: 24px;
 }
 
-.meta {
-  display: flex;
-  margin-bottom: 32px;
-}
+/*.meta {*/
+/*  display: flex;*/
+/*  margin-bottom: 32px;*/
+/*}*/
 
-.metaItem {
-  display: inline-flex;
-  flex-direction: column;
-  border-radius: 8px;
-  background: var(--theme-background-primary);
-  padding: 16px;
-  margin-right: 24px;
-}
+/*.metaItem {*/
+/*  display: inline-flex;*/
+/*  flex-direction: column;*/
+/*  border-radius: 8px;*/
+/*  background: var(--theme-background-primary);*/
+/*  padding: 16px;*/
+/*  margin-right: 24px;*/
+/*}*/
 
-.metaItem:last-child {
-  margin-right: 0;
-}
+/*.metaItem:last-child {*/
+/*  margin-right: 0;*/
+/*}*/
 
-.metaTitle {
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--theme-text-secondary);
-}
+/*.metaTitle {*/
+/*  font-weight: 600;*/
+/*  font-size: 12px;*/
+/*  line-height: 16px;*/
+/*  color: var(--theme-text-secondary);*/
+/*}*/
 
-.metaValue {
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 24px;
-  color: var(--theme-text-primary);
-  display: flex;
-  align-items: center;
-}
+/*.metaValue {*/
+/*  font-weight: 700;*/
+/*  font-size: 18px;*/
+/*  line-height: 24px;*/
+/*  color: var(--theme-text-primary);*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*}*/
 
-.metaUnit {
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  margin-left: 4px;
-  color: var(--theme-text-secondary);
-  margin-top: 4px;
-}
+/*.metaUnit {*/
+/*  font-weight: 600;*/
+/*  font-size: 12px;*/
+/*  line-height: 16px;*/
+/*  margin-left: 4px;*/
+/*  color: var(--theme-text-secondary);*/
+/*  margin-top: 4px;*/
+/*}*/
 
-.metaPercent {
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  background: rgba(var(--theme-color-primary-rgb), 0.08);
-  border-radius: 8px;
-  padding: 4px 12px;
-  color: var(--theme-color-primary);
-  margin-left: 16px;
-}
+/*.metaPercent {*/
+/*  font-weight: 600;*/
+/*  font-size: 12px;*/
+/*  line-height: 16px;*/
+/*  background: rgba(var(--theme-color-primary-rgb), 0.08);*/
+/*  border-radius: 8px;*/
+/*  padding: 4px 12px;*/
+/*  color: var(--theme-color-primary);*/
+/*  margin-left: 16px;*/
+/*}*/
 
 .wrap :global(.recharts-cartesian-grid-horizontal) line:first-child {
   opacity: 0;
