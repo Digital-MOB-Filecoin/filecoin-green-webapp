@@ -36,9 +36,12 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
   const [calendarDateInterval, setCalendarDateInterval] = useState(
     dateInterval
   );
-  const wrapRef = useRef();
+  const wrapRef = useRef(null);
+  const outyRef = useRef(null);
 
   const activeRange = useMemo(() => {
+    if (isCustomRangeOpen) return RANGES.CUSTOM;
+
     if (DICD(dateInterval.end, dateInterval.start) === 7) {
       return RANGES.WEEK;
     }
@@ -56,16 +59,29 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
     }
 
     setIsCustomRangeOpen(true);
-    return RANGES.CUSTOM;
   }, [isOpen]);
 
-  useEffect(() => {
-    const outsideTap = outy([wrapRef.current], ['click', 'touchend'], () =>
-      setIsOpen(false)
-    );
+  const keyboardHandler = (event) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+    }
+  };
 
-    return () => outsideTap.remove();
-  }, []);
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', keyboardHandler, false);
+      outyRef.current = outy([wrapRef.current], ['click', 'touchend'], () =>
+        setIsOpen(false)
+      );
+    }
+
+    return () => {
+      document.removeEventListener('keydown', keyboardHandler, false);
+      if (outyRef.current && outyRef.current.remove) {
+        outyRef.current.remove();
+      }
+    };
+  }, [isOpen]);
 
   const handlerSetRange = (range) => {
     let newStartDate = calendarDateInterval.start;
@@ -94,6 +110,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
         return;
     }
 
+    setCalendarDateInterval({ start: newStartDate, end: newEndDate });
     onChange({ start: newStartDate, end: newEndDate });
     setIsCustomRangeOpen(false);
     setIsOpen(false);

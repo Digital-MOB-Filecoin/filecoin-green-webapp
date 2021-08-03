@@ -143,6 +143,8 @@
 .rangeWrap {
   padding: 8px;
   border-left: 1px solid var(--theme-background-primary);
+  display: flex;
+  flex-direction: column;
 }
 
 .rangeButton {

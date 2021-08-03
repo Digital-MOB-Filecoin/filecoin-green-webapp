@@ -228,6 +228,7 @@ export const Month = ({
               onFocus={() => {
                 onChangeHoverDate(dayDate);
               }}
+              tabIndex={isDisabled ? -1 : 0}
             >
               <span className={s.dayNumber}>
                 <span>{dayNumber}</span>
