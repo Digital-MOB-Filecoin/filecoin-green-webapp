@@ -5,6 +5,7 @@ import sub from 'date-fns/sub';
 import lightFormat from 'date-fns/lightFormat';
 import parse from 'date-fns/parse';
 
+import { DEFAULT_CHART_SCALE } from 'constant';
 import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
 import { Chart } from 'components/Chart';
@@ -98,19 +99,19 @@ export default function DashboardPage() {
         miner={query.miner}
         start={query.start ?? defaultQueryParams.start}
         end={query.end ?? defaultQueryParams.end}
-        filter={query.capacity ?? 'week'}
+        filter={query.capacity ?? DEFAULT_CHART_SCALE}
       />
       <FractionChart
         miner={query.miner}
         start={query.start ?? defaultQueryParams.start}
         end={query.end ?? defaultQueryParams.end}
-        filter={query.fraction ?? 'week'}
+        filter={query.fraction ?? DEFAULT_CHART_SCALE}
       />
       <SealedChart
         miner={query.miner}
         start={query.start ?? defaultQueryParams.start}
         end={query.end ?? defaultQueryParams.end}
-        filter={query.sealed ?? 'week'}
+        filter={query.sealed ?? DEFAULT_CHART_SCALE}
       />
       <Table
         limit={query.limit ?? 10}

@@ -1,11 +1,25 @@
 import { NavLink } from 'react-router-dom';
 
+import { DEFAULT_CHART_SCALE } from 'constant';
+
 import s from './s.module.css';
 
 const RANGE = {
-  DAY: { title: 'Day', queryValue: 'day', default: true },
-  WEEK: { title: 'Week', queryValue: 'week' },
-  MONTH: { title: 'Month', queryValue: 'month' },
+  DAY: {
+    title: 'Day',
+    queryValue: 'day',
+    default: DEFAULT_CHART_SCALE === 'day',
+  },
+  WEEK: {
+    title: 'Week',
+    queryValue: 'week',
+    default: DEFAULT_CHART_SCALE === 'week',
+  },
+  MONTH: {
+    title: 'Month',
+    queryValue: 'month',
+    default: DEFAULT_CHART_SCALE === 'month',
+  },
 };
 
 export const TimeIntervalButtons = ({ queryKey }) => {

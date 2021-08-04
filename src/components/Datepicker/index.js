@@ -59,7 +59,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
     }
 
     setIsCustomRangeOpen(true);
-  }, [isOpen]);
+  }, [isOpen, isCustomRangeOpen]);
 
   const keyboardHandler = (event) => {
     if (event.key === 'Escape') {
