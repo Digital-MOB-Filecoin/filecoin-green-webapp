@@ -178,11 +178,11 @@ const CapacityChart = ({ start, end, miner, filter }) => {
 
   return (
     <Chart
-      title="Used Capacity vs Commited Capacity"
+      title="Used Capacity vs Committed Capacity"
       rangeKey="capacity"
       interval={filter}
       exportData={{
-        filename: `usedVsCommitedCapacity${miner ? `-${miner}` : ''}.csv`,
+        filename: `usedVsCommittedCapacity${miner ? `-${miner}` : ''}.csv`,
         fetchFunction: () =>
           fetchCapacity(new AbortController(), {
             start,
@@ -193,7 +193,7 @@ const CapacityChart = ({ start, end, miner, filter }) => {
         table: [
           { title: 'Epoch', key: 'epoch' },
           { title: 'Timestamp', key: 'timestamp' },
-          { title: 'Commited Capacity (GiB)', key: 'commited' },
+          { title: 'Committed Capacity (GiB)', key: 'commited' },
           { title: 'Used Capacity (GiB)', key: 'used' },
         ],
       }}
@@ -208,7 +208,7 @@ const CapacityChart = ({ start, end, miner, filter }) => {
         area: [
           {
             key: 'commited',
-            title: 'Commited Capacity',
+            title: 'Committed Capacity',
           },
           {
             key: 'used',

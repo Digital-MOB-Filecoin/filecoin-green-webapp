@@ -78,7 +78,7 @@ export const Table = ({
               <SortButton sortKey="rawPower">Total raw power</SortButton>
             </th>
             <th className={s.alignRight}>
-              <SortButton sortKey="freeSpace">Commited capacity</SortButton>
+              <SortButton sortKey="freeSpace">Committed capacity</SortButton>
             </th>
             <th className={s.alignRight} />
           </tr>
