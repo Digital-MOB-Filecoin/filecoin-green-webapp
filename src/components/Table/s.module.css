@@ -59,6 +59,7 @@
   box-shadow: 0 8px 16px rgba(var(--theme-color-primary-rgb), 0.24);
   opacity: 0;
   transition: opacity 0.05s ease-out;
+  white-space: nowrap;
 }
 
 .statisticsButton:focus {

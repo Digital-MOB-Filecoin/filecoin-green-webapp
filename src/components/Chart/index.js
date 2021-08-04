@@ -68,7 +68,8 @@ const renderLegend = ({ payload }) => {
   );
 };
 
-const renderTooltip = ({ payload }, interval, dataFormatType) => {
+const StyledTooltip = (props) => {
+  const { payload, interval, type: dataFormatType } = props;
   if (!payload) return null;
 
   const date =
@@ -248,11 +249,10 @@ export const Chart = ({
                 strokeDasharray: '5 7',
               }}
               isAnimationActive={false}
-              content={(content) =>
-                renderTooltip(content, interval, yData.type)
-              }
+              animationDuration={0}
+              content={<StyledTooltip interval={interval} type={yData.type} />}
               offset={0}
-              allowEscapeViewBox={{ x: true, y: true }}
+              allowEscapeViewBox={{ x: false, y: true }}
               position={{ y: -100 }}
             />
             <Legend content={renderLegend} />
