@@ -151,8 +151,9 @@ const CapacityChart = ({ start, end, miner, filter }) => {
       filter,
     })
       .then((data) => {
-        const results = data.map(({ commited, used, ...rest }) => ({
-          commited: Number(commited),
+        const results = data.map(({ commited, used, total, ...rest }) => ({
+          // commited: Number(commited),
+          total: Number(total),
           used: Number(used),
           ...rest,
         }));
@@ -178,7 +179,7 @@ const CapacityChart = ({ start, end, miner, filter }) => {
 
   return (
     <Chart
-      title="Used Capacity vs Committed Capacity"
+      title="Used Capacity vs Total Capacity"
       rangeKey="capacity"
       interval={filter}
       exportData={{
@@ -193,8 +194,8 @@ const CapacityChart = ({ start, end, miner, filter }) => {
         table: [
           { title: 'Epoch', key: 'epoch' },
           { title: 'Timestamp', key: 'timestamp' },
-          { title: 'Committed Capacity (GiB)', key: 'commited' },
           { title: 'Used Capacity (GiB)', key: 'used' },
+          { title: 'Total Capacity (GiB)', key: 'total' },
         ],
       }}
       data={{
@@ -207,8 +208,8 @@ const CapacityChart = ({ start, end, miner, filter }) => {
         },
         area: [
           {
-            key: 'commited',
-            title: 'Committed Capacity',
+            key: 'total',
+            title: 'Total Capacity',
           },
           {
             key: 'used',
