@@ -294,9 +294,9 @@ const FractionChart = ({ start, end, miner, filter }) => {
         xData: {
           key: 'start_date',
         },
-
         yData: {
           type: 'percent',
+          domain: [0, 'maxData'],
         },
         area: [
           {

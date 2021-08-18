@@ -213,8 +213,8 @@ export const Chart = ({
             <YAxis
               axisLine={false}
               tickLine={false}
-              // width={100}
-              tickFormatter={(value) => getFormattedValue(yData.type, value, 0)}
+              domain={yData.domain}
+              tickFormatter={(value) => getFormattedValue(yData.type, value, 1)}
               stroke="var(--color-nepal)"
             />
             {area.map((item, idx) => {
