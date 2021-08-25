@@ -130,7 +130,7 @@
   pointer-events: none;
 }
 
-.disabled .dayNumber {
+.disabled:not(.today) .dayNumber {
   color: var(--color-nepal);
   background: rgba(var(--rgb-solitude-dark), 0.32);
   border-radius: 8px;

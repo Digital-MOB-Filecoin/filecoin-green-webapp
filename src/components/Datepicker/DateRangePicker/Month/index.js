@@ -186,7 +186,9 @@ export const Month = ({
         {calendarMonthDays.map((day) => {
           if (!day) return null;
           const { date: dayDate, dayNumber, monthType } = day;
-          const isDisabled = dayDate.getTime() > new Date().getTime();
+          const isDisabled =
+            dayDate.getTime() > new Date().getTime() ||
+            isSameDay(dayDate, new Date());
 
           return (
             <button

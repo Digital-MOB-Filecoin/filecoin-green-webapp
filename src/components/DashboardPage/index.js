@@ -42,7 +42,9 @@ export default function DashboardPage() {
     start: query.start
       ? parse(query.start, 'yyyy-MM-dd', new Date())
       : sub(new Date(), { years: 1 }),
-    end: query.end ? parse(query.end, 'yyyy-MM-dd', new Date()) : new Date(),
+    end: query.end
+      ? parse(query.end, 'yyyy-MM-dd', new Date())
+      : sub(new Date(), { days: 1 }),
   });
 
   const defaultQueryParams = useMemo(
