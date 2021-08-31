@@ -1,0 +1,48 @@
+.wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 5, 5, 0.75);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.inner {
+  position: relative;
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  padding: 40px;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding-right: 64px;
+}
+
+.closeButton {
+  background: rgba(152, 169, 184, 0.12);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  color: var(--theme-text-inactive);
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.closeButton:hover {
+  color: var(--theme-text-secondary);
+}

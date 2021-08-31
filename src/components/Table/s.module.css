@@ -14,7 +14,15 @@
   width: 100%;
 }
 
-.table .alignRight {
+.table .left {
+  text-align: left;
+}
+
+.table .center {
+  text-align: center;
+}
+
+.table .right {
   text-align: right;
 }
 
@@ -28,7 +36,7 @@
 }
 
 .table td {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   line-height: 24px;
   color: var(--theme-table-td-color);
@@ -47,29 +55,6 @@
   background: var(--theme-table-row-bg);
 }
 
-.statisticsButton {
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--theme-text-primary-inverted);
-  padding: 12px 24px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--theme-color-primary);
-  box-shadow: 0 8px 16px rgba(var(--theme-color-primary-rgb), 0.24);
-  opacity: 0;
-  transition: opacity 0.05s ease-out;
-  white-space: nowrap;
-}
-
-.statisticsButton:focus {
-  opacity: 1;
-}
-
-.table tr:hover .statisticsButton {
-  opacity: 1;
-}
-
-.entity {
-  width: 50%;
+.pagination {
+  margin-top: 24px;
 }

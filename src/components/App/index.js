@@ -4,8 +4,9 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { Spinner } from 'components/Spinner';
 import { Header } from 'components/Header';
 
-const DashboardPage = lazy(() => import('components/DashboardPage'));
-const AboutPage = lazy(() => import('components/AboutPage'));
+const LeaderboardPage = lazy(() => import('components/LeaderboardPage'));
+const DataPage = lazy(() => import('components/DataPage'));
+const AboutPage = lazy(() => import('components/MethodologyPage'));
 
 function App() {
   return (
@@ -20,8 +21,9 @@ function App() {
           }
         >
           <Switch>
-            <Route exact path="/" component={DashboardPage} />
-            <Route exact path="/about" component={AboutPage} />
+            <Route exact path="/" component={LeaderboardPage} />
+            <Route path="/data" component={DataPage} />
+            <Route path="/methodology" component={AboutPage} />
 
             <Redirect to="/" />
           </Switch>

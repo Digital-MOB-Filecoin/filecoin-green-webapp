@@ -1,0 +1,8 @@
+.statisticsButton {
+  opacity: 0;
+}
+
+.statisticsButton:focus,
+.table tr:hover .statisticsButton {
+  opacity: 1;
+}

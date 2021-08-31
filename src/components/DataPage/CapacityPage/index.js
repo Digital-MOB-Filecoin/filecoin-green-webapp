@@ -1,21 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 
-import sub from 'date-fns/sub';
 import lightFormat from 'date-fns/lightFormat';
-import parse from 'date-fns/parse';
 
 import { DEFAULT_CHART_SCALE } from 'constant';
 import { fetchCapacity, fetchFraction, fetchSealed } from 'api';
 
 import { Chart } from 'components/Chart';
-import { Table } from 'components/Table';
-import { Search } from 'components/Search';
-import { Datepicker } from 'components/Datepicker';
-import { Tabs } from 'components/Tabs';
-import { Svg } from 'components/Svg';
-
-import s from './s.module.css';
 
 const defaultDataState = {
   results: [],
@@ -23,8 +14,8 @@ const defaultDataState = {
   failed: false,
 };
 
-export default function DashboardPage() {
-  const [query, setQuery] = useQueryParams({
+export default function CapacityPage({ dateInterval }) {
+  const [query] = useQueryParams({
     miner: StringParam,
     limit: NumberParam,
     offset: NumberParam,
@@ -38,15 +29,6 @@ export default function DashboardPage() {
     order: StringParam,
   });
 
-  const [dateInterval, setDateInterval] = useState({
-    start: query.start
-      ? parse(query.start, 'yyyy-MM-dd', new Date())
-      : sub(new Date(), { years: 1 }),
-    end: query.end
-      ? parse(query.end, 'yyyy-MM-dd', new Date())
-      : sub(new Date(), { days: 1 }),
-  });
-
   const defaultQueryParams = useMemo(
     () => ({
       start: query.start || lightFormat(dateInterval.start, 'yyyy-MM-dd'),
@@ -58,45 +40,8 @@ export default function DashboardPage() {
     [query.start, query.end]
   );
 
-  const handlerSetDateInterval = (newDateInterval) => {
-    setDateInterval(newDateInterval);
-
-    setQuery((prevQuery) => ({
-      ...prevQuery,
-      start: lightFormat(newDateInterval.start, 'yyyy-MM-dd'),
-      end: lightFormat(newDateInterval.end, 'yyyy-MM-dd'),
-    }));
-  };
-
   return (
-    <div className="container">
-      <div className={s.header}>
-        <Search placeholder="Storage Provider ID" className={s.search} />
-        <Datepicker
-          dateInterval={dateInterval}
-          onChange={handlerSetDateInterval}
-        />
-      </div>
-      {query.miner ? (
-        <div className={s.searchContainer}>
-          <span>Storage Provider {query.miner}</span>
-          <button
-            type="button"
-            className={s.searchClear}
-            onClick={() =>
-              setQuery((prevQuery) => ({
-                ...prevQuery,
-                miner: undefined,
-              }))
-            }
-          >
-            <Svg id="close" width={16} height={16} />
-          </button>
-        </div>
-      ) : null}
-      <div>
-        <Tabs className={s.tabs} />
-      </div>
+    <>
       <CapacityChart
         miner={query.miner}
         start={query.start ?? defaultQueryParams.start}
@@ -115,26 +60,7 @@ export default function DashboardPage() {
         end={query.end ?? defaultQueryParams.end}
         filter={query.sealed ?? DEFAULT_CHART_SCALE}
       />
-      <Table
-        limit={query.limit ?? 10}
-        offset={query.offset ?? 0}
-        total={query.total ?? 0}
-        sortBy={query.sortBy ?? undefined}
-        order={query.order ?? undefined}
-        setTotal={(total) =>
-          setQuery((prevQuery) => ({
-            ...prevQuery,
-            total,
-          }))
-        }
-        pageHandler={(page) => {
-          setQuery((prevQuery) => ({
-            ...prevQuery,
-            offset: (page - 1) * (query.limit ?? 10),
-          }));
-        }}
-      />
-    </div>
+    </>
   );
 }
 
@@ -154,7 +80,6 @@ const CapacityChart = ({ start, end, miner, filter }) => {
     })
       .then((data) => {
         const results = data.map(({ commited, used, total, ...rest }) => ({
-          // commited: Number(commited),
           total: Number(total),
           used: Number(used),
           ...rest,

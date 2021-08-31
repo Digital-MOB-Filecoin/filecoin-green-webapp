@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { nanoid } from 'nanoid';
 import cn from 'classnames';
+import { Link } from 'react-router-dom';
 import {
   AreaChart,
   Area,
@@ -51,8 +52,9 @@ const getFormattedValue = (type, value, precision = 2) => {
   }
 };
 
-const renderLegend = ({ payload }) => {
+const renderLegend = (payload, showMethodologyLink) => {
   if (!payload) return null;
+
   return (
     <div className={s.legend}>
       {payload.map((entry, idx) => (
@@ -64,6 +66,11 @@ const renderLegend = ({ payload }) => {
           {entry.value}
         </span>
       ))}
+      {showMethodologyLink ? (
+        <Link to="/methodology" className={s.legendLink}>
+          View methodology
+        </Link>
+      ) : null}
     </div>
   );
 };
@@ -124,6 +131,7 @@ export const Chart = ({
   exportData,
   title,
   interval,
+  showMethodologyLink,
 }) => {
   const gradient1Id = useMemo(nanoid, []);
   const gradient2Id = useMemo(nanoid, []);
@@ -255,7 +263,11 @@ export const Chart = ({
               allowEscapeViewBox={{ x: false, y: true }}
               position={{ y: -100 }}
             />
-            <Legend content={renderLegend} />
+            <Legend
+              content={({ payload }) =>
+                renderLegend(payload, showMethodologyLink)
+              }
+            />
           </AreaChart>
         </ResponsiveContainer>
         {loading ? (

@@ -95,6 +95,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 24px;
+  position: relative;
 }
 
 .legendItem {
@@ -124,6 +125,16 @@
   background: var(--color);
   border-radius: 100px;
   margin-right: 8px;
+}
+
+.legendLink {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
 }
 
 .tooltip {

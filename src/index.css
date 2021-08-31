@@ -49,6 +49,11 @@
 
 a {
   text-decoration: none;
+  color: var(--theme-color-primary);
+}
+
+a:hover {
+  opacity: 0.8;
 }
 
 button {
@@ -102,4 +107,18 @@ main {
   text-align: left;
   color: var(--theme-text-primary);
   margin: 0;
+}
+
+.button-primary {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-text-primary-inverted);
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--theme-color-primary);
+  box-shadow: 0 8px 16px rgba(var(--theme-color-primary-rgb), 0.24);
+  transition: all 0.05s ease-out;
+  white-space: nowrap;
 }

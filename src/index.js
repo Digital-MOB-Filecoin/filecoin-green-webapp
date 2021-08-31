@@ -7,6 +7,9 @@ import App from 'components/App';
 
 import './index.css';
 
+// polyfill
+import 'wicg-inert';
+
 ReactDOM.render(
   <React.StrictMode>
     <Router>

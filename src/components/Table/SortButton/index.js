@@ -38,7 +38,7 @@ export const SortButton = ({ children, sortKey }) => {
           onClick={() => handlerSort('asc')}
           tabIndex={0}
         >
-          <Svg id="sort-asc" width={8} height={4} className={s.icon} />
+          <Svg id="sort-asc" width={6} height={4} className={s.icon} />
         </button>
         <button
           className={cn(s.button, {
@@ -48,7 +48,7 @@ export const SortButton = ({ children, sortKey }) => {
           onClick={() => handlerSort('desc')}
           tabIndex={0}
         >
-          <Svg id="sort-desc" width={8} height={4} className={s.icon} />
+          <Svg id="sort-desc" width={6} height={4} className={s.icon} />
         </button>
       </div>
     </div>
