@@ -26,9 +26,9 @@ export const Table = ({
       <table className={s.table}>
         <thead>
           <tr>
-            {columns.map((column) => (
+            {columns.map((column, idx) => (
               <th
-                key={column.key}
+                key={idx}
                 className={column.align ? s[column.align] : null}
                 style={column.width ? { width: column.width } : null}
               >
@@ -44,22 +44,14 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {data.loading ? (
-            <tr>
-              <td colSpan={4}>
-                <div style={{ display: 'flex' }}>
-                  <Spinner style={{ margin: 'auto' }} />
-                </div>
-              </td>
-            </tr>
-          ) : data.failed ? (
+          {data.failed ? (
             <tr>
               <td colSpan={4}>Failed to Load Data.</td>
             </tr>
           ) : (
-            data.results.map((item) => {
+            data.results.map((item, idx) => {
               return (
-                <tr key={item.id}>
+                <tr key={idx}>
                   {columns.map((column) => (
                     <td
                       key={column.key}
@@ -77,6 +69,11 @@ export const Table = ({
           )}
         </tbody>
       </table>
+      {data.loading ? (
+        <div className={s.spinnerWrapper}>
+          <Spinner style={{ margin: 'auto' }} />
+        </div>
+      ) : null}
       <Pagination
         skip={offset}
         take={limit}

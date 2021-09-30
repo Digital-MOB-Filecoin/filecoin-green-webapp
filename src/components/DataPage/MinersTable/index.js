@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { Link } from 'react-router-dom';
 import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
 import cn from 'classnames';
 
@@ -12,16 +11,7 @@ import { formatBytes } from 'utils/bytes';
 
 import s from './s.module.css';
 
-const generateMinerUrl = (minerId) => {
-  return (location) => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set('miner', minerId);
-
-    return `${location.pathname}?${queryParams.toString()}`;
-  };
-};
-
-export const MinerTable = () => {
+export const MinersTable = () => {
   const [data, setData] = useState(defaultDataState);
   const [total, setTotal] = useState(0);
   const [query, setQuery] = useQueryParams({
@@ -37,7 +27,7 @@ export const MinerTable = () => {
   useEffect(() => {
     const abortController = new AbortController();
 
-    setData({ ...defaultDataState, loading: true });
+    setData((prevProps) => ({ ...prevProps, loading: true }));
 
     fetchMiners(abortController, {
       limit: query.limit ?? 10,
@@ -81,14 +71,14 @@ export const MinerTable = () => {
       columns={[
         {
           title: 'Entitiy',
-          key: 'address',
+          key: 'miner',
           width: '50%',
           format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
         },
         {
           title: 'Total raw power',
-          key: 'rawPower',
-          sortKey: 'rawPower',
+          key: 'power',
+          sortKey: 'power',
           align: 'right',
           format: (value) =>
             value
@@ -99,8 +89,8 @@ export const MinerTable = () => {
         },
         {
           title: 'Committed capacity',
-          key: 'freeSpace',
-          sortKey: 'freeSpace',
+          key: 'used',
+          sortKey: 'used',
           align: 'right',
           format: (value) =>
             value
@@ -113,13 +103,19 @@ export const MinerTable = () => {
           title: '',
           key: nanoid(),
           format: (_, item) => (
-            <Link
-              to={generateMinerUrl(item.address)}
-              onClick={() => window.scroll({ top: 0 })}
+            <button
+              type="button"
+              onClick={() => {
+                setQuery((prevQuery) => ({
+                  ...prevQuery,
+                  miner: item.miner,
+                }));
+                window.scroll({ top: 0 });
+              }}
               className={cn('button-primary', s.statisticsButton)}
             >
               View statistics
-            </Link>
+            </button>
           ),
         },
       ]}

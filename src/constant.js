@@ -7,3 +7,5 @@ export const defaultDataState = {
   loading: false,
   failed: false,
 };
+
+export const LOCALSTORAGE_SELECTED_CHARTS = 'selected-charts';

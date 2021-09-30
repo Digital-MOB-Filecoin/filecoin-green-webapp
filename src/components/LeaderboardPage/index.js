@@ -6,7 +6,7 @@ import lightFormat from 'date-fns/lightFormat';
 import sub from 'date-fns/sub';
 
 import { DEFAULT_CHART_SCALE } from 'constant';
-import { EnergyChart } from './EnergyChart';
+import { Chart } from 'components/Chart';
 import { LeaderboardTable } from './LeaderboadTable';
 import s from './s.module.css';
 
@@ -56,14 +56,14 @@ export default function LeaderboardPage() {
         </div>
       </div>
       <div>
-        <EnergyChart
+        <Chart
+          showMethodologyLink
           miner={query.miner}
-          start={lightFormat(
-            sub(new Date(), { years: 1, days: 1 }),
-            'yyyy-MM-dd'
-          )}
-          end={lightFormat(sub(new Date(), { days: 1 }), 'yyyy-MM-dd')}
-          filter={query.fraction ?? DEFAULT_CHART_SCALE}
+          model={{ id: 0 }}
+          interval={{
+            start: sub(new Date(), { years: 1, days: 1 }),
+            end: sub(new Date(), { days: 1 }),
+          }}
         />
       </div>
       <div>

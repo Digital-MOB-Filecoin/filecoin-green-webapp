@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
-import { StringParam, useQueryParams } from 'use-query-params';
+import { useState, useEffect, useMemo } from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import parse from 'date-fns/parse';
 import sub from 'date-fns/sub';
@@ -11,15 +11,24 @@ import { Datepicker } from 'components/Datepicker';
 import { Svg } from 'components/Svg';
 import { Tabs } from 'components/Tabs';
 
-import CapacityPage from './CapacityPage';
-import EnergyPage from './EnergyPage';
-import { MinerTable } from './MinerTable';
-import { SelectCharts } from './SelectCharts';
+import { MinersTable } from './MinersTable';
+import { SelectChartsModal } from './SelectChartsModal';
 
 import s from './s.module.css';
+import { fetchChartModels } from 'api';
+import {
+  DEFAULT_CHART_SCALE,
+  defaultDataState,
+  LOCALSTORAGE_SELECTED_CHARTS,
+} from 'constant';
+import { Chart } from 'components/Chart';
 
 export default function DataPage() {
+  const [chartModels, setChartModels] = useState(defaultDataState);
+  const [showChartsModal, setShowChartsModal] = useState(false);
+
   const [query, setQuery] = useQueryParams({
+    charts: ObjectParam,
     miner: StringParam,
     start: StringParam,
     end: StringParam,
@@ -32,10 +41,6 @@ export default function DataPage() {
     end: query.end ? parse(query.end, 'yyyy-MM-dd', new Date()) : new Date(),
   });
 
-  const [showChartsModal, setShowChartsModal] = useState(false);
-
-  const isEnergyPage = useRouteMatch('/data/energy');
-
   const handlerSetDateInterval = (newDateInterval) => {
     setDateInterval(newDateInterval);
 
@@ -45,6 +50,71 @@ export default function DataPage() {
       end: lightFormat(newDateInterval.end, 'yyyy-MM-dd'),
     }));
   };
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setChartModels((prevProps) => ({ ...prevProps, loading: true }));
+
+    fetchChartModels(abortController)
+      .then((results) => {
+        if (!query.charts) {
+          const storedCharts = localStorage.getItem(
+            LOCALSTORAGE_SELECTED_CHARTS
+          );
+          if (!storedCharts) {
+            localStorage.setItem(
+              LOCALSTORAGE_SELECTED_CHARTS,
+              JSON.stringify(results.map(({ id }) => id))
+            );
+          }
+        }
+
+        setChartModels({
+          results,
+          loading: false,
+          failed: false,
+        });
+        setQuery((prevQuery) => {
+          const newQuery = {};
+          results.forEach(
+            ({ id }) =>
+              (newQuery[id] = query.charts?.[id] || DEFAULT_CHART_SCALE)
+          );
+
+          return {
+            ...prevQuery,
+            charts: newQuery,
+          };
+        });
+        return results;
+      })
+      .catch((e) => {
+        console.error(e);
+        setChartModels({
+          results: [],
+          loading: false,
+          failed: true,
+        });
+      });
+  }, []);
+
+  const userCharts = useMemo(() => {
+    const storedCharts = localStorage.getItem(LOCALSTORAGE_SELECTED_CHARTS);
+
+    if (storedCharts) {
+      return JSON.parse(storedCharts);
+    }
+
+    return chartModels.results.map(({ id }) => id);
+  }, [localStorage.getItem(LOCALSTORAGE_SELECTED_CHARTS)]);
+
+  const capacityCharts = chartModels.results.filter(
+    (item) => item.category === 'capacity' && userCharts.includes(item.id)
+  );
+  const energyCharts = chartModels.results.filter(
+    (item) => item.category === 'energy' && userCharts.includes(item.id)
+  );
 
   return (
     <>
@@ -93,22 +163,47 @@ export default function DataPage() {
               },
             ]}
           />
-
-          {isEnergyPage ? <SelectCharts /> : null}
+          <button
+            type="button"
+            className={s.chooseChartsButton}
+            onClick={() => setShowChartsModal(true)}
+          >
+            <span className={s.chooseChartsButtonCounter}>
+              {chartModels.results.length}
+            </span>
+            Charts displayed
+          </button>
         </div>
-
         <Switch>
           <Route exact path={['/data', '/data/capacity']}>
-            <CapacityPage dateInterval={dateInterval} />
+            {capacityCharts.length ? (
+              capacityCharts.map((model) => (
+                <Chart key={model.id} model={model} interval={dateInterval} />
+              ))
+            ) : (
+              <div className={s.noCharts}>No selected charts.</div>
+            )}
           </Route>
           <Route path="/data/energy">
-            <EnergyPage dateInterval={dateInterval} />
+            {energyCharts.length ? (
+              energyCharts.map((model) => (
+                <Chart key={model.id} model={model} interval={dateInterval} />
+              ))
+            ) : (
+              <div className={s.noCharts}>No selected charts.</div>
+            )}
           </Route>
           <Redirect to="/data" />
         </Switch>
 
-        <MinerTable />
+        <MinersTable />
       </div>
+
+      <SelectChartsModal
+        data={chartModels}
+        open={showChartsModal}
+        onClose={() => setShowChartsModal(false)}
+      />
     </>
   );
 }
