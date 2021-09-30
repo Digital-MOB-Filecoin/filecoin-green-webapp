@@ -1,0 +1,86 @@
+.header {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.searchContainer {
+  margin: 16px 0;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  color: var(--theme-text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.searchClear {
+  background: rgba(152, 169, 184, 0.12);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+  color: var(--theme-text-inactive);
+  border: 0;
+}
+
+.searchClear:hover,
+.searchClear:active {
+  color: var(--theme-text-secondary);
+}
+
+.tabsWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tabs {
+  margin-bottom: 40px;
+}
+
+.search {
+  margin-right: 24px;
+  flex-grow: 1;
+}
+
+.chooseChartsButton {
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--theme-background-secondary);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-text-secondary);
+  padding: 12px 16px 12px 12px;
+}
+
+.chooseChartsButton:hover {
+  border-color: var(--theme-color-primary);
+}
+
+.chooseChartsButtonCounter {
+  background: rgba(78, 163, 148, 0.16);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  text-align: center;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-color-primary);
+  margin-right: 8px;
+}
+
+.noCharts {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: center;
+  color: var(--theme-text-primary);
+  margin: 24px 0 80px;
+}

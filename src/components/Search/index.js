@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useQueryParam, StringParam } from 'use-query-params';
 import cn from 'classnames';
@@ -10,12 +11,13 @@ const inputName = 'search';
 
 export const Search = ({ className, ...rest }) => {
   const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
+  const [value, setValue] = useState(minerQuery);
 
   const handlerSetQuery = (value) => {
     setMinerQuery(value || undefined);
   };
 
-  const debounced = useDebouncedCallback(handlerSetQuery, 600);
+  const debounced = useDebouncedCallback(handlerSetQuery, 200);
 
   const handlerSubmit = (event) => {
     debounced.cancel();
@@ -25,6 +27,10 @@ export const Search = ({ className, ...rest }) => {
     handlerSetQuery(formData.get(inputName));
   };
 
+  useEffect(() => {
+    setValue(minerQuery);
+  }, [minerQuery]);
+
   return (
     <form className={cn(s.wrap, className)} onSubmit={handlerSubmit}>
       <Svg id="search" className={s.icon} />
@@ -32,8 +38,11 @@ export const Search = ({ className, ...rest }) => {
         type="search"
         name={inputName}
         className={s.input}
-        defaultValue={minerQuery || ''}
-        onChange={(e) => debounced(e.target.value)}
+        value={value || ''}
+        onChange={(e) => {
+          setValue(e.target.value);
+          debounced(e.target.value);
+        }}
         {...rest}
       />
     </form>

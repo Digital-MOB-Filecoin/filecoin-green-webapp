@@ -1,142 +1,85 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { formatBytes } from 'utils/bytes';
+import cn from 'classnames';
 
-import { fetchMiners } from 'api';
+import { defaultDataState } from 'constant';
 
 import { Spinner } from 'components/Spinner';
-import { Pagination } from './Pagination';
+import { Pagination } from 'components/Pagination';
 import { SortButton } from './SortButton';
+// eslint-disable-next-line css-modules/no-unused-class
 import s from './s.module.css';
 
-const generateMinerUrl = (minerId) => {
-  return (location) => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set('miner', minerId);
-
-    return `${location.pathname}?${queryParams.toString()}`;
-  };
-};
-
-const defaultDataState = {
-  results: [],
-  loading: false,
-  failed: false,
-};
-
 export const Table = ({
+  title,
+  data = defaultDataState,
+  columns = [],
   limit,
   offset,
   total,
-  sortBy,
-  order,
-  setTotal,
   pageHandler,
+  className,
 }) => {
-  const [data, setData] = useState(defaultDataState);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    setData({ ...defaultDataState, loading: true });
-
-    fetchMiners(abortController, {
-      limit,
-      offset,
-      sortBy,
-      order,
-    })
-      .then((data) => {
-        setData({
-          results: data.miners,
-          loading: false,
-          failed: false,
-        });
-
-        setTotal(data.pagination.total);
-      })
-      .catch((e) => {
-        console.error(e);
-        setData({
-          results: [],
-          loading: false,
-          failed: true,
-        });
-      });
-  }, [limit, offset, sortBy, order]);
-
   return (
-    <div className={s.wrap}>
+    <div className={cn(s.wrap, className)}>
       <div className={s.header}>
-        <h2 className="h2">Storage Providers</h2>
+        <h2 className="h2">{title}</h2>
       </div>
       <table className={s.table}>
         <thead>
           <tr>
-            <th className={s.entity}>Entity</th>
-            <th className={s.alignRight}>
-              <SortButton sortKey="rawPower">Total raw power</SortButton>
-            </th>
-            <th className={s.alignRight}>
-              <SortButton sortKey="freeSpace">Committed capacity</SortButton>
-            </th>
-            <th className={s.alignRight} />
+            {columns.map((column, idx) => (
+              <th
+                key={idx}
+                className={column.align ? s[column.align] : null}
+                style={column.width ? { width: column.width } : null}
+              >
+                {column.sortKey ? (
+                  <SortButton sortKey={column.sortKey}>
+                    {column.title}
+                  </SortButton>
+                ) : (
+                  column.title
+                )}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {data.loading ? (
-            <tr>
-              <td colSpan={4}>
-                <div style={{ display: 'flex' }}>
-                  <Spinner style={{ margin: 'auto' }} />
-                </div>
-              </td>
-            </tr>
-          ) : data.failed ? (
+          {data.failed ? (
             <tr>
               <td colSpan={4}>Failed to Load Data.</td>
             </tr>
           ) : (
-            data.results.map((item) => {
+            data.results.map((item, idx) => {
               return (
-                <tr key={item.id}>
-                  <td className={s.entity}>{item.address}</td>
-                  <td className={s.alignRight}>
-                    {item.rawPower
-                      ? formatBytes(item.rawPower, {
-                          // inputUnit: 'GiB',
-                          precision: 2,
-                        })
-                      : 'N/A'}
-                  </td>
-                  <td className={s.alignRight}>
-                    {item.freeSpace
-                      ? formatBytes(item.freeSpace, {
-                          // inputUnit: 'GiB',
-                          precision: 2,
-                        })
-                      : 'N/A'}
-                  </td>
-                  <td className={s.alignRight}>
-                    <Link
-                      to={generateMinerUrl(item.address)}
-                      onClick={() => window.scroll({ top: 0 })}
-                      className={s.statisticsButton}
+                <tr key={idx}>
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className={column.align ? s[column.align] : null}
+                      style={column.width ? { width: column.width } : null}
                     >
-                      View statistics
-                    </Link>
-                  </td>
+                      {column.format
+                        ? column.format(item[column.key], item)
+                        : item[column.key]}
+                    </td>
+                  ))}
                 </tr>
               );
             })
           )}
         </tbody>
       </table>
+      {data.loading ? (
+        <div className={s.spinnerWrapper}>
+          <Spinner style={{ margin: 'auto' }} />
+        </div>
+      ) : null}
       <Pagination
         skip={offset}
         take={limit}
         total={total}
         pageHandler={pageHandler}
+        className={s.pagination}
       />
     </div>
   );

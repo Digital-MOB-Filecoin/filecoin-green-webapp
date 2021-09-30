@@ -20,16 +20,26 @@ export const Header = () => {
               className={s.navLink}
               activeClassName={s.active}
             >
-              <span>Home</span>
+              <span>Leaderboard</span>
             </NavLink>
             <NavLink
-              to="/about"
+              to="/data"
               className={s.navLink}
               activeClassName={s.active}
             >
-              <span>About</span>
+              <span>Data</span>
+            </NavLink>
+            <NavLink
+              to="/methodology"
+              className={s.navLink}
+              activeClassName={s.active}
+            >
+              <span>Methodology</span>
             </NavLink>
           </nav>
+          <div className={s.slack}>
+            Feedback? Join <a href="#">#fil-green</a> on Slack!
+          </div>
         </div>
       </div>
     </header>

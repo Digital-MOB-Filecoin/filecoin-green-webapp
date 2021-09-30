@@ -1,31 +1,77 @@
 import { useState } from 'react';
 import cn from 'classnames';
+import { useQueryParam, StringParam } from 'use-query-params';
 
 import { Spinner } from 'components/Spinner';
 
 import s from './s.module.css';
+import { fetchExportData } from '../../api';
+import lightFormat from 'date-fns/lightFormat';
 
-export const ExportButton = ({ className, data }) => {
+export const ExportButton = ({ className, id, filename, interval }) => {
   const [loading, setLoading] = useState(false);
+  const [miner] = useQueryParam('miner', StringParam);
 
   const handlerExport = async () => {
     setLoading(true);
-    const { filename, fetchFunction, table } = data;
 
     try {
       setLoading(true);
-      const results = await fetchFunction();
 
-      const headerString = table.map((header) => `"${header.title}"`).join(',');
-      const dataString = results
-        .map((row) =>
-          table
-            .map(({ key, format }) => {
-              return `"${format ? format(row[key]) : row[key]}"`;
-            })
-            .join(',')
-        )
-        .join('\r\n');
+      let offset = 0;
+      let limit = 1000;
+      const start = lightFormat(interval.start, 'yyyy-MM-dd');
+      const end = lightFormat(interval.end, 'yyyy-MM-dd');
+
+      let results = await fetchExportData({
+        id,
+        offset,
+        limit,
+        start,
+        end,
+        miner,
+      });
+
+      const headerString = results.fields
+        .map((field) => `"${field}"`)
+        .join(',');
+      let dataString = '';
+
+      while (results.data.length) {
+        results = await fetchExportData({
+          id,
+          offset,
+          limit,
+          start,
+          end,
+        });
+
+        if (dataString) {
+          dataString +=
+            '\r\n' +
+            results.data
+              .map((item) =>
+                results.fields
+                  .map((fieldKey) => {
+                    return `"${item[fieldKey]}"`;
+                  })
+                  .join(',')
+              )
+              .join('\r\n');
+        } else {
+          dataString += results.data
+            .map((item) =>
+              results.fields
+                .map((fieldKey) => {
+                  return `"${item[fieldKey]}"`;
+                })
+                .join(',')
+            )
+            .join('\r\n');
+        }
+        offset += limit;
+      }
+
       const resultString = `${headerString}\r\n${dataString}`;
 
       const blob = new Blob([resultString], {

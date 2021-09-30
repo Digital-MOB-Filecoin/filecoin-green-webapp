@@ -21,61 +21,30 @@ export const api = async (url, { headers = {}, ...restOptions } = {}) => {
   return response.json();
 };
 
-export const fetchCapacity = async (abortController, query) => {
-  let resource = 'network';
-  let queryParams = '';
-
-  if (query) {
-    if (query.miner) {
-      resource = 'miner';
-    }
-    queryParams = `?${queryString.stringify(query)}`;
-  }
-
-  return api(`${config.apiBaseUrl}${resource}/capacity${queryParams}`, {
-    signal: abortController.signal,
-  });
-};
-
-export const fetchFraction = async (abortController, query) => {
-  let resource = 'network';
-  let queryParams = '';
-
-  if (query) {
-    if (query.miner) {
-      resource = 'miner';
-    }
-    queryParams = `?${queryString.stringify(query)}`;
-  }
-
-  return api(`${config.apiBaseUrl}${resource}/fraction${queryParams}`, {
-    signal: abortController.signal,
-  });
-};
-
-export const fetchSealed = async (abortController, query) => {
-  let resource = 'network';
-  let queryParams = '';
-
-  if (query) {
-    if (query.miner) {
-      resource = 'miner';
-    }
-    queryParams = `?${queryString.stringify(query)}`;
-  }
-
-  return api(`${config.apiBaseUrl}${resource}/sealed${queryParams}`, {
-    signal: abortController.signal,
-  });
-};
-
 export const fetchMiners = async (abortController, query) => {
   const queryParams = `?${queryString.stringify(query)}`;
 
-  return api(
-    `https://api.repsys.d.interplanetary.one/api/miners${queryParams}`,
-    {
-      signal: abortController.signal,
-    }
-  );
+  return api(`${config.apiBaseUrl}miners${queryParams}`, {
+    signal: abortController.signal,
+  });
+};
+
+export const fetchChartModels = async (abortController) => {
+  return api(`${config.apiBaseUrl}models/list`, {
+    signal: abortController.signal,
+  });
+};
+
+export const fetchChart = async (abortController, query) => {
+  const queryParams = `?${queryString.stringify(query)}`;
+
+  return api(`${config.apiBaseUrl}models/model${queryParams}`, {
+    signal: abortController.signal,
+  });
+};
+
+export const fetchExportData = async (query) => {
+  const queryParams = `?${queryString.stringify(query)}`;
+
+  return api(`${config.apiBaseUrl}models/export${queryParams}`);
 };

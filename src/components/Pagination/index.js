@@ -17,30 +17,34 @@ function pagination(current, last, delta = 2) {
       range.push(i);
     }
   }
-  range.push(last);
 
-  range.forEach((i) => {
-    if (l) {
-      if (i - l === 2) {
-        rangeWithDots.push(l + 1);
-      } else if (i - l !== 1) {
-        rangeWithDots.push(null);
+  if (range.length > 1) {
+    range.push(last);
+    range.forEach((i) => {
+      if (l) {
+        if (i - l === 2) {
+          rangeWithDots.push(l + 1);
+        } else if (i - l !== 1) {
+          rangeWithDots.push(null);
+        }
       }
-    }
-    rangeWithDots.push(i);
-    l = i;
-  });
+      rangeWithDots.push(i);
+      l = i;
+    });
+  } else {
+    rangeWithDots.push(1);
+  }
 
   return rangeWithDots;
 }
 
-export function Pagination({ skip, take, total, pageHandler }) {
+export function Pagination({ skip, take, total, pageHandler, className }) {
   const currentPage = skip / take + 1;
   const pages = Math.ceil(total / take);
   const paginationList = pagination(currentPage, pages);
 
   return (
-    <ol className={s.pagination}>
+    <ol className={cn(s.pagination, className)}>
       <li>
         <button
           onClick={() => pageHandler(currentPage - 1)}

@@ -72,3 +72,12 @@
   right: 0;
   height: 2px;
 }
+
+.slack {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--theme-text-secondary);
+  align-self: center;
+}
