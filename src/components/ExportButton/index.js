@@ -79,12 +79,12 @@ export const ExportButton = ({ className, id, filename, interval }) => {
       });
 
       if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, filename);
+        navigator.msSaveBlob(blob, `${filename}.csv`);
       } else {
         const link = document.createElement('a');
         if (link.download !== undefined) {
           link.setAttribute('href', URL.createObjectURL(blob));
-          link.setAttribute('download', filename);
+          link.setAttribute('download', `${filename}.csv`);
           link.style.visibility = 'hidden';
           document.body.appendChild(link);
           link.click();
