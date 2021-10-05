@@ -34,6 +34,7 @@
   color: var(--theme-input-placeholder-color);
 }
 
+.input:hover,
 .input:active,
 .input:focus {
   border: var(--theme-input-border-active);

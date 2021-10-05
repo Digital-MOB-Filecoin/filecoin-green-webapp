@@ -54,6 +54,15 @@
   position: relative;
 }
 
+.navLink[disabled] {
+  cursor: not-allowed;
+  color: var(--theme-text-inactive);
+}
+
+.navLink[disabled]:hover {
+  color: var(--theme-text-inactive);
+}
+
 .navLink:last-child {
   margin-right: 0;
 }

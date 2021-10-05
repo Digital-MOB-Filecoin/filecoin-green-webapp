@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useQueryParam, StringParam } from 'use-query-params';
 import cn from 'classnames';

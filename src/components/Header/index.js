@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import s from './s.module.css';
 
@@ -7,29 +7,35 @@ export const Header = () => {
     <header className={s.header}>
       <div className="container">
         <div className={s.inner}>
-          <NavLink to="/" className={s.logoLink}>
+          <Link to="/" className={s.logoLink}>
             <h1 className={s.logo}>
               <span>Filecoin</span>
               <span className={s.green}>Green</span>
             </h1>
-          </NavLink>
+          </Link>
           <nav className={s.nav}>
             <NavLink
-              exact
               to="/"
+              className={s.navLink}
+              activeClassName={s.active}
+              isActive={(match, location) =>
+                ['/', '/capacity', '/energy'].includes(location.pathname)
+              }
+            >
+              <span>Data</span>
+            </NavLink>
+            <NavLink
+              disabled
+              onClick={(e) => e.preventDefault()}
+              to="/leaderboard"
               className={s.navLink}
               activeClassName={s.active}
             >
               <span>Leaderboard</span>
             </NavLink>
             <NavLink
-              to="/data"
-              className={s.navLink}
-              activeClassName={s.active}
-            >
-              <span>Data</span>
-            </NavLink>
-            <NavLink
+              disabled
+              onClick={(e) => e.preventDefault()}
               to="/methodology"
               className={s.navLink}
               activeClassName={s.active}

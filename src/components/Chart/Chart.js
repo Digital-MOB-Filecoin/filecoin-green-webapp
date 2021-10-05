@@ -17,13 +17,13 @@ import format from 'date-fns/format';
 import isValid from 'date-fns/isValid';
 
 import { Spinner } from 'components/Spinner';
-import { TimeIntervalButtons } from 'components/TimeIntervalButtons';
-import { ExportButton } from 'components/ExportButton';
 import { formatBytes } from 'utils/bytes';
 import { formatWatts } from 'utils/numbers';
 import { convertNumberToPercent } from 'utils/numbers';
 import { camelCase } from 'utils/string';
 
+import { TimeIntervalButtons } from './TimeIntervalButtons';
+import { ExportButton } from './ExportButton';
 import s from './s.module.css';
 
 const getFormattedValue = (type, value, precision = 2) => {
