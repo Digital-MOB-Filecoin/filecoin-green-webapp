@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
 import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import parse from 'date-fns/parse';
@@ -109,12 +109,47 @@ export default function DataPage() {
     return chartModels.results.map(({ id }) => id);
   }, [localStorage.getItem(LOCALSTORAGE_SELECTED_CHARTS)]);
 
+  const selectedCharts = chartModels.results.filter((item) =>
+    userCharts.includes(item.id)
+  );
   const capacityCharts = chartModels.results.filter(
     (item) => item.category === 'capacity' && userCharts.includes(item.id)
   );
   const energyCharts = chartModels.results.filter(
     (item) => item.category === 'energy' && userCharts.includes(item.id)
   );
+
+  const isSelectedChartsPage = useRouteMatch({
+    path: '/',
+    exact: true,
+  });
+  const isCapacityChartsPage = useRouteMatch({
+    path: '/capacity',
+  });
+  const isEnergyChartsPage = useRouteMatch({
+    path: '/energy',
+  });
+
+  const chartsDisplayed = useMemo(() => {
+    if (isSelectedChartsPage) {
+      return selectedCharts.length;
+    }
+    if (isCapacityChartsPage) {
+      return capacityCharts.length;
+    }
+    if (isEnergyChartsPage) {
+      return energyCharts.length;
+    }
+
+    return '-';
+  }, [
+    isSelectedChartsPage,
+    selectedCharts.length,
+    isCapacityChartsPage,
+    capacityCharts.length,
+    isEnergyChartsPage,
+    energyCharts.length,
+  ]);
 
   return (
     <>
@@ -148,16 +183,20 @@ export default function DataPage() {
             className={s.tabs}
             tabs={[
               {
-                to: '/data',
+                to: ({ search }) => '/' + search,
                 exact: true,
+                children: 'All',
+              },
+              {
+                to: ({ search }) => '/capacity' + search,
                 children: 'Capacity Committed and Used',
               },
               {
-                to: '/data/energy',
+                to: ({ search }) => '/energy' + search,
                 children: 'Energy',
               },
               {
-                to: '/data/carbon',
+                to: ({ search }) => '/carbon' + search,
                 children: 'Carbon intensity',
                 disabled: true,
               },
@@ -169,31 +208,41 @@ export default function DataPage() {
             onClick={() => setShowChartsModal(true)}
           >
             <span className={s.chooseChartsButtonCounter}>
-              {chartModels.results.length}
+              {chartsDisplayed}
             </span>
             Charts displayed
           </button>
         </div>
         <Switch>
-          <Route exact path={['/data', '/data/capacity']}>
+          <Route exact path="/">
+            {selectedCharts.length ? (
+              selectedCharts.map((model) => (
+                <Chart key={model.id} model={model} interval={dateInterval} />
+              ))
+            ) : (
+              <div className={s.noCharts}>Select more charts.</div>
+            )}
+          </Route>
+          <Route path="/capacity">
             {capacityCharts.length ? (
               capacityCharts.map((model) => (
                 <Chart key={model.id} model={model} interval={dateInterval} />
               ))
             ) : (
-              <div className={s.noCharts}>No selected charts.</div>
+              <div className={s.noCharts}>Select more charts.</div>
             )}
           </Route>
-          <Route path="/data/energy">
+          <Route path="/energy">
             {energyCharts.length ? (
               energyCharts.map((model) => (
                 <Chart key={model.id} model={model} interval={dateInterval} />
               ))
             ) : (
-              <div className={s.noCharts}>No selected charts.</div>
+              <div className={s.noCharts}>Select more charts.</div>
             )}
           </Route>
-          <Redirect to="/data" />
+
+          <Redirect to="/" />
         </Switch>
 
         <MinersTable />

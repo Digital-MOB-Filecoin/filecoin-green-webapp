@@ -5,7 +5,7 @@ import { useQueryParam, StringParam } from 'use-query-params';
 import { Spinner } from 'components/Spinner';
 
 import s from './s.module.css';
-import { fetchExportData } from '../../api';
+import { fetchExportData } from '../../../api';
 import lightFormat from 'date-fns/lightFormat';
 
 export const ExportButton = ({ className, id, filename, interval }) => {

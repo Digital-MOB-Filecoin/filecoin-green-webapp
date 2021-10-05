@@ -50,6 +50,7 @@
   color: var(--theme-input-placeholder-color);
 }
 
+.button:hover,
 .button.active,
 .button:active,
 .button:focus {
