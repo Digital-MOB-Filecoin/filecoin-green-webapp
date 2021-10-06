@@ -71,4 +71,5 @@
   justify-content: center;
   z-index: 2;
   background: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
 }

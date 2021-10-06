@@ -5,22 +5,14 @@ import { Pagination } from 'components/Pagination';
 import { Svg } from 'components/Svg';
 import { Spinner } from 'components/Spinner';
 
-import { LOCALSTORAGE_SELECTED_CHARTS } from 'constant';
-
 import s from './s.module.css';
 
-export const SelectChartsModal = ({ open, data, onClose }) => {
+export const ChartsModal = ({ open, models, selected, onClose }) => {
   const [shownDetails, setShownDetails] = useState(null);
-  const [selectedCharts, setSelectedCharts] = useState([]);
+  const [localSelected, setLocalSelected] = useState(selected);
 
   useEffect(() => {
-    if (!open) return;
-
-    const userCharts = localStorage.getItem(LOCALSTORAGE_SELECTED_CHARTS);
-
-    if (userCharts) {
-      setSelectedCharts(JSON.parse(userCharts));
-    }
+    setLocalSelected(selected);
   }, [open]);
 
   if (!open) {
@@ -28,23 +20,29 @@ export const SelectChartsModal = ({ open, data, onClose }) => {
   }
 
   const handlerApply = () => {
-    localStorage.setItem(
-      LOCALSTORAGE_SELECTED_CHARTS,
-      JSON.stringify(selectedCharts)
-    );
-    onClose();
+    onClose(localSelected);
   };
 
-  const handlerSelect = (id) => {
-    setSelectedCharts((prevState) =>
-      prevState.some((itemId) => itemId === id)
-        ? prevState.filter((itemId) => itemId !== id)
-        : [...prevState, id]
-    );
+  const handlerSelect = (model) => {
+    setLocalSelected((prevState) => {
+      if (prevState.some(({ id }) => id === model.id)) {
+        return prevState.filter(({ id }) => id !== model.id);
+      }
+
+      return [...prevState, model];
+    });
   };
 
   const handlerChangePage = () => {
     console.log('change page');
+  };
+
+  const handlerSelectAll = () => {
+    if (models.results.length === localSelected.length) {
+      setLocalSelected([]);
+    } else {
+      setLocalSelected(models.results);
+    }
   };
 
   return (
@@ -56,12 +54,21 @@ export const SelectChartsModal = ({ open, data, onClose }) => {
         header={
           <hgroup>
             <h2 className={s.title}>Select charts</h2>
-            <h3 className={s.subtitle}>Choose the charts you want to see</h3>
+            <h3 className={s.subtitle}>
+              Choose the charts you want to see
+              <button
+                type="button"
+                className={s.selectAllBtn}
+                onClick={handlerSelectAll}
+              >
+                Select all
+              </button>
+            </h3>
           </hgroup>
         }
       >
         <div className={s.grid}>
-          {data.loading ? (
+          {models.loading ? (
             <div
               style={{
                 gridColumnStart: 1,
@@ -72,7 +79,7 @@ export const SelectChartsModal = ({ open, data, onClose }) => {
               <Spinner />
             </div>
           ) : (
-            data.results.map((item) => {
+            models.results.map((item) => {
               const id = nanoid();
 
               return (
@@ -82,10 +89,10 @@ export const SelectChartsModal = ({ open, data, onClose }) => {
                     type="checkbox"
                     name={id}
                     className={s.itemInput}
-                    checked={selectedCharts.some(
-                      (itemId) => itemId === item.id
+                    checked={localSelected.some(
+                      (model) => model.id === item.id
                     )}
-                    onChange={() => handlerSelect(item.id)}
+                    onChange={() => handlerSelect(item)}
                   />
                   <div className={s.itemInner}>
                     <label htmlFor={id} className={s.itemLabel} tabIndex={0} />
@@ -94,7 +101,9 @@ export const SelectChartsModal = ({ open, data, onClose }) => {
                         {item.name}
                       </label>
                       <div className={s.itemSubtitle}>
-                        <span>{item.category}</span>
+                        <span style={{ textTransform: 'capitalize' }}>
+                          {item.category}
+                        </span>
                         <span className={s.itemSubtitleSeparator} />
                         <button
                           type="button"

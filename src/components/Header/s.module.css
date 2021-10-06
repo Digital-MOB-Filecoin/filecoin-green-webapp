@@ -61,6 +61,7 @@
 
 .navLink[disabled]:hover {
   color: var(--theme-text-inactive);
+  opacity: 1;
 }
 
 .navLink:last-child {

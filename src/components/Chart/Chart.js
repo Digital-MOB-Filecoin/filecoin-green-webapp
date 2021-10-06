@@ -123,6 +123,8 @@ export const ChartComponent = ({
   loading,
   failed,
   interval,
+  category,
+  showCategory,
 }) => {
   const gradient1Id = useMemo(nanoid, []);
   const gradient2Id = useMemo(nanoid, []);
@@ -152,7 +154,14 @@ export const ChartComponent = ({
   return (
     <div className={s.wrap}>
       <div className={cn(s.header /* , { [s.withMeta]: meta } */)}>
-        <h2 className={cn('h2', s.title)}>{name}</h2>
+        <h2 className={cn('h2', s.title)}>
+          {name}
+          {showCategory && !loading ? (
+            <div className={s.subtitle} style={{ textTransform: 'capitalize' }}>
+              {category}
+            </div>
+          ) : null}
+        </h2>
         <TimeIntervalButtons chartId={id} />
         <ExportButton
           interval={interval}

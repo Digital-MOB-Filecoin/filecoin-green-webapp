@@ -85,23 +85,23 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
 
   const handlerSetRange = (range) => {
     let newStartDate = calendarDateInterval.start;
-    let newEndDate = new Date();
+    let newEndDate = sub(new Date(), { days: 1 });
 
     switch (range) {
       case RANGES.WEEK:
-        newStartDate = sub(new Date(), { weeks: 1 });
+        newStartDate = sub(new Date(), { weeks: 1, days: 1 });
         break;
       case RANGES.MONTH:
-        newStartDate = sub(new Date(), { months: 1 });
+        newStartDate = sub(new Date(), { months: 1, days: 1 });
         break;
       case RANGES.QUARTER:
-        newStartDate = sub(new Date(), { months: 3 });
+        newStartDate = sub(new Date(), { months: 3, days: 1 });
         break;
       case RANGES.HALF_YEAR:
-        newStartDate = sub(new Date(), { months: 6 });
+        newStartDate = sub(new Date(), { months: 6, days: 1 });
         break;
       case RANGES.YEAR:
-        newStartDate = sub(new Date(), { years: 1 });
+        newStartDate = sub(new Date(), { years: 1, days: 1 });
         break;
       case RANGES.CUSTOM:
         newEndDate = calendarDateInterval.end;
