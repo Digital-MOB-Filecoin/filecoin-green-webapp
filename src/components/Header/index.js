@@ -15,12 +15,10 @@ export const Header = () => {
           </Link>
           <nav className={s.nav}>
             <NavLink
+              exact
               to="/"
               className={s.navLink}
               activeClassName={s.active}
-              isActive={(match, location) =>
-                ['/', '/capacity', '/energy'].includes(location.pathname)
-              }
             >
               <span>Data</span>
             </NavLink>

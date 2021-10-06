@@ -19,6 +19,20 @@
   margin: 8px 0 0;
 }
 
+.selectAllBtn {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--theme-color-primary);
+  font: inherit;
+  font-weight: 600;
+  margin-left: 16px;
+}
+
+.selectAllBtn:hover {
+  opacity: 0.8;
+}
+
 .grid {
   margin: 32px 0;
   display: grid;
@@ -63,6 +77,7 @@
   background: #fff;
   border: 1px solid #E0E5EA;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .itemTitles {

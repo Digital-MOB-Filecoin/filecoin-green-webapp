@@ -20,6 +20,15 @@
   margin-right: auto;
 }
 
+.subtitle {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--theme-text-secondary);
+  margin-top: 4px;
+}
+
 .exportButton {
   margin-left: 24px;
 }

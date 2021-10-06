@@ -17,7 +17,12 @@ const defaultDataState = {
   y: '',
 };
 
-export const Chart = ({ model, interval, showMethodologyLink }) => {
+export const Chart = ({
+  model,
+  interval,
+  showMethodologyLink,
+  showCategory,
+}) => {
   const [normalizedData, setNormalizedData] = useState(defaultDataState);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -103,9 +108,11 @@ export const Chart = ({ model, interval, showMethodologyLink }) => {
       interval={interval}
       id={Number(model.id)}
       filter={query.charts?.[model.id] || DEFAULT_CHART_SCALE}
-      showMethodologyLink={showMethodologyLink}
       loading={loading}
       failed={failed}
+      showMethodologyLink={showMethodologyLink}
+      category={model.category}
+      showCategory={showCategory}
     />
   );
 };

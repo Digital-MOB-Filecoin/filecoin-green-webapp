@@ -83,4 +83,7 @@
   text-align: center;
   color: var(--theme-text-primary);
   margin: 24px 0 80px;
+  display: flex;
+  width: 100%;
+  min-height: 40px;
 }

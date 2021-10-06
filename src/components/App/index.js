@@ -21,11 +21,7 @@ function App() {
           }
         >
           <Switch>
-            <Route
-              exact
-              path={['/', '/capacity', '/energy']}
-              component={DataPage}
-            />
+            <Route exact path="/" component={DataPage} />
             <Route path="/leaderboard" component={LeaderboardPage} />
             <Route path="/methodology" component={AboutPage} />
 

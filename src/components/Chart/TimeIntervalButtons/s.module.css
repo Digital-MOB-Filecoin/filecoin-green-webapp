@@ -11,7 +11,7 @@
   letter-spacing: 0;
   text-align: left;
   color: var(--theme-text-secondary);
-  margin-right: 16px;
+  margin: 0 16px;
 }
 
 .rangeWrap {

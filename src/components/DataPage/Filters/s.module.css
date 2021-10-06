@@ -2,11 +2,13 @@
   display: flex;
 }
 
-.tab {
+.item {
   font-size: 16px;
+  background: transparent;
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
+  border: 0;
   letter-spacing: 0;
   color: var(--theme-text-secondary);
   display: inline-flex;
@@ -16,21 +18,20 @@
   padding: 16px 0;
 }
 
-.tab[disabled] {
+.item[disabled] {
   color: var(--theme-text-inactive);
   cursor: not-allowed;
 }
 
-.tab:last-child {
+.item:last-child {
   margin-right: 0;
 }
 
-.tab.active {
+.item.active {
   color: var(--theme-text-primary);
-  cursor: default;
 }
 
-.tab.active::after {
+.item.active::after {
   content: '';
   background: var(--theme-color-primary);
   border-radius: 2px 2px 0 0;
