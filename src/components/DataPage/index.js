@@ -169,10 +169,10 @@ export default function DataPage() {
                   selectedCharts.length &&
                   selectedCharts.every((item) => item.category === 'energy'),
               },
-              {
-                children: 'Carbon intensity',
-                disabled: true,
-              },
+              // {
+              //   children: 'Carbon intensity',
+              //   disabled: true,
+              // },
             ]}
           />
           <button

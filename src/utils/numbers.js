@@ -11,7 +11,7 @@ export const convertNumberToPercent = (value, precision = 5) => {
   return `${valueBN.multipliedBy(100).toString()}%`;
 };
 
-const units = ['kW', 'µW', 'GW', 'TW', 'PW'];
+const units = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
 
 export function formatWatts(size, { precision, output, inputUnit } = {}) {
   let n = new BigNumber(size || 0);

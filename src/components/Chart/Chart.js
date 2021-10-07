@@ -102,7 +102,7 @@ const StyledTooltip = (props) => {
               {item.name}
             </span>
             <span className={s.tooltipItemValue}>
-              {getFormattedValue(dataFormatType, item.value)}
+              {getFormattedValue(dataFormatType, item.value, 3)}
             </span>
           </div>
         );
@@ -245,7 +245,7 @@ export const ChartComponent = ({
               axisLine={false}
               tickLine={false}
               domain={['minData', 'maxData']}
-              tickFormatter={(value) => getFormattedValue(y, value, 1)}
+              tickFormatter={(value) => getFormattedValue(y, value, 3)}
               stroke="var(--color-nepal)"
             />
             {meta?.map((item, idx) => {
