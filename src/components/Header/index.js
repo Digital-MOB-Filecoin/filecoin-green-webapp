@@ -22,15 +22,15 @@ export const Header = () => {
             >
               <span>Data</span>
             </NavLink>
-            <NavLink
-              disabled
-              onClick={(e) => e.preventDefault()}
-              to="/leaderboard"
-              className={s.navLink}
-              activeClassName={s.active}
-            >
-              <span>Leaderboard</span>
-            </NavLink>
+            {/*<NavLink*/}
+            {/*  disabled*/}
+            {/*  onClick={(e) => e.preventDefault()}*/}
+            {/*  to="/leaderboard"*/}
+            {/*  className={s.navLink}*/}
+            {/*  activeClassName={s.active}*/}
+            {/*>*/}
+            {/*  <span>Leaderboard</span>*/}
+            {/*</NavLink>*/}
             <NavLink
               disabled
               onClick={(e) => e.preventDefault()}

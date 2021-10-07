@@ -1,3 +1,3 @@
 export default function MethodologyPage() {
-  return <div className="container">Awesome Methodology page</div>;
+  return <div className="container">Methodology page</div>;
 }
