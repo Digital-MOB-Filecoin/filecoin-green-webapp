@@ -38,6 +38,15 @@ export function formatBytes(size, { precision, output, inputUnit } = {}) {
   let n = new BigNumber(size || 0);
   let l = inputUnit && units.includes(inputUnit) ? units.indexOf(inputUnit) : 0;
 
+  if (n.isZero()) {
+    return output === 'object'
+      ? {
+          unit: 'bytes',
+          value: 0,
+        }
+      : '0 bytes';
+  }
+
   while (n.isGreaterThanOrEqualTo(1024) && ++l) {
     n = n.dividedBy(1024);
   }

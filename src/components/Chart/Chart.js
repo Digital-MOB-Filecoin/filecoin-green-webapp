@@ -126,28 +126,24 @@ export const ChartComponent = ({
   category,
   showCategory,
 }) => {
-  const gradient1Id = useMemo(nanoid, []);
-  const gradient2Id = useMemo(nanoid, []);
-  const gradient3Id = useMemo(nanoid, []);
-
   const colors = useMemo(
-    () => [
-      {
+    () => ({
+      green: {
+        id: nanoid(),
         stroke: 'var(--theme-color-primary)',
         fill: 'var(--theme-background-secondary)',
-        gradient: `url(#${gradient1Id})`,
       },
-      {
+      orange: {
+        id: nanoid(),
         stroke: 'var(--theme-color-secondary)',
         fill: 'var(--theme-background-secondary)',
-        gradient: `url(#${gradient2Id})`,
       },
-      {
+      silver: {
+        id: nanoid(),
         stroke: 'var(--color-nepal)',
         fill: 'var(--theme-background-secondary)',
-        gradient: `url(#${gradient3Id})`,
       },
-    ],
+    }),
     []
   );
 
@@ -197,42 +193,27 @@ export const ChartComponent = ({
         <ResponsiveContainer width="100%" aspect={2.5}>
           <AreaChart data={data}>
             <defs>
-              <linearGradient id={gradient1Id} x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0"
-                  stopColor="var(--theme-color-primary)"
-                  stopOpacity={0.12}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--theme-color-primary)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
-              <linearGradient id={gradient2Id} x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0%"
-                  stopColor="var(--theme-color-secondary)"
-                  stopOpacity={0.12}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--theme-color-secondary)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
-              <linearGradient id={gradient3Id} x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0"
-                  stopColor="var(--color-nepal)"
-                  stopOpacity={0.12}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--color-nepal)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
+              {Object.values(colors).map((color) => (
+                <linearGradient
+                  key={color.id}
+                  id={color.id}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="0"
+                    stopColor={color.stroke}
+                    stopOpacity={0.12}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={color.stroke}
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              ))}
             </defs>
             <XAxis
               dataKey="start_date"
@@ -249,22 +230,24 @@ export const ChartComponent = ({
               stroke="var(--color-nepal)"
             />
             {meta?.map((item, idx) => {
+              const color = colors[item.color] || colors.green;
+
               return (
                 <Area
                   key={`area-${idx}`}
                   dataKey={`value${idx}`}
                   name={item.title}
-                  stroke={colors[idx].stroke}
+                  stroke={color.stroke}
                   strokeWidth={2}
                   isAnimationActive={false}
                   activeDot={{
-                    stroke: colors[idx].stroke,
-                    fill: colors[idx].fill,
+                    stroke: color.stroke,
+                    fill: color.fill,
                     strokeWidth: 2,
                     r: 5,
                   }}
                   fillOpacity={1}
-                  fill={colors[idx].gradient}
+                  fill={`url(#${color.id})`}
                 />
               );
             })}

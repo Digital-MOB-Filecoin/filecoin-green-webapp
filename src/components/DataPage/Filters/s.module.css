@@ -27,6 +27,7 @@
   margin-right: 0;
 }
 
+.item:hover,
 .item.active {
   color: var(--theme-text-primary);
 }

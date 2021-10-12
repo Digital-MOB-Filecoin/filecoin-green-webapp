@@ -73,7 +73,7 @@ export const Chart = ({
           y: response.y,
           data: normalizedChartData,
           meta: normalizedChartData.length
-            ? response.data.map(({ title }) => ({ title }))
+            ? response.data.map(({ title, color }) => ({ title, color }))
             : [],
         });
         setLoading(false);
