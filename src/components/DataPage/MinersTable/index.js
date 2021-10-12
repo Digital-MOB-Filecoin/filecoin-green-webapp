@@ -84,6 +84,7 @@ export const MinersTable = () => {
             value
               ? formatBytes(value, {
                   precision: 2,
+                  inputUnit: 'GiB',
                 })
               : 'N/A',
         },
@@ -96,6 +97,7 @@ export const MinersTable = () => {
             value
               ? formatBytes(value, {
                   precision: 2,
+                  inputUnit: 'GiB',
                 })
               : 'N/A',
         },
