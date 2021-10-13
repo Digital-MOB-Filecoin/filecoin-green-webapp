@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import ReactMarkdown from 'react-markdown';
+
+import { getCategoryName } from 'utils/string';
 import { Modal } from 'components/Modal';
 import { Pagination } from 'components/Pagination';
 import { Svg } from 'components/Svg';
@@ -101,9 +104,7 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
                         {item.name}
                       </label>
                       <div className={s.itemSubtitle}>
-                        <span style={{ textTransform: 'capitalize' }}>
-                          {item.category}
-                        </span>
+                        <span>{getCategoryName(item.category)}</span>
                         <span className={s.itemSubtitleSeparator} />
                         <button
                           type="button"
@@ -153,11 +154,16 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
                 <span>Select charts</span>
               </button>
               <h2 className={s.title}>{shownDetails.name}</h2>
-              <h3 className={s.subtitle}>{shownDetails.category}</h3>
+              <h3 className={s.subtitle}>
+                {getCategoryName(shownDetails.category)}
+              </h3>
             </hgroup>
           }
         >
-          <div className={s.description}>{shownDetails.name}</div>
+          <ReactMarkdown
+            className={s.description}
+            children={shownDetails.details}
+          />
         </Modal>
       ) : (
         shownDetails

@@ -9,3 +9,14 @@ export const camelCase = (str) => {
     .reduce((result, word) => result + capitalize(word.toLowerCase()));
   return string.charAt(0).toLowerCase() + string.slice(1);
 };
+
+export const getCategoryName = (category) => {
+  switch (category) {
+    case 'energy':
+      return 'Energy';
+    case 'capacity':
+      return 'Capacity';
+    default:
+      return capitalize(category);
+  }
+};

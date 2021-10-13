@@ -20,7 +20,7 @@ import { Spinner } from 'components/Spinner';
 import { formatBytes } from 'utils/bytes';
 import { formatWatts } from 'utils/numbers';
 import { convertNumberToPercent } from 'utils/numbers';
-import { camelCase } from 'utils/string';
+import { camelCase, getCategoryName } from 'utils/string';
 
 import { TimeIntervalButtons } from './TimeIntervalButtons';
 import { ExportButton } from './ExportButton';
@@ -153,9 +153,7 @@ export const ChartComponent = ({
         <h2 className={cn('h2', s.title)}>
           {name}
           {showCategory && !loading ? (
-            <div className={s.subtitle} style={{ textTransform: 'capitalize' }}>
-              {category}
-            </div>
+            <div className={s.subtitle}>{getCategoryName(category)}</div>
           ) : null}
         </h2>
         <TimeIntervalButtons chartId={id} />
