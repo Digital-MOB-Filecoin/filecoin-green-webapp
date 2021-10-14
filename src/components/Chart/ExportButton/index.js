@@ -44,6 +44,7 @@ export const ExportButton = ({ className, id, filename, interval }) => {
           limit,
           start,
           end,
+          miner,
         });
 
         if (dataString) {
