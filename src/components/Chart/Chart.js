@@ -27,6 +27,8 @@ import { ExportButton } from './ExportButton';
 import s from './s.module.css';
 
 const getFormattedValue = (type, value, precision = 2) => {
+  const isMobileVersion = window.innerWidth <= 768;
+
   let temp;
   switch (type) {
     case 'day':
@@ -40,7 +42,9 @@ const getFormattedValue = (type, value, precision = 2) => {
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'time':
       temp = new Date(value);
-      return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
+      return isValid(temp)
+        ? format(temp, isMobileVersion ? 'MMM uuuu' : 'MMMM uuuu')
+        : value;
     case 'GiB':
       return formatBytes(value, { inputUnit: 'GiB', precision });
     case 'percentage':
@@ -152,7 +156,7 @@ export const ChartComponent = ({
       <div className={cn(s.header /* , { [s.withMeta]: meta } */)}>
         <h2 className={cn('h2', s.title)}>
           {name}
-          {showCategory && !loading ? (
+          {showCategory ? (
             <div className={s.subtitle}>{getCategoryName(category)}</div>
           ) : null}
         </h2>
@@ -187,8 +191,8 @@ export const ChartComponent = ({
           })}
         </div>
       ) : null} */}
-      <div style={{ position: 'relative' }}>
-        <ResponsiveContainer width="100%" aspect={2.5}>
+      <div className={s.chartWrapper}>
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
               {Object.values(colors).map((color) => (
@@ -290,6 +294,12 @@ export const ChartComponent = ({
           </div>
         ) : null}
       </div>
+      <ExportButton
+        interval={interval}
+        id={id}
+        filename={camelCase(name)}
+        className={s.mobileExportButton}
+      />
     </div>
   );
 };

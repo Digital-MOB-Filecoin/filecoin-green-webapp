@@ -1,3 +1,5 @@
+import { CHART_CATEGORY } from 'constant';
+
 const capitalize = (str) =>
   str.charAt(0).toUpperCase() + str.toLowerCase().slice(1);
 
@@ -12,9 +14,9 @@ export const camelCase = (str) => {
 
 export const getCategoryName = (category) => {
   switch (category) {
-    case 'energy':
+    case CHART_CATEGORY.ENERGY:
       return 'Energy';
-    case 'capacity':
+    case CHART_CATEGORY.CAPACITY:
       return 'Capacity';
     default:
       return capitalize(category);

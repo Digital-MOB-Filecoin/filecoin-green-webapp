@@ -6,3 +6,23 @@
 .table tr:hover .statisticsButton {
   opacity: 1;
 }
+
+.mobileTdInner {
+  display: flex;
+}
+
+.mobileTdMiner {
+  margin-right: auto;
+  font-weight: 600;
+}
+
+.mobileTdArrow {
+  margin-left: 24px;
+  color: var(--theme-icon-color);
+}
+
+.mobileTdArrow.active {
+  color: var(--theme-text-primary);
+  transform-origin: center;
+  transform: rotate(180deg);
+}

@@ -95,7 +95,6 @@ main {
   margin: 0 auto;
   max-width: 1118px;
   position: relative;
-  min-width: 768px;
 }
 
 .h2 {
@@ -121,4 +120,26 @@ main {
   box-shadow: 0 8px 16px rgba(var(--theme-color-primary-rgb), 0.24);
   transition: all 0.05s ease-out;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 16px 0 32px;
+  }
+  .container {
+    padding: 0 16px;
+  }
+  main.shadow {
+    position: relative;
+    z-index: -1;
+  }
+  main.shadow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(4, 5, 5, 0.75);
+  }
 }

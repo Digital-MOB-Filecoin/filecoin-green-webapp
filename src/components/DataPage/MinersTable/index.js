@@ -6,10 +6,36 @@ import cn from 'classnames';
 import { fetchMiners } from 'api';
 import { defaultDataState } from 'constant';
 
-import { Table } from 'components/Table';
 import { formatBytes } from 'utils/bytes';
+import { Table } from 'components/Table';
+import { IconButton } from 'components/IconButton';
+import { Svg } from 'components/Svg';
 
 import s from './s.module.css';
+
+const MobileTd = ({ miner, power, used }) => {
+  const [active, setActive] = useState(false);
+
+  return (
+    <td colSpan={3}>
+      <div className={s.mobileTdInner}>
+        <span className={s.mobileTdMiner}>{miner}</span>
+        <span>{power}</span>
+        <IconButton
+          className={cn(s.mobileTdArrow, { [s.active]: active })}
+          onClick={() => setActive((prevState) => !prevState)}
+        >
+          <Svg id="navigation_arrow-down" />
+        </IconButton>
+      </div>
+      {active ? (
+        <div>
+          Commited capacity <span>{used}</span>
+        </div>
+      ) : null}
+    </td>
+  );
+};
 
 export const MinersTable = () => {
   const [data, setData] = useState(defaultDataState);
@@ -54,6 +80,90 @@ export const MinersTable = () => {
       });
   }, [query.limit, query.offset, query.sortBy, query.order]);
 
+  const defaultColumns = [
+    {
+      title: 'Entitiy',
+      key: 'miner',
+      style: { width: '50%' },
+      format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
+    },
+    {
+      title: 'Total raw power',
+      key: 'power',
+      sortKey: 'power',
+      align: 'right',
+      format: (value) =>
+        value
+          ? formatBytes(value, {
+              precision: 2,
+              inputUnit: 'GiB',
+            })
+          : 'N/A',
+    },
+    {
+      title: 'Committed capacity',
+      key: 'used',
+      sortKey: 'used',
+      align: 'right',
+      format: (value) =>
+        value
+          ? formatBytes(value, {
+              precision: 2,
+              inputUnit: 'GiB',
+            })
+          : 'N/A',
+    },
+    {
+      title: '',
+      key: nanoid(),
+      format: (_, item) => (
+        <button
+          type="button"
+          onClick={() => {
+            setQuery((prevQuery) => ({
+              ...prevQuery,
+              miner: item.miner,
+            }));
+            window.scroll({ top: 0 });
+          }}
+          className={cn('button-primary', s.statisticsButton)}
+        >
+          View statistics
+        </button>
+      ),
+    },
+  ];
+
+  const mobileColumns = [
+    {
+      title: 'Entitiy',
+      key: 'miner',
+      format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
+    },
+    {
+      title: 'Total raw power',
+      key: 'power',
+      sortKey: 'power',
+      align: 'right',
+      format: (value) =>
+        value
+          ? formatBytes(value, {
+              precision: 2,
+              inputUnit: 'GiB',
+            })
+          : 'N/A',
+    },
+    {
+      title: '',
+      key: nanoid(),
+      format: (_, item) => (
+        <IconButton>
+          <Svg id="navigation_arrow-down" />
+        </IconButton>
+      ),
+    },
+  ];
+
   return (
     <Table
       title="Storage Providers"
@@ -68,59 +178,34 @@ export const MinersTable = () => {
           offset: (page - 1) * (query.limit ?? 10),
         }));
       }}
-      columns={[
-        {
-          title: 'Entitiy',
-          key: 'miner',
-          width: '50%',
-          format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
-        },
-        {
-          title: 'Total raw power',
-          key: 'power',
-          sortKey: 'power',
-          align: 'right',
-          format: (value) =>
-            value
-              ? formatBytes(value, {
-                  precision: 2,
-                  inputUnit: 'GiB',
-                })
-              : 'N/A',
-        },
-        {
-          title: 'Committed capacity',
-          key: 'used',
-          sortKey: 'used',
-          align: 'right',
-          format: (value) =>
-            value
-              ? formatBytes(value, {
-                  precision: 2,
-                  inputUnit: 'GiB',
-                })
-              : 'N/A',
-        },
-        {
-          title: '',
-          key: nanoid(),
-          format: (_, item) => (
-            <button
-              type="button"
-              onClick={() => {
-                setQuery((prevQuery) => ({
-                  ...prevQuery,
-                  miner: item.miner,
-                }));
-                window.scroll({ top: 0 });
-              }}
-              className={cn('button-primary', s.statisticsButton)}
-            >
-              View statistics
-            </button>
-          ),
-        },
-      ]}
+      columns={mobileColumns}
+      renderTd={(item, columnIdx) => {
+        if (columnIdx === 0) {
+          console.log(item, columnIdx);
+          return (
+            <MobileTd
+              miner={item.miner}
+              power={
+                item.power
+                  ? formatBytes(item.power, {
+                      precision: 2,
+                      inputUnit: 'GiB',
+                    })
+                  : 'N/A'
+              }
+              used={
+                item.used
+                  ? formatBytes(item.used, {
+                      precision: 2,
+                      inputUnit: 'GiB',
+                    })
+                  : 'N/A'
+              }
+            />
+          );
+        }
+        return null;
+      }}
     />
   );
 };

@@ -140,7 +140,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
           : '--'}
       </button>
       <Svg
-        id="dropdown-arrow-down"
+        id="navigation_arrow-down"
         className={cn(s.iconArrow, { [s.rotate]: isOpen })}
       />
       <div className={cn(s.datePickerWrap, { [s.active]: isOpen })}>

@@ -5,19 +5,22 @@ import parse from 'date-fns/parse';
 import sub from 'date-fns/sub';
 import lightFormat from 'date-fns/lightFormat';
 
+import { fetchChartModels } from 'api';
+import {
+  CHART_CATEGORY,
+  DEFAULT_CHART_SCALE,
+  defaultDataState,
+} from 'constant';
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
 import { Svg } from 'components/Svg';
 import { Filters } from 'components/DataPage/Filters';
-
-import { MinersTable } from './MinersTable';
-import { ChartsModal } from './ChartsModal';
-
-import s from './s.module.css';
-import { fetchChartModels } from 'api';
-import { DEFAULT_CHART_SCALE, defaultDataState } from 'constant';
 import { Chart } from 'components/Chart';
 import { Spinner } from 'components/Spinner';
+import { MinersTable } from './MinersTable';
+import { ChartsModal } from './ChartsModal';
+import s from './s.module.css';
+import { getCategoryName } from '../../utils/string';
 
 export default function DataPage() {
   const [chartModels, setChartModels] = useState(defaultDataState);
@@ -79,6 +82,16 @@ export default function DataPage() {
       });
   }, []);
 
+  const getChartsQueryString = (chartsArray) => {
+    return chartsArray.reduce(
+      (acc, { id }) => ({
+        ...acc,
+        [id]: query.charts?.[id] || DEFAULT_CHART_SCALE,
+      }),
+      {}
+    );
+  };
+
   const handlerChangeFilter = (category) => {
     let newCharts = [];
     if (selectedCharts.every((model) => model.category === category)) {
@@ -92,13 +105,7 @@ export default function DataPage() {
     setSelectedCharts(newCharts);
     setQuery((prevQuery) => ({
       ...prevQuery,
-      charts: newCharts.reduce(
-        (acc, { id }) => ({
-          ...acc,
-          [id]: query.charts?.[id] || DEFAULT_CHART_SCALE,
-        }),
-        {}
-      ),
+      charts: getChartsQueryString(newCharts),
     }));
   };
 
@@ -107,22 +114,16 @@ export default function DataPage() {
       setSelectedCharts(newSelectedCharts);
       setQuery((prevQuery) => ({
         ...prevQuery,
-        charts: newSelectedCharts.reduce(
-          (acc, { id }) => ({
-            ...acc,
-            [id]: query.charts?.[id] || DEFAULT_CHART_SCALE,
-          }),
-          {}
-        ),
+        charts: getChartsQueryString(newSelectedCharts),
       }));
     }
 
     setShowChartsModal(false);
   };
 
-  const showCategory =
-    selectedCharts.some(({ category }) => category === 'capacity') &&
-    selectedCharts.some(({ category }) => category === 'energy');
+  const isFilterActive = (category) =>
+    selectedCharts.length &&
+    selectedCharts.every((item) => item.category === category);
 
   return (
     <>
@@ -153,27 +154,11 @@ export default function DataPage() {
         ) : null}
         <div className={s.tabsWrap}>
           <Filters
-            className={s.tabs}
-            items={[
-              {
-                children: 'Capacity',
-                onClick: () => handlerChangeFilter('capacity'),
-                isActive:
-                  selectedCharts.length &&
-                  selectedCharts.every((item) => item.category === 'capacity'),
-              },
-              {
-                children: 'Energy',
-                onClick: () => handlerChangeFilter('energy'),
-                isActive:
-                  selectedCharts.length &&
-                  selectedCharts.every((item) => item.category === 'energy'),
-              },
-              // {
-              //   children: 'Carbon intensity',
-              //   disabled: true,
-              // },
-            ]}
+            items={Object.values(CHART_CATEGORY).map((category) => ({
+              children: getCategoryName(category),
+              onClick: () => handlerChangeFilter(category),
+              isActive: isFilterActive(category),
+            }))}
           />
           <button
             type="button"
@@ -196,14 +181,35 @@ export default function DataPage() {
         ) : (
           <>
             {selectedCharts.length && chartModels.results.length ? (
-              selectedCharts.map((model) => (
-                <Chart
-                  key={model.id}
-                  model={model}
-                  interval={dateInterval}
-                  showCategory={showCategory}
-                />
-              ))
+              selectedCharts.map((model) => {
+                // const showCategory =
+                //   Object.values(
+                //     selectedCharts.reduce(
+                //       (acc, { category }) => {
+                //         acc[category] += 1;
+                //         return acc;
+                //       },
+                //       Object.assign(
+                //         ...Object.values(CHART_CATEGORY).map((category) => ({
+                //           [category]: 0,
+                //         }))
+                //       )
+                //     )
+                //   ).filter(Boolean).length > 1;
+
+                const showCategory = !Object.values(
+                  CHART_CATEGORY
+                ).some((category) => isFilterActive(category));
+
+                return (
+                  <Chart
+                    key={model.id}
+                    model={model}
+                    interval={dateInterval}
+                    showCategory={showCategory}
+                  />
+                );
+              })
             ) : (
               <div className={s.noCharts}>
                 <div style={{ width: '100%' }}>Select more charts.</div>

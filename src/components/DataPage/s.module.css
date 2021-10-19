@@ -35,9 +35,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.tabs {
   margin-bottom: 40px;
 }
 
@@ -86,4 +83,24 @@
   display: flex;
   width: 100%;
   min-height: 40px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    margin: 0 0 16px;
+  }
+  .search {
+    margin: 0 0 16px;
+  }
+  .tabsWrap {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin-bottom: 32px;
+  }
+  .chooseChartsButton {
+    text-align: left;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
 }

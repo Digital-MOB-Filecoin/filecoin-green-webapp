@@ -44,3 +44,18 @@
   box-shadow: 0 4px 8px rgba(4, 5, 5, 0.04);
   cursor: default;
 }
+
+@media (max-width: 768px) {
+  /*.wrap {*/
+  /*  flex-grow: 1;*/
+  /*}*/
+  .title {
+    display: none;
+  }
+  .rangeWrap {
+    width: 100%;
+  }
+  .button {
+    flex: 1 1 100%;
+  }
+}

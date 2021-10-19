@@ -17,6 +17,7 @@ export const Table = ({
   total,
   pageHandler,
   className,
+  renderTd,
 }) => {
   return (
     <div className={cn(s.wrap, className)}>
@@ -52,17 +53,22 @@ export const Table = ({
             data.results.map((item, idx) => {
               return (
                 <tr key={idx}>
-                  {columns.map((column) => (
-                    <td
-                      key={column.key}
-                      className={column.align ? s[column.align] : null}
-                      style={column.width ? { width: column.width } : null}
-                    >
-                      {column.format
-                        ? column.format(item[column.key], item)
-                        : item[column.key]}
-                    </td>
-                  ))}
+                  {columns.map((column, columnIdx) => {
+                    if (renderTd) {
+                      return renderTd(item, columnIdx);
+                    }
+                    return (
+                      <td
+                        key={column.key}
+                        className={column.align ? s[column.align] : null}
+                        style={{ '--label': column.title, ...column.style }}
+                      >
+                        {column.format
+                          ? column.format(item[column.key], item)
+                          : item[column.key]}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })

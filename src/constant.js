@@ -7,3 +7,8 @@ export const defaultDataState = {
   loading: false,
   failed: false,
 };
+
+export const CHART_CATEGORY = {
+  CAPACITY: 'capacity',
+  ENERGY: 'energy',
+};

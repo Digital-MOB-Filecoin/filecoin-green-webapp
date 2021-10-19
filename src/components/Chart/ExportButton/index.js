@@ -38,19 +38,30 @@ export const ExportButton = ({ className, id, filename, interval }) => {
       let dataString = '';
 
       while (results.data.length) {
-        results = await fetchExportData({
-          id,
-          offset,
-          limit,
-          start,
-          end,
-          miner,
-        });
+        try {
+          results = await fetchExportData({
+            id,
+            offset,
+            limit,
+            start,
+            end,
+            miner,
+          });
 
-        if (dataString) {
-          dataString +=
-            '\r\n' +
-            results.data
+          if (dataString) {
+            dataString +=
+              '\r\n' +
+              results.data
+                .map((item) =>
+                  results.fields
+                    .map((fieldKey) => {
+                      return `"${item[fieldKey]}"`;
+                    })
+                    .join(',')
+                )
+                .join('\r\n');
+          } else {
+            dataString += results.data
               .map((item) =>
                 results.fields
                   .map((fieldKey) => {
@@ -59,18 +70,12 @@ export const ExportButton = ({ className, id, filename, interval }) => {
                   .join(',')
               )
               .join('\r\n');
-        } else {
-          dataString += results.data
-            .map((item) =>
-              results.fields
-                .map((fieldKey) => {
-                  return `"${item[fieldKey]}"`;
-                })
-                .join(',')
-            )
-            .join('\r\n');
+          }
+
+          offset += limit;
+        } catch (e) {
+          console.warn(e);
         }
-        offset += limit;
       }
 
       const resultString = `${headerString}\r\n${dataString}`;

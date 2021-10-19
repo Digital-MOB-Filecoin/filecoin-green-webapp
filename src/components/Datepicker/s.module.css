@@ -10,7 +10,6 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1;
 }
 
 .iconCalendar {
@@ -31,7 +30,7 @@
   appearance: none;
   display: block;
   width: 100%;
-  padding: 24px 65px;
+  padding: 24px 64px;
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -176,4 +175,21 @@
 .rangeButton:hover {
   background: rgba(var(--rgb-solitude-dark), 0.32);
   color: var(--theme-text-primary);
+}
+
+@media (max-width: 768px) {
+ .wrap {
+   min-width: auto;
+ }
+  .iconCalendar{
+    left: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  .iconArrow {
+    display: none;
+  }
+  .button {
+    padding: 16px 24px 16px 48px;
+  }
 }

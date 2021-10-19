@@ -15,7 +15,7 @@ export const api = async (url, { headers = {}, ...restOptions } = {}) => {
   });
 
   if (!response.ok) {
-    throw await response.json();
+    throw new Error('Something went wrong');
   }
 
   return response.json();

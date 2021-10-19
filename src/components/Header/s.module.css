@@ -4,13 +4,20 @@
 
 .inner {
   display: flex;
+  align-items: center;
+}
+
+.headerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0;
 }
 
 .logoLink {
   text-decoration: none;
   color: var(--theme-text-primary);
   display: inline-flex;
-  margin: 24px 0;
 }
 
 .logo {
@@ -39,6 +46,7 @@
 .nav {
   margin-left: 72px;
   display: flex;
+  flex-grow: 1;
 }
 
 .navLink {
@@ -90,4 +98,63 @@
   line-height: 24px;
   color: var(--theme-text-secondary);
   align-self: center;
+}
+
+.menuButton {
+  display: none;
+  color: var(--theme-icon-color);
+}
+
+@media (max-width: 768px) {
+  .headerWrapper {
+    flex-grow: 1;
+    padding: 0 8px;
+  }
+  .nav {
+    display: none;
+    margin: 0;
+    border-radius: 0 0 8px 8px;
+  }
+  .menuButton {
+    display: flex;
+  }
+  .headerWrapper {
+    margin: 16px 0;
+  }
+  .showMobileNav {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--theme-background-secondary);
+    flex-direction: column;
+    display: flex;
+    align-items: flex-start;
+  }
+  .navLink {
+    padding: 8px 24px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .navLink.active::after {
+    content: '';
+    background: var(--theme-color-primary);
+    border-radius: 0 2px 2px 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    top: 0;
+    height: auto;
+    width: 3px;
+  }
+  .slack {
+    font-size: 14px;
+    border-top: 1px solid var(--theme-border-color);
+    margin: 12px 0 0;
+    flex-grow: 1;
+    padding: 32px 24px;
+    background: rgba(var(--rgb-solitude-dark), 0.16);
+    align-self: stretch;
+  }
 }

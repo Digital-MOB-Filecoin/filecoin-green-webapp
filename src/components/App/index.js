@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { Spinner } from 'components/Spinner';
@@ -9,10 +9,12 @@ const DataPage = lazy(() => import('components/DataPage'));
 const AboutPage = lazy(() => import('components/MethodologyPage'));
 
 function App() {
+  const mainRef = useRef();
+
   return (
     <>
-      <Header />
-      <main>
+      <Header mainRef={mainRef} />
+      <main ref={mainRef}>
         <Suspense
           fallback={
             <div style={{ margin: 'auto' }}>

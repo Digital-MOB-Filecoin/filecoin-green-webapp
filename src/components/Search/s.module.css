@@ -39,3 +39,14 @@
 .input:focus {
   border: var(--theme-input-border-active);
 }
+
+@media (max-width: 768px) {
+  .input {
+    padding: 16px 24px 16px 48px;
+  }
+  .icon {
+    width: 16px;
+    height: 16px;
+    left: 16px;
+  }
+}
