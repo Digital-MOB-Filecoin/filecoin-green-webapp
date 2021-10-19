@@ -222,9 +222,9 @@ export default function DataPage() {
       </div>
 
       <ChartsModal
+        open={showChartsModal}
         models={chartModels}
         selected={selectedCharts}
-        open={showChartsModal}
         onClose={handlerCloseModal}
       />
     </>

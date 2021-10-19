@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
 import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
 import cn from 'classnames';
 
@@ -10,30 +9,64 @@ import { formatBytes } from 'utils/bytes';
 import { Table } from 'components/Table';
 import { IconButton } from 'components/IconButton';
 import { Svg } from 'components/Svg';
+import { SortButton } from 'components/Table/SortButton';
 
 import s from './s.module.css';
 
-const MobileTd = ({ miner, power, used }) => {
+const DesktopRow = ({ miner, power, used, onViewStatistics, highlightRow }) => {
+  return (
+    <tr className={cn(s.hideOnMobile, { [s.highlight]: highlightRow })}>
+      <td style={{ fontWeight: 600 }}>{miner}</td>
+      <td style={{ textAlign: 'right' }}>{power}</td>
+      <td style={{ textAlign: 'right' }}>{used}</td>
+      <td>
+        <button
+          type="button"
+          onClick={onViewStatistics}
+          className={cn('button-primary', s.statisticsButton)}
+        >
+          View statistics
+        </button>
+      </td>
+    </tr>
+  );
+};
+
+const MobileRow = ({ miner, power, used, onViewStatistics, highlightRow }) => {
   const [active, setActive] = useState(false);
 
   return (
-    <td colSpan={3}>
-      <div className={s.mobileTdInner}>
-        <span className={s.mobileTdMiner}>{miner}</span>
-        <span>{power}</span>
-        <IconButton
-          className={cn(s.mobileTdArrow, { [s.active]: active })}
-          onClick={() => setActive((prevState) => !prevState)}
-        >
-          <Svg id="navigation_arrow-down" />
-        </IconButton>
-      </div>
-      {active ? (
-        <div>
-          Commited capacity <span>{used}</span>
+    <tr className={cn({ [s.highlight]: highlightRow })}>
+      <td colSpan={3} className={cn(s.mobileTd, { [s.active]: active })}>
+        <div className={s.mobileTdInner}>
+          <span className={s.mobileTdMiner}>{miner}</span>
+          <span>{power}</span>
+          <IconButton
+            className={cn(s.mobileTdArrow, { [s.active]: active })}
+            onClick={() => setActive((prevState) => !prevState)}
+          >
+            <Svg id="navigation_arrow-down" />
+          </IconButton>
         </div>
-      ) : null}
-    </td>
+        {active ? (
+          <>
+            <dl className={s.mobileDl}>
+              <div>
+                <dt>Commited capacity</dt>
+                <dd>{used}</dd>
+              </div>
+            </dl>
+            <button
+              type="button"
+              onClick={onViewStatistics}
+              className={cn('button-primary', s.mobileStatisticsButton)}
+            >
+              View statistics
+            </button>
+          </>
+        ) : null}
+      </td>
+    </tr>
   );
 };
 
@@ -80,90 +113,6 @@ export const MinersTable = () => {
       });
   }, [query.limit, query.offset, query.sortBy, query.order]);
 
-  const defaultColumns = [
-    {
-      title: 'Entitiy',
-      key: 'miner',
-      style: { width: '50%' },
-      format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
-    },
-    {
-      title: 'Total raw power',
-      key: 'power',
-      sortKey: 'power',
-      align: 'right',
-      format: (value) =>
-        value
-          ? formatBytes(value, {
-              precision: 2,
-              inputUnit: 'GiB',
-            })
-          : 'N/A',
-    },
-    {
-      title: 'Committed capacity',
-      key: 'used',
-      sortKey: 'used',
-      align: 'right',
-      format: (value) =>
-        value
-          ? formatBytes(value, {
-              precision: 2,
-              inputUnit: 'GiB',
-            })
-          : 'N/A',
-    },
-    {
-      title: '',
-      key: nanoid(),
-      format: (_, item) => (
-        <button
-          type="button"
-          onClick={() => {
-            setQuery((prevQuery) => ({
-              ...prevQuery,
-              miner: item.miner,
-            }));
-            window.scroll({ top: 0 });
-          }}
-          className={cn('button-primary', s.statisticsButton)}
-        >
-          View statistics
-        </button>
-      ),
-    },
-  ];
-
-  const mobileColumns = [
-    {
-      title: 'Entitiy',
-      key: 'miner',
-      format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
-    },
-    {
-      title: 'Total raw power',
-      key: 'power',
-      sortKey: 'power',
-      align: 'right',
-      format: (value) =>
-        value
-          ? formatBytes(value, {
-              precision: 2,
-              inputUnit: 'GiB',
-            })
-          : 'N/A',
-    },
-    {
-      title: '',
-      key: nanoid(),
-      format: (_, item) => (
-        <IconButton>
-          <Svg id="navigation_arrow-down" />
-        </IconButton>
-      ),
-    },
-  ];
-
   return (
     <Table
       title="Storage Providers"
@@ -178,33 +127,59 @@ export const MinersTable = () => {
           offset: (page - 1) * (query.limit ?? 10),
         }));
       }}
-      columns={mobileColumns}
-      renderTd={(item, columnIdx) => {
-        if (columnIdx === 0) {
-          console.log(item, columnIdx);
-          return (
-            <MobileTd
-              miner={item.miner}
-              power={
-                item.power
-                  ? formatBytes(item.power, {
-                      precision: 2,
-                      inputUnit: 'GiB',
-                    })
-                  : 'N/A'
-              }
-              used={
-                item.used
-                  ? formatBytes(item.used, {
-                      precision: 2,
-                      inputUnit: 'GiB',
-                    })
-                  : 'N/A'
-              }
+      ThRow={
+        <tr>
+          <th style={{ width: '50%' }}>Entitiy</th>
+          <th style={{ textAlign: 'right' }}>
+            <SortButton sortKey="power">Total raw power</SortButton>
+          </th>
+          <th style={{ textAlign: 'right' }} className={s.hideOnMobile}>
+            <SortButton sortKey="used">Committed capacity</SortButton>
+          </th>
+          <th />
+        </tr>
+      }
+      TdRow={({ data, idx }) => {
+        const miner = data.miner;
+        const power = data.power
+          ? formatBytes(data.power, {
+              precision: 2,
+              inputUnit: 'GiB',
+            })
+          : 'N/A';
+        const used = data.used
+          ? formatBytes(data.used, {
+              precision: 2,
+              inputUnit: 'GiB',
+            })
+          : 'N/A';
+        const handlerViewStatistics = () => {
+          setQuery((prevQuery) => ({
+            ...prevQuery,
+            miner,
+          }));
+          window.scroll({ top: 0 });
+        };
+        const highlightRow = Boolean((idx % 2) - 1);
+
+        return (
+          <>
+            <MobileRow
+              miner={miner}
+              power={power}
+              used={used}
+              onViewStatistics={handlerViewStatistics}
+              highlightRow={highlightRow}
             />
-          );
-        }
-        return null;
+            <DesktopRow
+              miner={miner}
+              power={power}
+              used={used}
+              onViewStatistics={handlerViewStatistics}
+              highlightRow={highlightRow}
+            />
+          </>
+        );
       }}
     />
   );

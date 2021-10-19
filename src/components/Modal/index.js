@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-// import outy from 'outy';
+import outy from 'outy';
 import cn from 'classnames';
 
 import { Svg } from 'components/Svg';
@@ -8,27 +8,23 @@ import s from './s.module.css';
 
 const root = document.getElementById('root');
 const rootModal = document.getElementById('root-modal');
-// let outsideTap;
+let outsideTap;
 
 export const Modal = ({ open, onClose, children, header, className }) => {
-  const innerRef = useRef(null);
-
-  const handlerClose = () => {
-    onClose();
-  };
+  const innerRef = useRef();
 
   const keyboardHandler = useCallback((event) => {
     if (event.key === 'Escape') {
-      handlerClose();
+      onClose();
     }
   }, []);
 
   useEffect(() => {
     if (open) {
       document.addEventListener('keydown', keyboardHandler, false);
-      // if (innerRef.current) {
-      //   outsideTap = outy(innerRef.current, ['click', 'touchend'], onClose);
-      // }
+      if (innerRef.current) {
+        outsideTap = outy([innerRef.current], ['click', 'touchend'], onClose);
+      }
       if (root) {
         root.setAttribute('inert', 'true');
         document.body.style.overflow = 'hidden';
@@ -37,15 +33,15 @@ export const Modal = ({ open, onClose, children, header, className }) => {
 
     return () => {
       document.removeEventListener('keydown', keyboardHandler, false);
-      // if (outsideTap) {
-      //   outsideTap.remove();
-      // }
+      if (outsideTap) {
+        outsideTap.remove();
+      }
       if (root) {
         root.removeAttribute('inert');
         document.body.style.overflow = 'visible';
       }
     };
-  }, []);
+  }, [open]);
 
   if (!open) return null;
 
@@ -54,17 +50,12 @@ export const Modal = ({ open, onClose, children, header, className }) => {
       <div className={cn(s.inner, className)} ref={innerRef}>
         <div className={s.header}>
           {header}
-          <button
-            className={s.closeButton}
-            type="button"
-            onClick={handlerClose}
-          >
+          <button className={s.closeButton} type="button" onClick={onClose}>
             <Svg id="close" size={24} />
           </button>
         </div>
         {children}
       </div>
-      )}
     </div>,
     rootModal
   );

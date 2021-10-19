@@ -1,6 +1,8 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import cn from 'classnames';
 import outy from 'outy';
+import { usePopper } from 'react-popper';
 
 import format from 'date-fns/format';
 import DICD from 'date-fns/differenceInCalendarDays';
@@ -22,6 +24,9 @@ const RANGES = {
   CUSTOM: 'custom',
 };
 
+const root = document.getElementById('root');
+const rootModal = document.getElementById('root-modal');
+
 /**
  *
  * @param {Object} params
@@ -37,7 +42,21 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
     dateInterval
   );
   const wrapRef = useRef(null);
+  const popperRef = useRef(null);
   const outyRef = useRef(null);
+
+  const { styles, attributes } = usePopper(wrapRef.current, popperRef.current, {
+    placement: 'bottom-end',
+    strategy: 'absolute',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 8],
+        },
+      },
+    ],
+  });
 
   const activeRange = useMemo(() => {
     if (isCustomRangeOpen) return RANGES.CUSTOM;
@@ -70,15 +89,23 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', keyboardHandler, false);
-      outyRef.current = outy([wrapRef.current], ['click', 'touchend'], () =>
-        setIsOpen(false)
+      outyRef.current = outy(
+        [wrapRef.current, popperRef.current],
+        ['click', 'touchend'],
+        () => setIsOpen(false)
       );
+      if (root && window.innerWidth <= 768) {
+        root.classList.add('shadow');
+      }
     }
 
     return () => {
       document.removeEventListener('keydown', keyboardHandler, false);
       if (outyRef.current && outyRef.current.remove) {
         outyRef.current.remove();
+      }
+      if (root) {
+        root.classList.remove('shadow');
       }
     };
   }, [isOpen]);
@@ -125,126 +152,136 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
   }, [dateInterval.start.getTime(), dateInterval.end.getTime()]);
 
   return (
-    <div className={cn(s.wrap, className)} ref={wrapRef}>
-      <Svg id="calendar" className={s.iconCalendar} />
-      <button
-        onClick={() => setIsOpen((prevState) => !prevState)}
-        className={cn(s.button, { [s.active]: isOpen })}
-      >
-        {isValid(dateInterval.start)
-          ? format(dateInterval.start, 'LLL d, yyyy')
-          : '--'}
-        <span className={s.dateSeparator}>-</span>
-        {isValid(dateInterval.end)
-          ? format(dateInterval.end, 'LLL d, yyyy')
-          : '--'}
-      </button>
-      <Svg
-        id="navigation_arrow-down"
-        className={cn(s.iconArrow, { [s.rotate]: isOpen })}
-      />
-      <div className={cn(s.datePickerWrap, { [s.active]: isOpen })}>
-        <div className={s.calendarsWrap}>
-          {isCustomRangeOpen ? (
-            <DateRangePicker
-              interval={calendarDateInterval}
-              onChange={setCalendarDateInterval}
-            />
-          ) : null}
-          <div className={s.rangeWrap}>
-            <button
-              className={cn(s.rangeButton, {
-                [s.active]: activeRange === RANGES.WEEK,
-              })}
-              type="button"
-              onClick={() => handlerSetRange(RANGES.WEEK)}
-            >
-              7 days
-            </button>
-            <button
-              className={cn(s.rangeButton, {
-                [s.active]: activeRange === RANGES.MONTH,
-              })}
-              type="button"
-              onClick={() => handlerSetRange(RANGES.MONTH)}
-            >
-              30 days
-            </button>
-            <button
-              className={cn(s.rangeButton, {
-                [s.active]: activeRange === RANGES.QUARTER,
-              })}
-              type="button"
-              onClick={() => handlerSetRange(RANGES.QUARTER)}
-            >
-              3 months
-            </button>
-            <button
-              className={cn(s.rangeButton, {
-                [s.active]: activeRange === RANGES.HALF_YEAR,
-              })}
-              type="button"
-              onClick={() => handlerSetRange(RANGES.HALF_YEAR)}
-            >
-              6 months
-            </button>
-            <button
-              className={cn(s.rangeButton, {
-                [s.active]: activeRange === RANGES.YEAR,
-              })}
-              type="button"
-              onClick={() => handlerSetRange(RANGES.YEAR)}
-            >
-              Last year
-            </button>
-            <button
-              className={cn(s.rangeButton, s.custom, {
-                [s.active]: activeRange === RANGES.CUSTOM,
-              })}
-              type="button"
-              onClick={() => setIsCustomRangeOpen(true)}
-            >
-              Custom range
-            </button>
-          </div>
-        </div>
-        {isCustomRangeOpen ? (
-          <div className={s.footer}>
-            <div className={s.selectedDate}>
-              <div className={s.selectedDateTitle}>From</div>
-              <div className={s.selectedDateValue}>
-                {isValid(calendarDateInterval.start)
-                  ? format(calendarDateInterval.start, 'MMM d, yyyy hh:mm aa')
-                  : '--'}
-              </div>
-            </div>
-            <div className={s.selectedDate}>
-              <div className={s.selectedDateTitle}>To</div>
-              <div className={s.selectedDateValue}>
-                {isValid(calendarDateInterval.end)
-                  ? format(calendarDateInterval.end, 'MMM d, yyyy hh:mm aa')
-                  : '--'}
-              </div>
-            </div>
-            <div className={s.buttonsWarp}>
-              <button
-                type="button"
-                className={s.clearButton}
-                onClick={handlerClear}
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                className={s.applyButton}
-                onClick={() => handlerSetRange(RANGES.CUSTOM)}
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        ) : null}
+    <>
+      <div className={cn(s.wrap, className)} ref={wrapRef}>
+        <Svg id="calendar" className={s.iconCalendar} />
+        <button
+          onClick={() => setIsOpen((prevState) => !prevState)}
+          className={cn(s.button, { [s.active]: isOpen })}
+        >
+          {isValid(dateInterval.start)
+            ? format(dateInterval.start, 'LLL d, yyyy')
+            : '--'}
+          <span className={s.dateSeparator}>-</span>
+          {isValid(dateInterval.end)
+            ? format(dateInterval.end, 'LLL d, yyyy')
+            : '--'}
+        </button>
+        <Svg
+          id="navigation_arrow-down"
+          className={cn(s.iconArrow, { [s.rotate]: isOpen })}
+        />
       </div>
-    </div>
+      {createPortal(
+        <div
+          ref={popperRef}
+          className={cn(s.datePickerWrap, { [s.active]: isOpen })}
+          style={window.innerWidth <= 768 ? {} : styles.popper}
+          {...attributes.popper}
+        >
+          <div className={s.calendarsWrap}>
+            {isCustomRangeOpen ? (
+              <DateRangePicker
+                interval={calendarDateInterval}
+                onChange={setCalendarDateInterval}
+              />
+            ) : null}
+            <div className={s.rangeWrap}>
+              <button
+                className={cn(s.rangeButton, {
+                  [s.active]: activeRange === RANGES.WEEK,
+                })}
+                type="button"
+                onClick={() => handlerSetRange(RANGES.WEEK)}
+              >
+                7 days
+              </button>
+              <button
+                className={cn(s.rangeButton, {
+                  [s.active]: activeRange === RANGES.MONTH,
+                })}
+                type="button"
+                onClick={() => handlerSetRange(RANGES.MONTH)}
+              >
+                30 days
+              </button>
+              <button
+                className={cn(s.rangeButton, {
+                  [s.active]: activeRange === RANGES.QUARTER,
+                })}
+                type="button"
+                onClick={() => handlerSetRange(RANGES.QUARTER)}
+              >
+                3 months
+              </button>
+              <button
+                className={cn(s.rangeButton, {
+                  [s.active]: activeRange === RANGES.HALF_YEAR,
+                })}
+                type="button"
+                onClick={() => handlerSetRange(RANGES.HALF_YEAR)}
+              >
+                6 months
+              </button>
+              <button
+                className={cn(s.rangeButton, {
+                  [s.active]: activeRange === RANGES.YEAR,
+                })}
+                type="button"
+                onClick={() => handlerSetRange(RANGES.YEAR)}
+              >
+                Last year
+              </button>
+              <button
+                className={cn(s.rangeButton, s.custom, {
+                  [s.active]: activeRange === RANGES.CUSTOM,
+                })}
+                type="button"
+                onClick={() => setIsCustomRangeOpen(true)}
+              >
+                Custom range
+              </button>
+            </div>
+          </div>
+          {isCustomRangeOpen ? (
+            <div className={s.footer}>
+              <div className={s.selectedDate}>
+                <div className={s.selectedDateTitle}>From</div>
+                <div className={s.selectedDateValue}>
+                  {isValid(calendarDateInterval.start)
+                    ? format(calendarDateInterval.start, 'MMM d, yyyy hh:mm aa')
+                    : '--'}
+                </div>
+              </div>
+              <div className={s.selectedDate}>
+                <div className={s.selectedDateTitle}>To</div>
+                <div className={s.selectedDateValue}>
+                  {isValid(calendarDateInterval.end)
+                    ? format(calendarDateInterval.end, 'MMM d, yyyy hh:mm aa')
+                    : '--'}
+                </div>
+              </div>
+              <div className={s.buttonsWarp}>
+                <button
+                  type="button"
+                  className={s.clearButton}
+                  onClick={handlerClear}
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  className={s.applyButton}
+                  onClick={() => handlerSetRange(RANGES.CUSTOM)}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>,
+        rootModal
+      )}
+    </>
   );
 };

@@ -122,24 +122,25 @@ main {
   white-space: nowrap;
 }
 
+#root.shadow {
+  position: relative;
+  z-index: -1;
+}
+#root.shadow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 5, 5, 0.75);
+}
+
 @media (max-width: 768px) {
   main {
     padding: 16px 0 32px;
   }
   .container {
     padding: 0 16px;
-  }
-  main.shadow {
-    position: relative;
-    z-index: -1;
-  }
-  main.shadow::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(4, 5, 5, 0.75);
   }
 }

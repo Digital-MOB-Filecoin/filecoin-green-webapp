@@ -9,12 +9,10 @@ const DataPage = lazy(() => import('components/DataPage'));
 const AboutPage = lazy(() => import('components/MethodologyPage'));
 
 function App() {
-  const mainRef = useRef();
-
   return (
     <>
-      <Header mainRef={mainRef} />
-      <main ref={mainRef}>
+      <Header />
+      <main>
         <Suspense
           fallback={
             <div style={{ margin: 'auto' }}>

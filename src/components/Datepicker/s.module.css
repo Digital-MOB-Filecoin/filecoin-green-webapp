@@ -63,12 +63,8 @@
 
 .datePickerWrap {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
   background-color: var(--theme-background-secondary);
   border-radius: 8px;
-  z-index: 2;
   box-shadow: 0 32px 64px rgba(4, 5, 5, 0.08);
 }
 
@@ -178,9 +174,9 @@
 }
 
 @media (max-width: 768px) {
- .wrap {
-   min-width: auto;
- }
+  .wrap {
+    min-width: auto;
+  }
   .iconCalendar{
     left: 16px;
     width: 16px;
@@ -191,5 +187,12 @@
   }
   .button {
     padding: 16px 24px 16px 48px;
+  }
+  .datePickerWrap {
+    position: fixed;
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
   }
 }

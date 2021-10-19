@@ -6,17 +6,19 @@ import { Svg } from 'components/Svg';
 import { IconButton } from 'components/IconButton';
 import s from './s.module.css';
 
-export const Header = ({ mainRef }) => {
+const root = document.getElementById('root');
+
+export const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
-    if (mainRef.current && showMobileMenu) {
-      mainRef.current.classList.add('shadow');
+    if (root && showMobileMenu) {
+      root.classList.add('shadow');
     }
 
     return () => {
-      if (mainRef.current) {
-        mainRef.current.classList.remove('shadow');
+      if (root) {
+        root.classList.remove('shadow');
       }
     };
   }, [showMobileMenu]);

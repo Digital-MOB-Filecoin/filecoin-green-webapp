@@ -11,13 +11,13 @@ import s from './s.module.css';
 export const Table = ({
   title,
   data = defaultDataState,
-  columns = [],
   limit,
   offset,
   total,
   pageHandler,
   className,
-  renderTd,
+  ThRow,
+  TdRow,
 }) => {
   return (
     <div className={cn(s.wrap, className)}>
@@ -25,53 +25,16 @@ export const Table = ({
         <h2 className="h2">{title}</h2>
       </div>
       <table className={s.table}>
-        <thead>
-          <tr>
-            {columns.map((column, idx) => (
-              <th
-                key={idx}
-                className={column.align ? s[column.align] : null}
-                style={column.width ? { width: column.width } : null}
-              >
-                {column.sortKey ? (
-                  <SortButton sortKey={column.sortKey}>
-                    {column.title}
-                  </SortButton>
-                ) : (
-                  column.title
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        <thead>{ThRow}</thead>
         <tbody>
           {data.failed ? (
             <tr>
               <td colSpan={4}>Failed to Load Data.</td>
             </tr>
           ) : (
-            data.results.map((item, idx) => {
-              return (
-                <tr key={idx}>
-                  {columns.map((column, columnIdx) => {
-                    if (renderTd) {
-                      return renderTd(item, columnIdx);
-                    }
-                    return (
-                      <td
-                        key={column.key}
-                        className={column.align ? s[column.align] : null}
-                        style={{ '--label': column.title, ...column.style }}
-                      >
-                        {column.format
-                          ? column.format(item[column.key], item)
-                          : item[column.key]}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })
+            data.results.map((rowData, idx) => (
+              <TdRow key={idx} data={rowData} idx={idx} />
+            ))
           )}
         </tbody>
       </table>

@@ -18,10 +18,6 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
     setLocalSelected(selected);
   }, [open]);
 
-  if (!open) {
-    return null;
-  }
-
   const handlerApply = () => {
     onClose(localSelected);
   };
@@ -51,7 +47,7 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
   return (
     <>
       <Modal
-        open={open & !shownDetails}
+        open={open && !shownDetails}
         className={s.modal}
         onClose={() => onClose()}
         header={
@@ -140,9 +136,12 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
 
       {shownDetails ? (
         <Modal
-          open={shownDetails}
+          open={open && shownDetails}
           className={s.modal}
-          onClose={() => setShownDetails(null)}
+          onClose={() => {
+            setShownDetails(null);
+            onClose();
+          }}
           header={
             <hgroup>
               <button
@@ -165,9 +164,7 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
             children={shownDetails.details}
           />
         </Modal>
-      ) : (
-        shownDetails
-      )}
+      ) : null}
     </>
   );
 };
