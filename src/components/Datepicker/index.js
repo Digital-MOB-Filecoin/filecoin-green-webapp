@@ -12,6 +12,7 @@ import { Svg } from 'components/Svg';
 
 import { DateRangePicker } from './DateRangePicker';
 import s from './s.module.css';
+import { MAX_DATEPICKER_DATE } from 'constant';
 
 const RANGES = {
   WEEK: 'week',
@@ -85,23 +86,23 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
 
   const handlerSetRange = (range) => {
     let newStartDate = calendarDateInterval.start;
-    let newEndDate = sub(new Date(), { days: 1 });
+    let newEndDate = MAX_DATEPICKER_DATE;
 
     switch (range) {
       case RANGES.WEEK:
-        newStartDate = sub(new Date(), { weeks: 1, days: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { weeks: 1 });
         break;
       case RANGES.MONTH:
-        newStartDate = sub(new Date(), { months: 1, days: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { months: 1 });
         break;
       case RANGES.QUARTER:
-        newStartDate = sub(new Date(), { months: 3, days: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { months: 3 });
         break;
       case RANGES.HALF_YEAR:
-        newStartDate = sub(new Date(), { months: 6, days: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { months: 6 });
         break;
       case RANGES.YEAR:
-        newStartDate = sub(new Date(), { years: 1, days: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { years: 1 });
         break;
       case RANGES.CUSTOM:
         newEndDate = calendarDateInterval.end;

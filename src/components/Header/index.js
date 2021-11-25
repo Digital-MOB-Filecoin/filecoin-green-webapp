@@ -32,8 +32,6 @@ export const Header = () => {
             {/*  <span>Leaderboard</span>*/}
             {/*</NavLink>*/}
             <NavLink
-              disabled
-              onClick={(e) => e.preventDefault()}
               to="/methodology"
               className={s.navLink}
               activeClassName={s.active}

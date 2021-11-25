@@ -15,7 +15,11 @@ import { ChartsModal } from './ChartsModal';
 
 import s from './s.module.css';
 import { fetchChartModels } from 'api';
-import { DEFAULT_CHART_SCALE, defaultDataState } from 'constant';
+import {
+  MAX_DATEPICKER_DATE,
+  DEFAULT_CHART_SCALE,
+  defaultDataState,
+} from 'constant';
 import { Chart } from 'components/Chart';
 import { Spinner } from 'components/Spinner';
 
@@ -34,10 +38,10 @@ export default function DataPage() {
   const [dateInterval, setDateInterval] = useState({
     start: query.start
       ? parse(query.start, 'yyyy-MM-dd', new Date())
-      : sub(new Date(), { years: 1, days: 1 }),
+      : sub(MAX_DATEPICKER_DATE, { years: 1 }),
     end: query.end
       ? parse(query.end, 'yyyy-MM-dd', new Date())
-      : sub(new Date(), { days: 1 }),
+      : MAX_DATEPICKER_DATE,
   });
 
   const handlerSetDateInterval = (newDateInterval) => {
