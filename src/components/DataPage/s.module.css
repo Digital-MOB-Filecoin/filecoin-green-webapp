@@ -87,3 +87,12 @@
   width: 100%;
   min-height: 40px;
 }
+
+.notification {
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  padding: 24px 36px;
+  margin: 32px 0;
+  text-align: center;
+  color: var(--theme-text-secondary);
+}

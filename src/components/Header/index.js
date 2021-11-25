@@ -40,7 +40,15 @@ export const Header = () => {
             </NavLink>
           </nav>
           <div className={s.slack}>
-            Feedback? Join <a href="#">#fil-green</a> on Slack!
+            Feedback? Join{' '}
+            <a
+              href="https://filecoin.io/slack"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              #fil-green
+            </a>{' '}
+            on Slack!
           </div>
         </div>
       </div>

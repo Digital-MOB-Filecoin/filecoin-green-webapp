@@ -217,6 +217,11 @@ export default function DataPage() {
         )}
 
         <MinersTable />
+
+        <div className={s.notification}>
+          These numbers are approximate projections based on the current network
+          state and may be incorrect, do your own research
+        </div>
       </div>
 
       <ChartsModal
