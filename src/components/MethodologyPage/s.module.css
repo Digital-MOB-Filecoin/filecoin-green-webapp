@@ -1,0 +1,5 @@
+.wrap {
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  padding: 24px 36px;
+}

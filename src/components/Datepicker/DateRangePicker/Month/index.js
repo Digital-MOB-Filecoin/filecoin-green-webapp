@@ -15,6 +15,7 @@ import isValidDate from 'date-fns/isValid';
 
 import { Svg } from 'components/Svg';
 import s from './s.module.css';
+import { MAX_DATEPICKER_DATE } from 'constant';
 
 const MONTH = {
   CURRENT: 'current',
@@ -186,9 +187,7 @@ export const Month = ({
         {calendarMonthDays.map((day) => {
           if (!day) return null;
           const { date: dayDate, dayNumber, monthType } = day;
-          const isDisabled =
-            dayDate.getTime() > new Date().getTime() ||
-            isSameDay(dayDate, new Date());
+          const isDisabled = dayDate.getTime() > MAX_DATEPICKER_DATE.getTime();
 
           return (
             <button
