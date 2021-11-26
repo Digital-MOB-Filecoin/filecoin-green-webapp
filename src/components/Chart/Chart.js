@@ -40,7 +40,7 @@ const getFormattedValue = (type, value, precision = 2) => {
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'time':
       temp = new Date(value);
-      return isValid(temp) ? format(temp, 'MMMM uuuu') : value;
+      return isValid(temp) ? format(temp, 'MMM uuuu') : value;
     case 'GiB':
       return formatBytes(value, { inputUnit: 'GiB', precision });
     case 'percentage':
@@ -213,6 +213,11 @@ export const ChartComponent = ({
                 </linearGradient>
               ))}
             </defs>
+            <CartesianGrid
+              strokeDasharray="5 7"
+              vertical={false}
+              stroke="var(--color-solitude-dark)"
+            />
             <XAxis
               dataKey="start_date"
               tickLine={false}
@@ -226,6 +231,19 @@ export const ChartComponent = ({
               domain={['minData', 'maxData']}
               tickFormatter={(value) => getFormattedValue(y, value, 3)}
               stroke="var(--color-nepal)"
+            />
+            <Tooltip
+              cursor={{
+                stroke: 'var(--color-nepal)',
+                strokeWidth: 2,
+                strokeDasharray: '5 7',
+              }}
+              isAnimationActive={false}
+              animationDuration={0}
+              content={<StyledTooltip filter={filter} type={y} />}
+              offset={0}
+              allowEscapeViewBox={{ x: false, y: true }}
+              position={{ y: -100 }}
             />
             {meta?.map((item, idx) => {
               const color = colors[item.color] || colors.green;
@@ -249,24 +267,6 @@ export const ChartComponent = ({
                 />
               );
             })}
-            <CartesianGrid
-              strokeDasharray="5 7"
-              vertical={false}
-              stroke="var(--color-solitude-dark)"
-            />
-            <Tooltip
-              cursor={{
-                stroke: 'var(--color-nepal)',
-                strokeWidth: 2,
-                strokeDasharray: '5 7',
-              }}
-              isAnimationActive={false}
-              animationDuration={0}
-              content={<StyledTooltip filter={filter} type={y} />}
-              offset={0}
-              allowEscapeViewBox={{ x: false, y: true }}
-              position={{ y: -100 }}
-            />
             <Legend
               content={({ payload }) =>
                 renderLegend(payload, showMethodologyLink)
