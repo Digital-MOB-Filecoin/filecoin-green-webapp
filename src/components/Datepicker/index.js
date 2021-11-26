@@ -34,9 +34,8 @@ const RANGES = {
 export const Datepicker = ({ className, dateInterval, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);
-  const [calendarDateInterval, setCalendarDateInterval] = useState(
-    dateInterval
-  );
+  const [calendarDateInterval, setCalendarDateInterval] =
+    useState(dateInterval);
   const wrapRef = useRef(null);
   const outyRef = useRef(null);
 
