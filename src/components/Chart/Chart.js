@@ -228,7 +228,7 @@ export const ChartComponent = ({
             <YAxis
               axisLine={false}
               tickLine={false}
-              domain={['minData', 'maxData']}
+              domain={[0, 'auto']}
               tickFormatter={(value) => getFormattedValue(y, value, 3)}
               stroke="var(--color-nepal)"
             />
