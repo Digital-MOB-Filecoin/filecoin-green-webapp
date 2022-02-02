@@ -46,7 +46,7 @@ const getFormattedValue = (type, value, precision = 2) => {
     case 'percentage':
       return convertNumberToPercent(value);
     case 'kWh':
-      return formatWatts(value, { precision }) + '/h';
+      return formatWatts(value, { precision }) + 'h';
     case 'kW':
       return formatWatts(value, { precision });
     default:
