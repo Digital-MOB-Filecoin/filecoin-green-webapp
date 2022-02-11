@@ -38,7 +38,7 @@ export default function DataPage() {
   const [dateInterval, setDateInterval] = useState({
     start: query.start
       ? parse(query.start, 'yyyy-MM-dd', new Date())
-      : sub(MAX_DATEPICKER_DATE, { years: 1 }),
+      : sub(MAX_DATEPICKER_DATE, { months: 3 }),
     end: query.end
       ? parse(query.end, 'yyyy-MM-dd', new Date())
       : MAX_DATEPICKER_DATE,
