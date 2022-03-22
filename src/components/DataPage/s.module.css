@@ -11,6 +11,14 @@
   color: var(--theme-text-primary);
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchContainerSub {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  width: 100%;
 }
 
 .searchClear {
