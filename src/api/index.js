@@ -48,3 +48,9 @@ export const fetchExportData = async (query) => {
 
   return api(`${config.apiBaseUrl}models/export${queryParams}`);
 };
+
+export const fetchMinerData = async (minerId) => {
+  return api(
+    `https://api.filrep.io/api/miners?limit=10&offset=0&search=${minerId}`
+  );
+};

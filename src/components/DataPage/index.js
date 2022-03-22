@@ -14,7 +14,7 @@ import { MinersTable } from './MinersTable';
 import { ChartsModal } from './ChartsModal';
 
 import s from './s.module.css';
-import { fetchChartModels } from 'api';
+import { fetchChartModels, fetchMinerData } from 'api';
 import {
   MAX_DATEPICKER_DATE,
   DEFAULT_CHART_SCALE,
@@ -27,6 +27,7 @@ export default function DataPage() {
   const [chartModels, setChartModels] = useState(defaultDataState);
   const [showChartsModal, setShowChartsModal] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState([]);
+  const [minerData, setMinerData] = useState(null);
 
   const [query, setQuery] = useQueryParams({
     charts: ObjectParam,
@@ -53,6 +54,16 @@ export default function DataPage() {
       end: lightFormat(newDateInterval.end, 'yyyy-MM-dd'),
     }));
   };
+
+  useEffect(() => {
+    if (query.miner) {
+      fetchMinerData(query.miner).then((data) => {
+        setMinerData(data?.miners?.[0]);
+      });
+    } else {
+      setMinerData(null);
+    }
+  }, [query.miner]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -153,8 +164,21 @@ export default function DataPage() {
             >
               <Svg id="close" width={16} height={16} />
             </button>
+            {minerData?.energy?.pageUrl ? (
+              <div className={s.searchContainerSub}>
+                Renewable energy purchases for{' '}
+                <a
+                  href={minerData.energy.pageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {minerData?.address || '--'}
+                </a>
+              </div>
+            ) : null}
           </div>
         ) : null}
+
         <div className={s.tabsWrap}>
           <Filters
             className={s.tabs}
