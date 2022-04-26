@@ -18,7 +18,7 @@ import isValid from 'date-fns/isValid';
 
 import { Spinner } from 'components/Spinner';
 import { formatBytes } from 'utils/bytes';
-import { formatWatts } from 'utils/numbers';
+import { formatNumber, formatWatts } from 'utils/numbers';
 import { convertNumberToPercent } from 'utils/numbers';
 import { camelCase, getCategoryName } from 'utils/string';
 
@@ -49,6 +49,8 @@ const getFormattedValue = (type, value, precision = 2) => {
       return formatWatts(value, { precision }) + 'h';
     case 'kW':
       return formatWatts(value, { precision });
+    case 'MW_per_EiB':
+      return formatNumber(value, 3) + ' MW/EiB';
     default:
       return value;
   }

@@ -11,6 +11,13 @@ export const convertNumberToPercent = (value, precision = 5) => {
   return `${valueBN.multipliedBy(100).toString()}%`;
 };
 
+export const formatNumber = (value, precision = 3) => {
+  BN.config({ DECIMAL_PLACES: precision });
+  const valueBN = new BN(value, 10);
+
+  return valueBN.toString();
+};
+
 const units = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
 
 export function formatWatts(size, { precision, output, inputUnit } = {}) {
