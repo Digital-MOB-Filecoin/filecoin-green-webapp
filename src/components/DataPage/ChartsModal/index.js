@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
-import ReactMarkdown from 'react-markdown';
 
 import { getCategoryName } from 'utils/string';
 import { Modal } from 'components/Modal';
 import { Pagination } from 'components/Pagination';
 import { Svg } from 'components/Svg';
 import { Spinner } from 'components/Spinner';
+import { ChartDetailsModal } from 'components/DataPage/ChartDetailsModal';
 
 import s from './s.module.css';
 
@@ -51,7 +51,7 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
   return (
     <>
       <Modal
-        open={open & !shownDetails}
+        open={open && !shownDetails}
         className={s.modal}
         onClose={() => onClose()}
         header={
@@ -138,36 +138,21 @@ export const ChartsModal = ({ open, models, selected, onClose }) => {
         </div>
       </Modal>
 
-      {shownDetails ? (
-        <Modal
-          open={shownDetails}
-          className={s.modal}
-          onClose={() => setShownDetails(null)}
-          header={
-            <hgroup>
-              <button
-                type="button"
-                className={s.backButton}
-                onClick={() => setShownDetails(null)}
-              >
-                <Svg id="back-arrow" />
-                <span>Select charts</span>
-              </button>
-              <h2 className={s.title}>{shownDetails.name}</h2>
-              <h3 className={s.subtitle}>
-                {getCategoryName(shownDetails.category)}
-              </h3>
-            </hgroup>
-          }
-        >
-          <ReactMarkdown
-            className={s.description}
-            children={shownDetails.details}
-          />
-        </Modal>
-      ) : (
-        shownDetails
-      )}
+      <ChartDetailsModal
+        model={shownDetails}
+        open={shownDetails}
+        onClose={() => setShownDetails(null)}
+        backButton={
+          <button
+            type="button"
+            className={s.backButton}
+            onClick={() => setShownDetails(null)}
+          >
+            <Svg id="back-arrow" />
+            <span>Select charts</span>
+          </button>
+        }
+      />
     </>
   );
 };

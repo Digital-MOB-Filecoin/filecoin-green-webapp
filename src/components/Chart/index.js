@@ -106,12 +106,11 @@ export const Chart = ({
     <ChartComponent
       {...normalizedData}
       interval={interval}
-      id={Number(model.id)}
+      model={model}
       filter={query.charts?.[model.id] || DEFAULT_CHART_SCALE}
       loading={loading}
       failed={failed}
       showMethodologyLink={showMethodologyLink}
-      category={model.category}
       showCategory={showCategory}
     />
   );
