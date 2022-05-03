@@ -150,14 +150,6 @@
   justify-content: space-between;
 }
 
-.description {
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 32px;
-  color: #040505;
-  margin-top: 32px;
-}
-
 .backButton {
   font: inherit;
   font-weight: 600;

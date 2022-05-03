@@ -16,8 +16,14 @@
 /*  margin-bottom: 12px;*/
 /*}*/
 
-.title {
+.hgroup {
   margin-right: auto;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  margin: 0;
 }
 
 .subtitle {
@@ -26,7 +32,25 @@
   font-size: 12px;
   line-height: 16px;
   color: var(--theme-text-secondary);
-  margin-top: 4px;
+  margin: 4px 0 0;
+}
+
+.detailsButton {
+  margin-left: 4px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  color: var(--theme-text-secondary);
+  opacity: 0.4;
+}
+
+.detailsButton:focus,
+.detailsButton:hover {
+  opacity: 1;
+  color: var(--theme-text-primary);
 }
 
 .exportButton {
