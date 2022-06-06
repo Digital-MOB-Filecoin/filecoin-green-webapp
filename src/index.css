@@ -2,16 +2,16 @@
 :root {
   --color-white: #fff;
   --color-black-pearl: #040505;
-  --color-solitude: #F2F4F6;
+  --color-solitude: #f2f4f6;
   --rgb-solitude: 242, 244, 246;
-  --color-solitude-dark: #E0E5EA;
+  --color-solitude-dark: #e0e5ea;
   --rgb-solitude-dark: 224, 226, 234;
-  --color-lochinvar: #4EA394;
+  --color-lochinvar: #4ea394;
   --rgb-lochinvar: 78, 163, 148;
-  --color-kashmir-blue: #576C7E;
-  --color-link-water: #BCC7D1;
-  --color-nepal: #98A9B8;
-  --color-sunshade: #FF974D;
+  --color-kashmir-blue: #576c7e;
+  --color-link-water: #bcc7d1;
+  --color-nepal: #98a9b8;
+  --color-sunshade: #ff974d;
   --rgb-sunshade: 255, 151, 77;
 
   --theme-color-primary: var(--color-lochinvar);
