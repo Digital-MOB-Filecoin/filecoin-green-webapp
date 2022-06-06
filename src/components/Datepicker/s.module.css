@@ -141,6 +141,11 @@
   border-color: var(--theme-color-primary);
 }
 
+.applyButton:disabled {
+  background: var(--theme-input-placeholder-color);
+  border-color: var(--theme-input-placeholder-color);
+}
+
 .rangeWrap {
   padding: 8px;
   border-left: 1px solid var(--theme-background-primary);

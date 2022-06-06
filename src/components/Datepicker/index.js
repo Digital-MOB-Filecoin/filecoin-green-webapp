@@ -45,7 +45,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
     if (DICD(dateInterval.end, dateInterval.start) === 7) {
       return RANGES.WEEK;
     }
-    if (DICM(dateInterval.end, dateInterval.start) === 1) {
+    if (DICD(dateInterval.end, dateInterval.start) === 30) {
       return RANGES.MONTH;
     }
     if (DICM(dateInterval.end, dateInterval.start) === 3) {
@@ -122,7 +122,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
 
   useEffect(() => {
     handlerClear();
-  }, [dateInterval.start.getTime(), dateInterval.end.getTime()]);
+  }, [dateInterval.start?.getTime(), dateInterval.end?.getTime()]);
 
   return (
     <div className={cn(s.wrap, className)} ref={wrapRef}>
@@ -238,6 +238,9 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
                 type="button"
                 className={s.applyButton}
                 onClick={() => handlerSetRange(RANGES.CUSTOM)}
+                disabled={
+                  !calendarDateInterval.start || !calendarDateInterval.end
+                }
               >
                 Apply
               </button>
