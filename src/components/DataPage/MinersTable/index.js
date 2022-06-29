@@ -70,7 +70,7 @@ export const MinersTable = () => {
       }}
       columns={[
         {
-          title: 'Entitiy',
+          title: 'Entity',
           key: 'miner',
           width: '50%',
           format: (value) => <span style={{ fontWeight: 600 }}>{value}</span>,
