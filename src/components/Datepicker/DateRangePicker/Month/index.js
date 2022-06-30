@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import cn from 'classnames';
 
 import getWeeksInMonth from 'date-fns/getWeeksInMonth';
@@ -33,19 +33,20 @@ const getDayMonthType = (dayDate, date) => {
 };
 
 export const Month = ({
-  start,
+  isStartCalendar,
+  isEndCalendar,
   interval,
   onChange,
   hoverDate,
   onChangeHoverDate,
+  calendarMonth,
+  setCalendarMonth,
 }) => {
-  const [calendarMonth, setCalendarMonth] = useState(
-    start ? interval.start : interval.end
-  );
+  const shownMonth = isStartCalendar ? calendarMonth.start : calendarMonth.end;
 
   const calendarMonthDays = useMemo(() => {
-    const calendarDaysInMonth = getWeeksInMonth(calendarMonth) * 7;
-    const firstDayInCalendarWeek = startOfWeek(set(calendarMonth, { date: 1 }));
+    const calendarDaysInMonth = getWeeksInMonth(shownMonth) * 7;
+    const firstDayInCalendarWeek = startOfWeek(set(shownMonth, { date: 1 }));
 
     return Array.from({ length: calendarDaysInMonth }).map((_, idx) => {
       const dayDate = addDays(firstDayInCalendarWeek, idx);
@@ -54,17 +55,41 @@ export const Month = ({
         date: dayDate,
         dayNumber: getDayNumber(dayDate),
         // weekDayNumber: getWeekdayNumber(dayDate),
-        monthType: getDayMonthType(dayDate, calendarMonth),
+        monthType: getDayMonthType(dayDate, shownMonth),
       };
     });
-  }, [calendarMonth.getTime()]);
+  }, [shownMonth.getTime()]);
 
   const handlerPrevMonth = () => {
-    setCalendarMonth((prevState) => sub(prevState, { months: 1 }));
+    setCalendarMonth((prevState) => {
+      if (isStartCalendar) {
+        return {
+          ...prevState,
+          start: sub(prevState.start, { months: 1 }),
+        };
+      }
+
+      return {
+        ...prevState,
+        end: sub(prevState.end, { months: 1 }),
+      };
+    });
   };
 
   const handlerNextMonth = () => {
-    setCalendarMonth((prevState) => add(prevState, { months: 1 }));
+    setCalendarMonth((prevState) => {
+      if (isStartCalendar) {
+        return {
+          ...prevState,
+          start: add(prevState.start, { months: 1 }),
+        };
+      }
+
+      return {
+        ...prevState,
+        end: add(prevState.end, { months: 1 }),
+      };
+    });
   };
 
   const isDayInRange = (dayDate) => {
@@ -149,8 +174,18 @@ export const Month = ({
   };
 
   const handlerChangePreviewInterval = (dayDate) => {
+    const isIntervalDatesValid =
+      isValidDate(interval.start) && isValidDate(interval.end);
+
+    if (isEndCalendar && isIntervalDatesValid) {
+      setCalendarMonth({
+        start: dayDate,
+        end: dayDate,
+      });
+    }
+
     onChange(
-      isValidDate(interval.start) && isValidDate(interval.end)
+      isIntervalDatesValid
         ? { start: dayDate, end: null }
         : { start: interval.start, end: dayDate }
     );
@@ -162,18 +197,25 @@ export const Month = ({
         <button
           type="button"
           onClick={handlerPrevMonth}
-          className={s.navButton}
+          className={cn(s.navButton, {
+            [s.disabled]:
+              isEndCalendar &&
+              isSameMonth(calendarMonth.start, calendarMonth.end),
+          })}
         >
           <Svg id="calendar-arrow-left" />
         </button>
-        <span>{format(calendarMonth, 'MMMM yyyy')}</span>
+        <span>{format(shownMonth, 'MMMM yyyy')}</span>
         <button
           type="button"
           onClick={handlerNextMonth}
           className={cn(s.navButton, {
-            [s.disabled]: isSameMonth(calendarMonth, new Date()),
+            [s.disabled]:
+              isSameMonth(shownMonth, new Date()) ||
+              (isStartCalendar &&
+                isSameMonth(calendarMonth.start, calendarMonth.end)),
           })}
-          disabled={isSameMonth(calendarMonth, new Date())}
+          disabled={isSameMonth(shownMonth, new Date())}
         >
           <Svg id="calendar-arrow-right" />
         </button>
@@ -187,7 +229,10 @@ export const Month = ({
         {calendarMonthDays.map((day) => {
           if (!day) return null;
           const { date: dayDate, dayNumber, monthType } = day;
-          const isDisabled = dayDate.getTime() > MAX_DATEPICKER_DATE.getTime();
+          const isDisabled =
+            dayDate.getTime() > MAX_DATEPICKER_DATE.getTime() ||
+            (isStartCalendar && !interval.end) ||
+            (dayDate.getTime() < interval.start.getTime() && !interval.end);
 
           return (
             <button

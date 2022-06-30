@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
-import parse from 'date-fns/parse';
-import sub from 'date-fns/sub';
-import lightFormat from 'date-fns/lightFormat';
+import dateParse from 'date-fns/parse';
+import dateSub from 'date-fns/sub';
+import dateLightFormat from 'date-fns/lightFormat';
+import dateIsValid from 'date-fns/isValid';
 
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
@@ -36,13 +37,33 @@ export default function DataPage() {
     end: StringParam,
   });
 
-  const [dateInterval, setDateInterval] = useState({
-    start: query.start
-      ? parse(query.start, 'yyyy-MM-dd', new Date())
-      : sub(MAX_DATEPICKER_DATE, { months: 6 }),
-    end: query.end
-      ? parse(query.end, 'yyyy-MM-dd', new Date())
-      : MAX_DATEPICKER_DATE,
+  const [dateInterval, setDateInterval] = useState(() => {
+    const parsedStartDate = query.start
+      ? dateParse(query.start, 'yyyy-MM-dd', new Date())
+      : null;
+
+    const parsedEndDate = query.end
+      ? dateParse(query.end, 'yyyy-MM-dd', new Date())
+      : null;
+
+    if (!dateIsValid(parsedStartDate) || !dateIsValid(parsedEndDate)) {
+      return {
+        start: dateSub(MAX_DATEPICKER_DATE, { months: 6 }),
+        end: MAX_DATEPICKER_DATE,
+      };
+    }
+
+    if (parsedStartDate.getTime() > parsedEndDate.getTime()) {
+      return {
+        start: parsedEndDate,
+        end: parsedStartDate,
+      };
+    }
+
+    return {
+      start: parsedStartDate,
+      end: parsedEndDate,
+    };
   });
 
   const handlerSetDateInterval = (newDateInterval) => {
@@ -50,8 +71,8 @@ export default function DataPage() {
 
     setQuery((prevQuery) => ({
       ...prevQuery,
-      start: lightFormat(newDateInterval.start, 'yyyy-MM-dd'),
-      end: lightFormat(newDateInterval.end, 'yyyy-MM-dd'),
+      start: dateLightFormat(newDateInterval.start, 'yyyy-MM-dd'),
+      end: dateLightFormat(newDateInterval.end, 'yyyy-MM-dd'),
     }));
   };
 
