@@ -8,7 +8,7 @@ import s from './s.module.css';
 import { fetchExportData } from '../../../api';
 import lightFormat from 'date-fns/lightFormat';
 
-export const ExportButton = ({ className, id, filename, interval }) => {
+export const ExportButton = ({ className, id, filename, interval, filter }) => {
   const [loading, setLoading] = useState(false);
   const [miner] = useQueryParam('miner', StringParam);
 
@@ -30,6 +30,7 @@ export const ExportButton = ({ className, id, filename, interval }) => {
         start,
         end,
         miner,
+        filter,
       });
 
       const headerString = results.fields
@@ -45,6 +46,7 @@ export const ExportButton = ({ className, id, filename, interval }) => {
           start,
           end,
           miner,
+          filter,
         });
 
         if (dataString) {
@@ -80,12 +82,12 @@ export const ExportButton = ({ className, id, filename, interval }) => {
       });
 
       if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, `${filename}.csv`);
+        navigator.msSaveBlob(blob, `${filename}_${filter}.csv`);
       } else {
         const link = document.createElement('a');
         if (link.download !== undefined) {
           link.setAttribute('href', URL.createObjectURL(blob));
-          link.setAttribute('download', `${filename}.csv`);
+          link.setAttribute('download', `${filename}_${filter}.csv`);
           link.style.visibility = 'hidden';
           document.body.appendChild(link);
           link.click();

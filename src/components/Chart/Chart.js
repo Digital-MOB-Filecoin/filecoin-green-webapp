@@ -183,6 +183,7 @@ export const ChartComponent = ({
             id={Number(model.id)}
             filename={camelCase(name)}
             className={s.exportButton}
+            filter={filter}
           />
         </div>
         {/* {meta ? (
