@@ -2,10 +2,8 @@ import cn from 'classnames';
 import { NavLink } from 'react-router-dom';
 import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
 
-import lightFormat from 'date-fns/lightFormat';
 import sub from 'date-fns/sub';
 
-import { DEFAULT_CHART_SCALE } from 'constant';
 import { Chart } from 'components/Chart';
 import { LeaderboardTable } from './LeaderboadTable';
 import s from './s.module.css';

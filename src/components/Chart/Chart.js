@@ -28,7 +28,7 @@ import { TimeIntervalButtons } from './TimeIntervalButtons';
 import { ExportButton } from './ExportButton';
 import s from './s.module.css';
 
-const getFormattedValue = (type, value, precision = 2) => {
+const getFormattedValue = ({ type, value, precision = 2, filter }) => {
   let temp;
   switch (type) {
     case 'day':
@@ -42,7 +42,10 @@ const getFormattedValue = (type, value, precision = 2) => {
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'time':
       temp = new Date(value);
-      return isValid(temp) ? format(temp, 'MMM uuuu') : value;
+      if (filter === 'month') {
+        return isValid(temp) ? format(temp, 'MMMM, yyyy') : value;
+      }
+      return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
     case 'GiB':
       return formatBytes(value, { inputUnit: 'GiB', precision });
     case 'percentage':
@@ -85,13 +88,19 @@ const StyledTooltip = (props) => {
   const { payload, filter, type: dataFormatType } = props;
   if (!payload) return null;
 
+  const formattedStartDate = getFormattedValue({
+    type: 'day',
+    value: payload[0]?.payload.start_date,
+  });
+  const formattedEndDate = getFormattedValue({
+    type: 'day',
+    value: payload[0]?.payload.end_date,
+  });
+
   const date =
     filter === 'day'
-      ? getFormattedValue('day', payload[0]?.payload.start_date)
-      : `${getFormattedValue(
-          'day',
-          payload[0]?.payload.start_date
-        )} – ${getFormattedValue('day', payload[0]?.payload.end_date)}`;
+      ? formattedStartDate
+      : `${formattedStartDate} – ${formattedEndDate}`;
 
   return (
     <div className={s.tooltip}>
@@ -106,7 +115,11 @@ const StyledTooltip = (props) => {
               {item.name}
             </span>
             <span className={s.tooltipItemValue}>
-              {getFormattedValue(dataFormatType, item.value, 3)}
+              {getFormattedValue({
+                type: dataFormatType,
+                value: item.value,
+                precision: 3,
+              })}
             </span>
           </div>
         );
@@ -244,14 +257,19 @@ export const ChartComponent = ({
                 dataKey="start_date"
                 tickLine={false}
                 stroke="var(--color-nepal)"
-                tickFormatter={(value) => getFormattedValue(x, value)}
+                tickFormatter={(value) =>
+                  getFormattedValue({ type: x, value, filter })
+                }
+                interval="preserveEnd"
                 y={1}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 domain={[0, 'auto']}
-                tickFormatter={(value) => getFormattedValue(y, value, 3)}
+                tickFormatter={(value) =>
+                  getFormattedValue({ type: y, value, precision: 3 })
+                }
                 stroke="var(--color-nepal)"
               />
               <Tooltip

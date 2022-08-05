@@ -92,7 +92,7 @@ export const Datepicker = ({ className, dateInterval, onChange }) => {
         newStartDate = sub(MAX_DATEPICKER_DATE, { weeks: 1 });
         break;
       case RANGES.MONTH:
-        newStartDate = sub(MAX_DATEPICKER_DATE, { months: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { days: 30 });
         break;
       case RANGES.QUARTER:
         newStartDate = sub(MAX_DATEPICKER_DATE, { months: 3 });
