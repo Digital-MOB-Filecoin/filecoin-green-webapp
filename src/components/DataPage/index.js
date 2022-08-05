@@ -6,23 +6,19 @@ import dateSub from 'date-fns/sub';
 import dateLightFormat from 'date-fns/lightFormat';
 import dateIsValid from 'date-fns/isValid';
 
+import { fetchChartModels, fetchMinerData } from 'api';
+import { MAX_DATEPICKER_DATE, defaultDataState } from 'constant';
+import { getNormalizedScale } from 'utils/string';
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
 import { Svg } from 'components/Svg';
 import { Filters } from 'components/DataPage/Filters';
+import { Chart } from 'components/Chart';
+import { Spinner } from 'components/Spinner';
 
 import { MinersTable } from './MinersTable';
 import { ChartsModal } from './ChartsModal';
-
 import s from './s.module.css';
-import { fetchChartModels, fetchMinerData } from 'api';
-import {
-  MAX_DATEPICKER_DATE,
-  DEFAULT_CHART_SCALE,
-  defaultDataState,
-} from 'constant';
-import { Chart } from 'components/Chart';
-import { Spinner } from 'components/Spinner';
 
 export default function DataPage() {
   const [chartModels, setChartModels] = useState(defaultDataState);
@@ -128,13 +124,12 @@ export default function DataPage() {
     setSelectedCharts(newCharts);
     setQuery((prevQuery) => ({
       ...prevQuery,
-      charts: newCharts.reduce(
-        (acc, { id }) => ({
+      charts: newCharts.reduce((acc, { id }) => {
+        return {
           ...acc,
-          [id]: query.charts?.[id] || DEFAULT_CHART_SCALE,
-        }),
-        {}
-      ),
+          [id]: getNormalizedScale(query.charts?.[id]),
+        };
+      }, {}),
     }));
   };
 
@@ -143,13 +138,12 @@ export default function DataPage() {
       setSelectedCharts(newSelectedCharts);
       setQuery((prevQuery) => ({
         ...prevQuery,
-        charts: newSelectedCharts.reduce(
-          (acc, { id }) => ({
+        charts: newSelectedCharts.reduce((acc, { id }) => {
+          return {
             ...acc,
-            [id]: query.charts?.[id] || DEFAULT_CHART_SCALE,
-          }),
-          {}
-        ),
+            [id]: getNormalizedScale(query.charts?.[id]),
+          };
+        }, {}),
       }));
     }
 

@@ -3,8 +3,8 @@ import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import lightFormat from 'date-fns/lightFormat';
 
-import { DEFAULT_CHART_SCALE } from 'constant';
 import { fetchChart } from 'api';
+import { getNormalizedScale } from 'utils/string';
 
 import { ChartComponent } from './Chart';
 
@@ -42,7 +42,7 @@ export const Chart = ({
       start: lightFormat(interval.start, 'yyyy-MM-dd'),
       end: lightFormat(interval.end, 'yyyy-MM-dd'),
       miner: query.miner,
-      filter: query.charts?.[model.id] ?? DEFAULT_CHART_SCALE,
+      filter: getNormalizedScale(query.charts?.[model.id]),
     })
       .then((response) => {
         if (!response.data[0].data.length) {
@@ -107,7 +107,7 @@ export const Chart = ({
       {...normalizedData}
       interval={interval}
       model={model}
-      filter={query.charts?.[model.id] || DEFAULT_CHART_SCALE}
+      filter={getNormalizedScale(query.charts?.[model.id])}
       loading={loading}
       failed={failed}
       showMethodologyLink={showMethodologyLink}

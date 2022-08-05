@@ -1,26 +1,10 @@
 import cn from 'classnames';
-import { DEFAULT_CHART_SCALE } from 'constant';
-
-import s from './s.module.css';
 import { ObjectParam, useQueryParam } from 'use-query-params';
 
-const RANGE = {
-  DAY: {
-    title: 'Day',
-    queryValue: 'day',
-    default: DEFAULT_CHART_SCALE === 'day',
-  },
-  WEEK: {
-    title: 'Week',
-    queryValue: 'week',
-    default: DEFAULT_CHART_SCALE === 'week',
-  },
-  MONTH: {
-    title: 'Month',
-    queryValue: 'month',
-    default: DEFAULT_CHART_SCALE === 'month',
-  },
-};
+import { CHART_SCALE } from 'constant';
+import { getNormalizedScale } from 'utils/string';
+
+import s from './s.module.css';
 
 export const TimeIntervalButtons = ({ chartId }) => {
   const [chartsQuery, setChartsQuery] = useQueryParam('charts', ObjectParam);
@@ -37,17 +21,15 @@ export const TimeIntervalButtons = ({ chartId }) => {
     <div className={s.wrap}>
       <span className={s.title}>Resolution</span>
       <div className={s.rangeWrap}>
-        {Object.values(RANGE).map((item) => {
+        {CHART_SCALE.map((item) => {
           return (
             <button
               type="button"
-              key={item.queryValue}
-              onClick={(event) => handlerClick(event, item.queryValue)}
+              key={item.queryKey}
+              onClick={(event) => handlerClick(event, item.queryKey)}
               className={cn(s.button, {
                 [s.active]:
-                  chartsQuery?.[chartId] === item.queryValue ||
-                  (!chartsQuery?.[chartId] &&
-                    DEFAULT_CHART_SCALE === item.queryValue),
+                  getNormalizedScale(chartsQuery?.[chartId]) === item.queryKey,
               })}
             >
               {item.title}

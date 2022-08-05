@@ -64,7 +64,6 @@ export const Modal = ({ open, onClose, children, header, className }) => {
         </div>
         {children}
       </div>
-      )}
     </div>,
     rootModal
   );
