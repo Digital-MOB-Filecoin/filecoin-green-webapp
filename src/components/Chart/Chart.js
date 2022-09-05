@@ -17,7 +17,7 @@ import format from 'date-fns/format';
 import isValid from 'date-fns/isValid';
 
 import { formatBytes } from 'utils/bytes';
-import { formatNumber, formatWatts } from 'utils/numbers';
+import { formatCO2, formatNumber, formatWatts } from 'utils/numbers';
 import { convertNumberToPercent } from 'utils/numbers';
 import { camelCase, getCategoryName } from 'utils/string';
 
@@ -56,6 +56,8 @@ const getFormattedValue = ({ type, value, precision = 2, filter }) => {
       return formatWatts(value, { precision });
     case 'MW_per_EiB':
       return formatNumber(value, 3) + ' MW/EiB';
+    case 'co2':
+      return formatCO2(value, { precision: 2 });
     default:
       return value;
   }

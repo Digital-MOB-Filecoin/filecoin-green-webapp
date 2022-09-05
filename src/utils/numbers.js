@@ -18,11 +18,14 @@ export const formatNumber = (value, precision = 3) => {
   return valueBN.toString();
 };
 
-const units = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
+const wattsUnits = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
 
 export function formatWatts(size, { precision, output, inputUnit } = {}) {
   let n = new BigNumber(size || 0);
-  let l = inputUnit && units.includes(inputUnit) ? units.indexOf(inputUnit) : 0;
+  let l =
+    inputUnit && wattsUnits.includes(inputUnit)
+      ? wattsUnits.indexOf(inputUnit)
+      : 0;
 
   while (n.isGreaterThanOrEqualTo(1000) && ++l) {
     n = n.dividedBy(1000);
@@ -34,8 +37,31 @@ export function formatWatts(size, { precision, output, inputUnit } = {}) {
 
   return output === 'object'
     ? {
-        unit: units[l],
+        unit: wattsUnits[l],
         value: n.toNumber(),
       }
-    : `${n} ${units[l]}`;
+    : `${n} ${wattsUnits[l]}`;
+}
+
+const CO2Units = ['gC02', 'kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
+
+export function formatCO2(size, { precision, output, inputUnit } = {}) {
+  let n = new BigNumber(size || 0);
+  let l =
+    inputUnit && CO2Units.includes(inputUnit) ? CO2Units.indexOf(inputUnit) : 0;
+
+  while (n.isGreaterThanOrEqualTo(1000) && ++l) {
+    n = n.dividedBy(1000);
+  }
+
+  if (typeof precision === 'number') {
+    n = n.decimalPlaces(precision, BigNumber.ROUND_FLOOR);
+  }
+
+  return output === 'object'
+    ? {
+        unit: CO2Units[l],
+        value: n.toNumber(),
+      }
+    : `${n} ${CO2Units[l]}`;
 }
