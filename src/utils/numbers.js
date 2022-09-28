@@ -22,46 +22,64 @@ const wattsUnits = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
 
 export function formatWatts(size, { precision, output, inputUnit } = {}) {
   let n = new BigNumber(size || 0);
+  const isNegative = n.isNegative();
   let l =
     inputUnit && wattsUnits.includes(inputUnit)
       ? wattsUnits.indexOf(inputUnit)
       : 0;
 
-  while (n.isGreaterThanOrEqualTo(1000) && ++l) {
-    n = n.dividedBy(1000);
+  if (isNegative) {
+    while (n.isLessThanOrEqualTo(-1000) && ++l) {
+      n = n.dividedBy(1000);
+    }
+  } else {
+    while (n.isGreaterThanOrEqualTo(1000) && ++l) {
+      n = n.dividedBy(1000);
+    }
   }
 
   if (typeof precision === 'number') {
     n = n.decimalPlaces(precision, BigNumber.ROUND_FLOOR);
   }
 
+  const unit = wattsUnits[l];
+
   return output === 'object'
     ? {
-        unit: wattsUnits[l],
+        unit,
         value: n.toNumber(),
       }
-    : `${n} ${wattsUnits[l]}`;
+    : `${n} ${unit}`;
 }
 
 const CO2Units = ['gC02', 'kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
 
 export function formatCO2(size, { precision, output, inputUnit } = {}) {
   let n = new BigNumber(size || 0);
+  const isNegative = n.isNegative();
   let l =
     inputUnit && CO2Units.includes(inputUnit) ? CO2Units.indexOf(inputUnit) : 0;
 
-  while (n.isGreaterThanOrEqualTo(1000) && ++l) {
-    n = n.dividedBy(1000);
+  if (isNegative) {
+    while (n.isLessThanOrEqualTo(-1000) && ++l) {
+      n = n.dividedBy(1000);
+    }
+  } else {
+    while (n.isGreaterThanOrEqualTo(1000) && ++l) {
+      n = n.dividedBy(1000);
+    }
   }
 
   if (typeof precision === 'number') {
     n = n.decimalPlaces(precision, BigNumber.ROUND_FLOOR);
   }
 
+  const unit = CO2Units[l];
+
   return output === 'object'
     ? {
-        unit: CO2Units[l],
+        unit,
         value: n.toNumber(),
       }
-    : `${n} ${CO2Units[l]}`;
+    : `${n} ${unit}`;
 }
