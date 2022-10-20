@@ -9,8 +9,7 @@ import dateIsValid from 'date-fns/isValid';
 import { fetchChartModels, fetchMinerData } from 'api';
 import { MAX_DATEPICKER_DATE, defaultDataState } from 'constant';
 import { getNormalizedScale } from 'utils/string';
-import { Search } from 'components/Search';
-import { Datepicker } from 'components/Datepicker';
+import { FiltersBar } from 'components/FiltersBar';
 import { Svg } from 'components/Svg';
 import { Filters } from 'components/DataPage/Filters';
 import { Chart } from 'components/Chart';
@@ -158,10 +157,9 @@ export default function DataPage() {
     <>
       <div className="container">
         <div className={s.header}>
-          <Search placeholder="Storage Provider ID" className={s.search} />
-          <Datepicker
+          <FiltersBar
             dateInterval={dateInterval}
-            onChange={handlerSetDateInterval}
+            onChangeDateInterval={handlerSetDateInterval}
           />
         </div>
         {query.miner ? (

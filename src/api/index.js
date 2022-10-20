@@ -54,3 +54,9 @@ export const fetchMinerData = async (minerId) => {
     `https://api.filrep.io/api/miners?limit=10&offset=0&search=${minerId}`
   );
 };
+
+export const fetchSearchMapList = async (abortController) => {
+  return api(`${config.apiBaseUrl}map/list`, {
+    signal: abortController?.signal,
+  });
+};
