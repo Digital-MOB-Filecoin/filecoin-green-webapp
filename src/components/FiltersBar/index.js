@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useQueryParam, StringParam } from 'use-query-params';
 import cn from 'classnames';
@@ -25,6 +25,7 @@ export const FiltersBar = ({
   const [showMap, setShowMap] = useState(false);
   const [data, setData] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const wrapperRef = useRef();
 
   const handlerSetQuery = (value) => {
     setMinerQuery(value || undefined);
@@ -53,8 +54,32 @@ export const FiltersBar = ({
     }
   }, [showMap]);
 
+  useEffect(() => {
+    const clickHandler = (e) => {
+      if (!wrapperRef.current.contains(e.target)) {
+        setShowMap(false);
+      }
+    };
+
+    const keyboardHandler = (e) => {
+      if (e.code === 'Escape') {
+        setShowMap(false);
+      }
+    };
+
+    if (showMap) {
+      document.addEventListener('click', clickHandler);
+      document.addEventListener('keyup', keyboardHandler);
+    }
+
+    return () => {
+      document.removeEventListener('click', clickHandler);
+      document.removeEventListener('keyup', keyboardHandler);
+    };
+  }, [showMap]);
+
   return (
-    <div className={cn(s.wrapper, className)}>
+    <div className={cn(s.wrapper, className)} ref={wrapperRef}>
       <form
         className={cn(s.form, { [s.hasFocus]: showMap })}
         onSubmit={handlerSubmit}
@@ -72,9 +97,9 @@ export const FiltersBar = ({
           onFocus={() => {
             setShowMap(true);
           }}
-          onBlur={() => {
-            setShowMap(false);
-          }}
+          // onBlur={() => {
+          //   setShowMap(false);
+          //}}
           placeholder="Storage Provider ID"
         />
       </form>

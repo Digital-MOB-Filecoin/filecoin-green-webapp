@@ -37,7 +37,7 @@
   letter-spacing: 0;
   text-align: left;
   color: var(--theme-text-primary);
-  border: 0;
+  border: 1px solid transparent;
   background: var(--theme-input-bg);
   border-radius: 8px;
   outline: none;
