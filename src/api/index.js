@@ -55,8 +55,14 @@ export const fetchMinerData = async (minerId) => {
   );
 };
 
-export const fetchSearchMapList = async (abortController) => {
-  return api(`${config.apiBaseUrl}map/list`, {
-    signal: abortController?.signal,
-  });
+export const fetchMapChart = async () => {
+  return api(`${config.apiBaseUrl}map/list`);
+};
+
+export const fetchMapChartMarkers = async (countryCode) => {
+  return api(`${config.apiBaseUrl}map/list/country?country=${countryCode}`);
+};
+
+export const fetchMapChartMiner = async (minedId) => {
+  return api(`${config.apiBaseUrl}map/list/miner?miner=${minedId}`);
 };

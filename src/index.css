@@ -173,10 +173,14 @@ main {
 }
 
 .rsm-svg {
-  height: 100%;
+  /*height: 100%;*/
 }
 
 .rsm-geography {
-  transition: fill 0.5s ease-out;
+  transition: fill 0.2s ease-out;
+  outline: none;
+}
+
+.rsm-marker {
   outline: none;
 }

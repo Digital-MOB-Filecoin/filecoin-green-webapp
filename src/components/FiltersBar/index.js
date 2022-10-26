@@ -1,62 +1,41 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import { useQueryParam, StringParam } from 'use-query-params';
 import cn from 'classnames';
+import ReactDOM from 'react-dom';
 
-import { fetchSearchMapList } from 'api';
-
+import { fetchMapChart, fetchMapChartMarkers } from 'api';
 import { getCountryNameByCode } from 'utils/country';
-import { Svg } from 'components/Svg';
-import { Spinner } from 'components/Spinner';
+import { formatBytes } from 'utils/bytes';
 import { Datepicker } from 'components/Datepicker';
-import MapChart from 'components/MapChart';
+import { MapChart } from 'components/FiltersBar/MapChart';
 
+import { Search } from './Search';
+import { ChartTable } from './ChartTable';
 import s from './s.module.css';
-
-const inputName = 'search';
 
 export const FiltersBar = ({
   className,
   dateInterval,
   onChangeDateInterval,
 }) => {
-  const [minerQuery, setMinerQuery] = useQueryParam('miner', StringParam);
-  const [value, setValue] = useState(minerQuery);
-  const [showMap, setShowMap] = useState(false);
-  const [data, setData] = useState([]);
+  const [showMap, setShowMap] = useState(true);
+  const [countries, setCountries] = useState([]);
+  const [markers, setMarkers] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const wrapperRef = useRef();
-
-  const handlerSetQuery = (value) => {
-    setMinerQuery(value || undefined);
-  };
-
-  const debounced = useDebouncedCallback(handlerSetQuery, 200);
-
-  const handlerSubmit = (event) => {
-    debounced.cancel();
-    const formData = new FormData(event.target);
-    event.preventDefault();
-
-    handlerSetQuery(formData.get(inputName));
-  };
-
-  useEffect(() => {
-    setValue(minerQuery);
-  }, [minerQuery]);
 
   useEffect(() => {
     if (showMap) {
       setIsDataLoading(true);
-      fetchSearchMapList()
-        .then((data) => setData(data))
+      fetchMapChart()
+        .then((data) => setCountries(data))
         .finally(() => setIsDataLoading(false));
     }
   }, [showMap]);
 
   useEffect(() => {
     const clickHandler = (e) => {
-      if (!wrapperRef.current.contains(e.target)) {
+      if (!ReactDOM.findDOMNode(wrapperRef.current)?.contains(e.target)) {
         setShowMap(false);
       }
     };
@@ -68,8 +47,8 @@ export const FiltersBar = ({
     };
 
     if (showMap) {
-      document.addEventListener('click', clickHandler);
-      document.addEventListener('keyup', keyboardHandler);
+      document.addEventListener('click', clickHandler, { capture: true });
+      document.addEventListener('keyup', keyboardHandler, { capture: true });
     }
 
     return () => {
@@ -78,70 +57,96 @@ export const FiltersBar = ({
     };
   }, [showMap]);
 
+  const handlerFetchMapChartCountry = (countryCode) => {
+    if (!countryCode) return null;
+    setSelectedCountry(countryCode);
+    setIsDataLoading(true);
+
+    fetchMapChartMarkers(countryCode)
+      .then((data) => setMarkers(data))
+      .finally(() => setIsDataLoading(false));
+  };
+
+  const handlerOnZoomOut = () => {
+    setMarkers([]);
+    setSelectedCountry(null);
+  };
+
+  const getTableColumns = () => {
+    const temp = {
+      head: [{ title: '' }, { title: '' }],
+      data: [],
+    };
+
+    if (isDataLoading) {
+      return temp;
+    }
+
+    if (selectedCountry) {
+      temp.head = [
+        { title: 'Storage provider' },
+        { title: 'Total raw power', alignRight: true },
+      ];
+      temp.data = markers.map((item) => [
+        {
+          value: item.miner,
+        },
+        {
+          value: formatBytes(item.power, {
+            precision: 2,
+            inputUnit: 'GiB',
+            iec: true,
+          }),
+          alignRight: true,
+        },
+      ]);
+
+      return temp;
+    }
+
+    temp.head = [
+      { title: 'Country' },
+      { title: '# of storage providers', alignRight: true },
+    ];
+    temp.data = countries.map((item) => [
+      {
+        value: getCountryNameByCode(item.country),
+      },
+      {
+        value: item.storage_providers,
+        alignRight: true,
+      },
+    ]);
+
+    return temp;
+  };
+
   return (
     <div className={cn(s.wrapper, className)} ref={wrapperRef}>
-      <form
-        className={cn(s.form, { [s.hasFocus]: showMap })}
-        onSubmit={handlerSubmit}
-      >
-        <Svg id="search" className={s.icon} />
-        <input
-          type="search"
-          name={inputName}
-          className={cn(s.input, { [s.hasFocus]: showMap })}
-          value={value || ''}
-          onChange={(e) => {
-            setValue(e.target.value);
-            debounced(e.target.value);
-          }}
-          onFocus={() => {
-            setShowMap(true);
-          }}
-          // onBlur={() => {
-          //   setShowMap(false);
-          //}}
-          placeholder="Storage Provider ID"
-        />
-      </form>
+      <Search onShowMap={() => setShowMap(true)} isMapShown={showMap} />
+
       {showMap ? (
         <div className={s.chartWrapper}>
-          <MapChart width={723} height={381} data={data} />
-          <div className={s.tableWrapper}>
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    <div>Country</div>
-                  </th>
-                  <th className={s.alignRight}>
-                    <div># of storage providers</div>
-                  </th>
-                </tr>
-              </thead>
-              {isDataLoading ? (
-                <tbody>
-                  <tr>
-                    <td colSpan={2} style={{ textAlign: 'center' }}>
-                      <Spinner />
-                    </td>
-                  </tr>
-                </tbody>
-              ) : null}
-
-              {!isDataLoading ? (
-                <tbody>
-                  {data.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>{getCountryNameByCode(item.country)}</td>
-                      <td className={s.alignRight}>{item.storage_providers}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              ) : null}
-            </table>
-          </div>
+          <MapChart
+            width={723}
+            height={381}
+            countries={countries}
+            markers={markers}
+            loading={isDataLoading}
+            onSelectCountry={handlerFetchMapChartCountry}
+            selectedCountry={selectedCountry}
+            onZoomOut={handlerOnZoomOut}
+          />
+          <ChartTable
+            loading={isDataLoading}
+            columns={getTableColumns()}
+            onBackToCountries={
+              !isDataLoading && selectedCountry ? handlerOnZoomOut : undefined
+            }
+          />
         </div>
       ) : null}
+
       {showMap ? null : (
         <Datepicker
           dateInterval={dateInterval}

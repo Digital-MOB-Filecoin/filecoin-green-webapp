@@ -69,3 +69,10 @@
   text-align: left;
   color: var(--theme-tooltip-color-secondary);
 }
+
+.spinner {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 1;
+}
