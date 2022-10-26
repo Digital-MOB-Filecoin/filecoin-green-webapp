@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import ReactDOM from 'react-dom';
 
@@ -17,7 +17,7 @@ export const FiltersBar = ({
   dateInterval,
   onChangeDateInterval,
 }) => {
-  const [showMap, setShowMap] = useState(true);
+  const [showMap, setShowMap] = useState(false);
   const [countries, setCountries] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
@@ -31,9 +31,7 @@ export const FiltersBar = ({
         .then((data) => setCountries(data))
         .finally(() => setIsDataLoading(false));
     }
-  }, [showMap]);
 
-  useEffect(() => {
     const clickHandler = (e) => {
       if (!ReactDOM.findDOMNode(wrapperRef.current)?.contains(e.target)) {
         setShowMap(false);
@@ -57,22 +55,34 @@ export const FiltersBar = ({
     };
   }, [showMap]);
 
-  const handlerFetchMapChartCountry = (countryCode) => {
+  const handlerFetchMapChartMarkers = useCallback((countryCode) => {
     if (!countryCode) return null;
     setSelectedCountry(countryCode);
     setIsDataLoading(true);
+    setMarkers([]);
 
     fetchMapChartMarkers(countryCode)
-      .then((data) => setMarkers(data))
+      .then((data) =>
+        setMarkers(
+          data.map((item) => ({
+            ...item,
+            power: formatBytes(item.power, {
+              precision: 2,
+              inputUnit: 'GiB',
+              iec: true,
+            }),
+          }))
+        )
+      )
       .finally(() => setIsDataLoading(false));
-  };
+  }, []);
 
   const handlerOnZoomOut = () => {
     setMarkers([]);
     setSelectedCountry(null);
   };
 
-  const getTableColumns = () => {
+  const tableColumns = useMemo(() => {
     const temp = {
       head: [{ title: '' }, { title: '' }],
       data: [],
@@ -92,11 +102,7 @@ export const FiltersBar = ({
           value: item.miner,
         },
         {
-          value: formatBytes(item.power, {
-            precision: 2,
-            inputUnit: 'GiB',
-            iec: true,
-          }),
+          value: item.power,
           alignRight: true,
         },
       ]);
@@ -119,7 +125,7 @@ export const FiltersBar = ({
     ]);
 
     return temp;
-  };
+  }, [isDataLoading, selectedCountry, markers, countries]);
 
   return (
     <div className={cn(s.wrapper, className)} ref={wrapperRef}>
@@ -133,13 +139,13 @@ export const FiltersBar = ({
             countries={countries}
             markers={markers}
             loading={isDataLoading}
-            onSelectCountry={handlerFetchMapChartCountry}
+            onSelectCountry={handlerFetchMapChartMarkers}
             selectedCountry={selectedCountry}
             onZoomOut={handlerOnZoomOut}
           />
           <ChartTable
             loading={isDataLoading}
-            columns={getTableColumns()}
+            columns={tableColumns}
             onBackToCountries={
               !isDataLoading && selectedCountry ? handlerOnZoomOut : undefined
             }

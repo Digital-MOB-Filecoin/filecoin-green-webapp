@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -14,9 +14,8 @@ import { Spinner } from 'components/Spinner';
 
 import geography from './world-countries-sans-antarctica.json';
 import s from './s.module.css';
-import { formatBytes } from '../../../utils/bytes';
 
-const projection = d3Projection.geoNaturalEarth2().scale(150).center([65, -10]);
+const projection = d3Projection.geoNaturalEarth2().scale(150);
 
 const colorScale = (value, domain) => {
   if (!value || !domain) {
@@ -50,7 +49,7 @@ const getMinMax = (arr) => {
 };
 
 const defaultZoom = 1;
-const defaultCenter = [0, 0];
+const defaultCenter = [10, 10];
 const defaultCountryZoom = 4;
 
 export function MapChart({
@@ -63,25 +62,30 @@ export function MapChart({
   selectedCountry,
   onZoomOut,
 }) {
-  const [parsedData, setParsedData] = useState([]);
   const [domain, setDomain] = useState(null);
-  const [tooltipContent, setTooltipContent] = useState(null);
   const [zoom, setZoom] = useState(defaultZoom);
   const [center, setCenter] = useState(defaultCenter);
+  const [tooltipContent, setTooltipContent] = useState(null);
+  const [availableCountryCodes, setAvailableCountryCodes] = useState([]);
 
-  const availableCountryCodes = useMemo(() => {
-    return countries.map(({ country }) => country);
-  }, [countries, countries?.length]);
+  useEffect(ReactTooltip.rebuild, [
+    countries?.length,
+    selectedCountry,
+    markers?.length,
+    loading,
+  ]);
 
   useEffect(() => {
-    ReactTooltip.rebuild();
-  }, [countries?.length, selectedCountry, markers?.length]);
+    const providers = [];
+    const codes = [];
 
-  useEffect(() => {
-    setParsedData(countries);
-    setDomain(
-      getMinMax(countries.map((item) => Number(item.storage_providers)))
-    );
+    countries?.forEach((item) => {
+      providers.push(Number(item.storage_providers));
+      codes.push(item.country);
+    });
+
+    setDomain(getMinMax(providers));
+    setAvailableCountryCodes(codes);
   }, [countries, countries?.length]);
 
   useEffect(() => {
@@ -115,6 +119,10 @@ export function MapChart({
         style={{ width: '100%', height: '100%' }}
       >
         <ZoomableGroup
+          translateExtent={[
+            [141, 33],
+            [width + 140, height + 33],
+          ]}
           zoom={zoom}
           center={center}
           minZoom={1}
@@ -140,7 +148,7 @@ export function MapChart({
 
                 const storageProviders =
                   (isAvailable &&
-                    parsedData.find((item) => item.country === alpha2)
+                    countries.find((item) => item.country === alpha2)
                       ?.storage_providers) ||
                   0;
 
@@ -207,11 +215,7 @@ export function MapChart({
               title: marker.miner,
               data: [
                 {
-                  value: formatBytes(marker.power, {
-                    precision: 2,
-                    inputUnit: 'GiB',
-                    iec: true,
-                  }),
+                  value: marker.power,
                   title: 'total raw power',
                 },
               ],

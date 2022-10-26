@@ -95,7 +95,7 @@ export const ExportButton = ({ className, id, filename, interval, filter }) => {
         }
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       setLoading(false);
     }
