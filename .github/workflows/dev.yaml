@@ -40,18 +40,17 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: dev-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: dev-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: yarn install --pure-lockfile
 
       - name: Build
-        run: npm run build
+        run: yarn build
         env:
           CI: false
-          SKIP_PREFLIGHT_CHECK: true
-          REACT_APP_API_BASE_URL: 'https://api.filgreen.d.interplanetary.one/'
+          REACT_APP_API_BASE_URL: https://api.filgreen.d.interplanetary.one/
 
       - name: Save artifacts
         uses: actions/upload-artifact@v2
