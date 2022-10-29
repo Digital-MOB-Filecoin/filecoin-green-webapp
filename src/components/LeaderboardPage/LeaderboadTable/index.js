@@ -7,7 +7,7 @@ import { Svg } from 'components/Svg';
 import s from './s.module.css';
 
 export const LeaderboardTable = () => {
-  const [data, setData] = useState({
+  const [data] = useState({
     results: Array(10)
       .fill(null)
       .map((_, idx) => ({
@@ -21,7 +21,7 @@ export const LeaderboardTable = () => {
     loading: false,
     failed: false,
   });
-  const [total, setTotal] = useState(0);
+  const [total] = useState(0);
   const [query, setQuery] = useQueryParams({
     miner: StringParam,
     limit: NumberParam,
