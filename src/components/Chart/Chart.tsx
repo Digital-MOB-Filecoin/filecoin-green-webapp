@@ -337,7 +337,7 @@ export const ChartComponent = ({
               <Spinner className={s.spinner} width={40} height={40} />
             </div>
           ) : null}
-          {failed ? (
+          {!loading && failed ? (
             <div className={s.loader}>
               <p className={s.failed}>Failed to Load Data.</p>
             </div>

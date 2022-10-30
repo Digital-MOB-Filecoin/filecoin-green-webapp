@@ -1,35 +1,32 @@
-import { lazy, Suspense } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Navigate, Route, Routes, Outlet } from 'react-router-dom';
 
-import { Spinner } from 'components/Spinner';
 import { Header } from 'components/Header';
+import DataPage from 'components/DataPage';
+import MethodologyPage from 'components/MethodologyPage';
+import LeaderboardPage from 'components/LeaderboardPage';
 
-const LeaderboardPage = lazy(() => import('components/LeaderboardPage'));
-const DataPage = lazy(() => import('components/DataPage'));
-const AboutPage = lazy(() => import('components/MethodologyPage'));
-
-function App() {
+function AppSkeleton() {
   return (
     <>
       <Header />
       <main>
-        <Suspense
-          fallback={
-            <div style={{ margin: 'auto' }}>
-              <Spinner width={40} height={40} />
-            </div>
-          }
-        >
-          <Switch>
-            <Route exact path="/" component={DataPage} />
-            <Route path="/leaderboard" component={LeaderboardPage} />
-            <Route path="/methodology" component={AboutPage} />
-
-            <Redirect to="/" />
-          </Switch>
-        </Suspense>
+        <Outlet />
       </main>
     </>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<AppSkeleton />}>
+        <Route index element={<DataPage />} />
+        <Route path="leaderboard" element={<LeaderboardPage />} />
+        <Route path="methodology" element={<MethodologyPage />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

@@ -1,12 +1,34 @@
-import { useRef, useEffect } from 'react';
-import ReactDOM, { createPortal } from 'react-dom';
+import { useRef, useEffect, forwardRef, ForwardedRef } from 'react';
+import ReactDOM from 'react-dom';
 import cn from 'classnames';
 
 import { Svg } from 'components/Svg';
 import s from './s.module.css';
 
 const root = document.getElementById('root');
-const rootModal = document.getElementById('root-modal');
+const rootModal = document.getElementById('root-modal') || document.body;
+
+const ModalChildren = forwardRef(
+  ({ header, children, className, onClose }: any, ref: ForwardedRef<any>) =>
+    ReactDOM.createPortal(
+      <div className={s.wrap}>
+        <div className={cn(s.inner, className)} ref={ref}>
+          <div className={s.header}>
+            {header}
+            <button
+              className={s.closeButton}
+              type="button"
+              onClick={() => onClose()}
+            >
+              <Svg id="close" />
+            </button>
+          </div>
+          {children}
+        </div>
+      </div>,
+      rootModal
+    )
+);
 
 export const Modal = ({ open, onClose, children, header, className }) => {
   const innerRef = useRef<any>();
@@ -34,8 +56,8 @@ export const Modal = ({ open, onClose, children, header, className }) => {
     }
 
     return () => {
-      document.removeEventListener('click', clickHandler);
-      document.removeEventListener('keyup', keyboardHandler);
+      document.removeEventListener('click', clickHandler, { capture: true });
+      document.removeEventListener('keyup', keyboardHandler, { capture: true });
       if (root) {
         root.removeAttribute('inert');
         document.body.style.overflow = 'visible';
@@ -45,22 +67,13 @@ export const Modal = ({ open, onClose, children, header, className }) => {
 
   if (!open || !rootModal) return null;
 
-  return createPortal(
-    <div className={s.wrap}>
-      <div className={cn(s.inner, className)} ref={innerRef}>
-        <div className={s.header}>
-          {header}
-          <button
-            className={s.closeButton}
-            type="button"
-            onClick={() => onClose()}
-          >
-            <Svg id="close" />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>,
-    rootModal
+  return (
+    <ModalChildren
+      ref={innerRef}
+      header={header}
+      children={children}
+      onClose={onClose}
+      className={className}
+    />
   );
 };

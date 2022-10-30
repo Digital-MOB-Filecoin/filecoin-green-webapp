@@ -72,7 +72,7 @@ export const Month = ({
         monthType: getDayMonthType(dayDate, shownMonth),
       };
     });
-  }, [shownMonth]);
+  }, [calendarMonth.start, shownMonth]);
 
   const handlerPrevMonth = () => {
     setCalendarMonth((prevState) => {

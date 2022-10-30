@@ -6,7 +6,7 @@ import { Svg } from 'components/Svg';
 import s from './s.module.css';
 
 export type TMapChartTableRow = {
-  onClick: () => void;
+  onClick?: () => void;
   data: {
     value: string;
     alignRight?: boolean;
@@ -49,25 +49,33 @@ export const MapChartTable = ({
               </div>
             </div>
           ) : data.length ? (
-            data.map((row, idx) => (
-              <button
-                type="button"
-                key={idx}
-                className={s.tableRow}
-                onClick={row.onClick}
-              >
-                {row.data.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(s.tableTd, {
-                      [s.alignRight]: item.alignRight,
-                    })}
-                  >
-                    {item.value}
-                  </div>
-                ))}
-              </button>
-            ))
+            data.map((row, idx) => {
+              const children = row.data.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={cn(s.tableTd, {
+                    [s.alignRight]: item.alignRight,
+                  })}
+                >
+                  {item.value}
+                </div>
+              ));
+
+              return row.onClick ? (
+                <button
+                  key={idx}
+                  type="button"
+                  className={s.tableRow}
+                  onClick={row.onClick}
+                >
+                  {children}
+                </button>
+              ) : (
+                <div key={idx} className={s.tableRow}>
+                  {children}
+                </div>
+              );
+            })
           ) : (
             <div className={s.tableRow}>
               <div className={cn(s.tableTd, s.alignCenter)}>No data</div>

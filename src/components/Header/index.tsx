@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
+import cn from 'classnames';
 
 import s from './s.module.css';
 
@@ -15,10 +16,11 @@ export const Header = () => {
           </Link>
           <nav className={s.nav}>
             <NavLink
-              exact
+              end
               to="/"
-              className={s.navLink}
-              activeClassName={s.active}
+              className={({ isActive }) =>
+                cn(s.navLink, { [s.active]: isActive })
+              }
             >
               <span>Data</span>
             </NavLink>
@@ -32,9 +34,11 @@ export const Header = () => {
             {/*  <span>Leaderboard</span>*/}
             {/*</NavLink>*/}
             <NavLink
+              end
               to="/methodology"
-              className={s.navLink}
-              activeClassName={s.active}
+              className={({ isActive }) =>
+                cn(s.navLink, { [s.active]: isActive })
+              }
             >
               <span>Methodology</span>
             </NavLink>

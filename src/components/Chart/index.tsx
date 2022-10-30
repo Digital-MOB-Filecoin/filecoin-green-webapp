@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import lightFormat from 'date-fns/lightFormat';
@@ -58,7 +58,9 @@ export const Chart = ({
     miner: StringParam,
   });
 
-  const handlerFetchChartData = useCallback((abortController) => {
+  useEffect(() => {
+    const abortController = new AbortController();
+
     setNormalizedData(defaultNormalizedData);
     setLoading(true);
     setFailed(false);
@@ -107,21 +109,24 @@ export const Chart = ({
       })
       .catch((err) => {
         console.error(err);
+        if (err.code !== 20) {
+          setLoading(false);
+          setFailed(true);
+        }
         setNormalizedData(defaultNormalizedData);
-        setLoading(false);
-        setFailed(true);
       });
-  }, []);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    handlerFetchChartData(abortController);
 
     return () => {
-      return abortController.abort();
+      abortController.abort('refetch');
     };
-  }, [interval.start, interval.end, query.miner, query.charts?.[model.id]]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    interval.end,
+    interval.start,
+    model.id,
+    query.charts?.[model.id],
+    query.miner,
+  ]);
 
   return (
     <ChartComponent

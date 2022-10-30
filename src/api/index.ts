@@ -129,9 +129,9 @@ export const fetchMinerData = async (minerId: string) => {
 export type TFetchMapChartResponse = {
   country: string;
   storage_providers: string;
-}[];
+};
 
-export const fetchMapChart = async (): Promise<TFetchMapChartResponse> => {
+export const fetchMapChart = async (): Promise<TFetchMapChartResponse[]> => {
   return api(`${config.apiBaseUrl}map/list`);
 };
 
@@ -142,10 +142,10 @@ export type TFetchMapChartMarkersResponse = {
   long: number;
   miner: string;
   power: string;
-}[];
+};
 export const fetchMapChartMarkers = async (
   countryCode: string
-): Promise<TFetchMapChartMarkersResponse> => {
+): Promise<TFetchMapChartMarkersResponse[]> => {
   return api(`${config.apiBaseUrl}map/list/country?country=${countryCode}`);
 };
 

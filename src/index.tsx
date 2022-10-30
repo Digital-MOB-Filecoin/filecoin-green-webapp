@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ReactRouter5Adapter } from 'use-query-params/adapters/react-router-5';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 
 import App from 'components/App';
 
@@ -11,13 +11,15 @@ import './index.css';
 // polyfill
 import 'wicg-inert';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container!);
+
+root.render(
   <React.StrictMode>
     <Router>
-      <QueryParamProvider adapter={ReactRouter5Adapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <App />
       </QueryParamProvider>
     </Router>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

@@ -35,9 +35,14 @@ const colorScale = (value, domain): string => {
   );
 };
 
+// props?: {
+//   title: string;
+//   data: { value: string; title: string }[];
+// }
 const handleTooltipContent = (props) => {
   if (!props) return null;
-  const { data, title } = props;
+
+  const { data, title } = JSON.parse(props);
 
   return (
     <>
@@ -61,12 +66,13 @@ const getMinMax = (arr: number[]): [number, number] => {
 type TMapChart = {
   width: number;
   height: number;
-  countries: TFetchMapChartResponse;
+  countries: TFetchMapChartResponse[];
   loading: boolean;
   onSelectCountry: (country: string) => void;
-  markers: TFetchMapChartMarkersResponse;
+  markers: TFetchMapChartMarkersResponse[];
   selectedCountry: string | null;
   onZoomOut: () => void;
+  onSelectMiner: (minerId: string) => void;
 };
 
 export function MapChart({
@@ -77,15 +83,12 @@ export function MapChart({
   markers,
   selectedCountry,
   onSelectCountry,
+  onSelectMiner,
   onZoomOut,
 }: TMapChart) {
   const [zoom, setZoom] = useState(defaultZoom);
   const [center, setCenter] = useState<[number, number]>(defaultCenter);
   const [domain, setDomain] = useState<number[]>([0, 0]);
-  const [tooltipContent, setTooltipContent] = useState<null | {
-    title: string;
-    data: { value: string; title: string }[];
-  }>(null);
   const [availableCountryCodes, setAvailableCountryCodes] = useState<string[]>(
     []
   );
@@ -124,28 +127,8 @@ export function MapChart({
     [onSelectCountry]
   );
 
-  const handlerShowGeoTooltip = useCallback(
-    ({ tip, isAvailable }) =>
-      () => {
-        if (isAvailable && !selectedCountry) {
-          setTooltipContent(tip);
-        }
-      },
-    [selectedCountry]
-  );
-
-  const handlerHideGeoTooltip = useCallback(
-    ({ isAvailable, alpha2 }) =>
-      () => {
-        if (isAvailable && selectedCountry && selectedCountry === alpha2) {
-          setTooltipContent(null);
-        }
-      },
-    [selectedCountry]
-  );
-
   const handlerGeoClick = useCallback(
-    ({ isAvailable, geo, path, projection, alpha2 }) =>
+    ({ isAvailable, geo, path, projection }) =>
       () => {
         if (isAvailable && !selectedCountry) {
           handlerZoomCountry(geo, projection, path);
@@ -179,10 +162,12 @@ export function MapChart({
           center={center}
           minZoom={1}
           maxZoom={selectedCountry ? 300 : 2}
-          onMoveEnd={({ zoom: zoomAfter }) => {
+          onMoveEnd={({ zoom: zoomAfter, coordinates }) => {
             if (zoomAfter < defaultCountryZoom) {
               onZoomOut();
             }
+            setZoom(zoomAfter);
+            setCenter(coordinates);
           }}
         >
           <Geographies geography={geography}>
@@ -202,16 +187,6 @@ export function MapChart({
                       ?.storage_providers) ||
                   0;
 
-                const tip = {
-                  title: geo.properties.name,
-                  data: [
-                    {
-                      value: storageProviders,
-                      title: 'storage providers',
-                    },
-                  ],
-                };
-
                 const fill = (): string => {
                   if (selectedCountry) {
                     if (selectedCountry === alpha2) {
@@ -230,61 +205,49 @@ export function MapChart({
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    onMouseEnter={handlerShowGeoTooltip({ tip, isAvailable })}
-                    onMouseLeave={handlerHideGeoTooltip({
-                      isAvailable,
-                      alpha2,
-                    })}
                     onClick={handlerGeoClick({
                       isAvailable,
                       geo,
                       path,
                       projection,
-                      alpha2,
                     })}
                     fill={fill()}
                     stroke="#fff"
                     strokeWidth={0.5}
-                    data-tip={''}
+                    data-tip={
+                      isAvailable && !selectedCountry
+                        ? JSON.stringify({
+                            title: geo.properties.name,
+                            data: [
+                              {
+                                value: storageProviders,
+                                title: 'storage providers',
+                              },
+                            ],
+                          })
+                        : ''
+                    }
                   />
                 );
               })
             }
           </Geographies>
-          {markers.map(
-            (
-              marker: {
-                miner: string;
-                power: string;
-                long: number;
-                lat: number;
-              },
-              idx
-            ) => {
-              const tip = {
-                title: marker.miner,
-                data: [
-                  {
-                    value: marker.power,
-                    title: 'total raw power',
-                  },
-                ],
-              };
-
-              return (
-                <Marker
-                  key={idx}
-                  coordinates={[marker.long, marker.lat]}
-                  data-tip=""
-                  onMouseEnter={() => setTooltipContent(tip)}
-                  onMouseLeave={() => setTooltipContent(null)}
-                >
-                  <circle r={7 / zoom} fill="#4EA394" opacity="0.24" />
-                  <circle r={3 / zoom} fill="#4EA394" />
-                </Marker>
-              );
-            }
-          )}
+          {markers.map((marker: TFetchMapChartMarkersResponse, idx) => {
+            return (
+              <Marker
+                key={idx}
+                coordinates={[marker.long, marker.lat]}
+                data-tip={JSON.stringify({
+                  title: marker.miner,
+                  data: [{ value: marker.power, title: 'total raw power' }],
+                })}
+                onClick={() => onSelectMiner(marker.miner)}
+              >
+                <circle r={7 / zoom} fill="#4EA394" opacity="0.24" />
+                <circle r={3 / zoom} fill="#4EA394" />
+              </Marker>
+            );
+          })}
         </ZoomableGroup>
       </ComposableMap>
       {loading ? <Spinner className={s.spinner} /> : null}
@@ -293,9 +256,8 @@ export function MapChart({
         place="top"
         className={s.tooltip}
         key={selectedCountry}
-      >
-        {handleTooltipContent(tooltipContent)}
-      </ReactTooltip>
+        getContent={handleTooltipContent}
+      />
     </div>
   );
 }

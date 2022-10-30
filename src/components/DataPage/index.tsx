@@ -6,6 +6,7 @@ import {
   sub as dateSub,
   lightFormat as dateLightFormat,
   isValid as dateIsValid,
+  getTime as dateGetTime,
 } from 'date-fns';
 
 import { fetchChartModels, fetchMinerData } from 'api';
@@ -30,19 +31,19 @@ export type TChartModel = {
 };
 
 export default function DataPage() {
-  const [chartModels, setChartModels] = useState<TChartModel[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [failed, setFailed] = useState<boolean>(false);
-  const [showChartsModal, setShowChartsModal] = useState(false);
-  const [selectedCharts, setSelectedCharts] = useState<TChartModel[]>([]);
-  const [minerData, setMinerData] = useState<any>(null);
-
   const [query, setQuery] = useQueryParams({
     charts: ObjectParam,
     miner: StringParam,
     start: StringParam,
     end: StringParam,
   });
+
+  const [chartModels, setChartModels] = useState<TChartModel[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [failed, setFailed] = useState<boolean>(false);
+  const [showChartsModal, setShowChartsModal] = useState(false);
+  const [selectedCharts, setSelectedCharts] = useState<TChartModel[]>([]);
+  const [minerData, setMinerData] = useState<any>(null);
 
   const [dateInterval, setDateInterval] = useState<Interval>(() => {
     const parsedStartDate = query.start
@@ -60,21 +61,21 @@ export default function DataPage() {
       !dateIsValid(parsedEndDate)
     ) {
       return {
-        start: dateSub(MAX_DATEPICKER_DATE, { months: 6 }).getTime(),
-        end: MAX_DATEPICKER_DATE,
+        start: dateGetTime(dateSub(MAX_DATEPICKER_DATE, { months: 6 })),
+        end: dateGetTime(MAX_DATEPICKER_DATE),
       };
     }
 
     if (parsedStartDate > parsedEndDate) {
       return {
-        start: parsedEndDate,
-        end: parsedStartDate,
+        start: dateGetTime(parsedEndDate),
+        end: dateGetTime(parsedStartDate),
       };
     }
 
     return {
-      start: parsedStartDate,
-      end: parsedEndDate,
+      start: dateGetTime(parsedStartDate),
+      end: dateGetTime(parsedEndDate),
     };
   });
 
@@ -89,19 +90,9 @@ export default function DataPage() {
   };
 
   useEffect(() => {
-    if (query.miner) {
-      fetchMinerData(query.miner).then((data) => {
-        setMinerData(data?.miners?.[0]);
-      });
-    } else {
-      setMinerData(null);
-    }
-  }, [query.miner]);
-
-  useEffect(() => {
     const abortController = new AbortController();
-
     setLoading(true);
+    setFailed(false);
 
     fetchChartModels(abortController)
       .then((results) => {
@@ -121,7 +112,18 @@ export default function DataPage() {
         setLoading(false);
         setFailed(true);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (query.miner) {
+      fetchMinerData(query.miner).then((data) => {
+        setMinerData(data?.miners?.[0]);
+      });
+    } else {
+      setMinerData(null);
+    }
+  }, [query.miner]);
 
   const handlerChangeFilter = (category) => {
     let newCharts: TChartModel[] = [];
@@ -134,12 +136,15 @@ export default function DataPage() {
     setSelectedCharts(newCharts);
     setQuery((prevQuery) => ({
       ...prevQuery,
-      charts: newCharts.reduce((acc, { id }) => {
-        return {
-          ...acc,
-          [id]: getNormalizedScale(query.charts?.[id]),
-        };
-      }, {}),
+      charts:
+        newCharts.length === chartModels.length
+          ? undefined
+          : newCharts.reduce((acc, { id }) => {
+              return {
+                ...acc,
+                [id]: getNormalizedScale(query.charts?.[id]),
+              };
+            }, {}),
     }));
   };
 
@@ -165,112 +170,106 @@ export default function DataPage() {
     selectedCharts.some(({ category }) => category === 'energy');
 
   return (
-    <>
-      <div className="container">
-        <div className={s.header}>
-          <FiltersBar
-            dateInterval={dateInterval}
-            onChangeDateInterval={handlerSetDateInterval}
-          />
-        </div>
-        {query.miner ? (
-          <div className={s.searchContainer}>
-            <span>Storage Provider {query.miner}</span>
-            <button
-              type="button"
-              className={s.searchClear}
-              onClick={() =>
-                setQuery((prevQuery) => ({
-                  ...prevQuery,
-                  miner: undefined,
-                }))
-              }
-            >
-              <Svg id="close" width={16} height={16} />
-            </button>
-            {minerData?.energy?.pageUrl ? (
-              <div className={s.searchContainerSub}>
-                Renewable energy purchases for{' '}
-                <a
-                  href={minerData.energy.pageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {minerData?.address || '--'}
-                </a>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        <div className={s.tabsWrap}>
-          <Filters
-            className={s.tabs}
-            items={[
-              {
-                children: 'Capacity',
-                onClick: () => handlerChangeFilter('capacity'),
-                isActive: selectedCharts.length
-                  ? selectedCharts.every((item) => item.category === 'capacity')
-                  : false,
-              },
-              {
-                children: 'Energy',
-                onClick: () => handlerChangeFilter('energy'),
-                isActive: selectedCharts.length
-                  ? selectedCharts.every((item) => item.category === 'energy')
-                  : false,
-              },
-            ]}
-          />
+    <div className="container">
+      <div className={s.header}>
+        <FiltersBar
+          dateInterval={dateInterval}
+          onChangeDateInterval={handlerSetDateInterval}
+        />
+      </div>
+      {query.miner ? (
+        <div className={s.searchContainer}>
+          <span>Storage Provider {query.miner}</span>
           <button
             type="button"
-            className={s.chooseChartsButton}
-            onClick={() => setShowChartsModal(true)}
+            className={s.searchClear}
+            onClick={() =>
+              setQuery((prevQuery) => ({
+                ...prevQuery,
+                miner: undefined,
+              }))
+            }
           >
-            <span className={s.chooseChartsButtonCounter}>
-              {selectedCharts.length}
-            </span>
-            Charts displayed
+            <Svg id="close" width={16} height={16} />
           </button>
-        </div>
-
-        {loading ? (
-          <div className={s.noCharts}>
-            <div style={{ width: '100%' }}>
-              <Spinner width={24} height={24} />
+          {minerData?.energy?.pageUrl ? (
+            <div className={s.searchContainerSub}>
+              Renewable energy purchases for{' '}
+              <a
+                href={minerData.energy.pageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {minerData?.address || '--'}
+              </a>
             </div>
-          </div>
-        ) : (
-          <>
-            {selectedCharts.length && chartModels.length && !failed ? (
-              selectedCharts.map((model) => (
-                <Chart
-                  key={model.id}
-                  model={model}
-                  interval={dateInterval}
-                  showCategory={showCategory}
-                />
-              ))
-            ) : (
-              <div className={s.noCharts}>
-                <div style={{ width: '100%' }}>
-                  {failed ? 'Failed to Load Data.' : null}
-                  {loading ? 'Select more charts.' : null}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        <MinersTable />
-
-        <div className={s.notification}>
-          These numbers are approximate projections based on the current network
-          state and may be incorrect, do your own research
+          ) : null}
         </div>
+      ) : null}
+
+      <div className={s.tabsWrap}>
+        <Filters
+          className={s.tabs}
+          items={[
+            {
+              children: 'Capacity',
+              onClick: () => handlerChangeFilter('capacity'),
+              isActive: selectedCharts.length
+                ? selectedCharts.every((item) => item.category === 'capacity')
+                : false,
+            },
+            {
+              children: 'Energy',
+              onClick: () => handlerChangeFilter('energy'),
+              isActive: selectedCharts.length
+                ? selectedCharts.every((item) => item.category === 'energy')
+                : false,
+            },
+          ]}
+        />
+        <button
+          type="button"
+          className={s.chooseChartsButton}
+          onClick={() => setShowChartsModal(true)}
+        >
+          <span className={s.chooseChartsButtonCounter}>
+            {selectedCharts.length}
+          </span>
+          Charts displayed
+        </button>
       </div>
 
+      {loading ? (
+        <div className={s.noCharts}>
+          <div style={{ width: '100%' }}>
+            <Spinner width={24} height={24} />
+          </div>
+        </div>
+      ) : failed ? (
+        <div className={s.noCharts}>
+          <div style={{ width: '100%' }}>Failed to Load Data.</div>
+        </div>
+      ) : selectedCharts.length && chartModels.length ? (
+        selectedCharts.map((model) => (
+          <Chart
+            key={model.id}
+            model={model}
+            interval={dateInterval}
+            showCategory={showCategory}
+          />
+        ))
+      ) : (
+        <div className={s.noCharts}>
+          <div style={{ width: '100%' }}>Select more charts.</div>
+        </div>
+      )}
+
+      <MinersTable />
+
+      <div className={s.notification}>
+        These numbers are approximate projections based on the current network
+        state and may be incorrect, do your own research
+      </div>
       <ChartsModal
         loading={loading}
         failed={failed}
@@ -279,6 +278,6 @@ export default function DataPage() {
         open={showChartsModal}
         onClose={handlerCloseModal}
       />
-    </>
+    </div>
   );
 }

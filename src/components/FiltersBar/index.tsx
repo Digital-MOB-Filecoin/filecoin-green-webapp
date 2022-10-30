@@ -33,8 +33,8 @@ export const FiltersBar = ({
     miner: StringParam,
   });
   const [showMap, setShowMap] = useState<boolean>(false);
-  const [countries, setCountries] = useState<TFetchMapChartResponse>([]);
-  const [markers, setMarkers] = useState<TFetchMapChartMarkersResponse>([]);
+  const [countries, setCountries] = useState<TFetchMapChartResponse[]>([]);
+  const [markers, setMarkers] = useState<TFetchMapChartMarkersResponse[]>([]);
   const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
@@ -87,7 +87,7 @@ export const FiltersBar = ({
               inputUnit: 'GiB',
               iec: true,
             });
-            const res: TFetchMapChartMarkersResponse[0] = {
+            const res: TFetchMapChartMarkersResponse = {
               ...item,
               power,
             };
@@ -103,6 +103,29 @@ export const FiltersBar = ({
     setSelectedCountry(null);
   }, []);
 
+  const handlerOnSelectMiner = useCallback(
+    (miner: string) => {
+      setQuery((prevQuery) => ({ ...prevQuery, miner }));
+      setShowMap(false);
+      setSelectedCountry(null);
+      setMarkers([]);
+    },
+    [setQuery]
+  );
+
+  const tableHeader = useMemo(() => {
+    if (selectedCountry) {
+      return [
+        { title: 'Storage provider' },
+        { title: 'Total raw power', alignRight: true },
+      ];
+    }
+    return [
+      { title: 'Country' },
+      { title: '# of storage providers', alignRight: true },
+    ];
+  }, [selectedCountry]);
+
   const tableData: TMapChartTableRow[] = useMemo(() => {
     if (isDataLoading) {
       return [];
@@ -111,7 +134,7 @@ export const FiltersBar = ({
     if (selectedCountry) {
       return markers.map((item: { miner: string; power: string }) => ({
         onClick: () => {
-          setQuery((prevQuery) => ({ ...prevQuery, miner: item.miner }));
+          handlerOnSelectMiner(item.miner);
         },
         data: [
           {
@@ -127,9 +150,6 @@ export const FiltersBar = ({
 
     return countries.map(
       (item: { country: string; storage_providers: string }) => ({
-        onClick: () => {
-          handlerFetchMapChartMarkers(item.country);
-        },
         data: [
           {
             value: getCountryNameByCode(item.country),
@@ -144,10 +164,9 @@ export const FiltersBar = ({
   }, [
     isDataLoading,
     selectedCountry,
-    markers,
     countries,
-    handlerFetchMapChartMarkers,
-    setQuery,
+    markers,
+    handlerOnSelectMiner,
   ]);
 
   return (
@@ -164,20 +183,11 @@ export const FiltersBar = ({
             selectedCountry={selectedCountry}
             onSelectCountry={handlerFetchMapChartMarkers}
             onZoomOut={handlerOnZoomOut}
+            onSelectMiner={handlerOnSelectMiner}
           />
           <MapChartTable
             loading={isDataLoading}
-            head={
-              selectedCountry
-                ? [
-                    { title: 'Storage provider' },
-                    { title: 'Total raw power', alignRight: true },
-                  ]
-                : [
-                    { title: 'Country' },
-                    { title: '# of storage providers', alignRight: true },
-                  ]
-            }
+            head={tableHeader}
             data={tableData}
             onBackToCountries={
               !isDataLoading && selectedCountry ? handlerOnZoomOut : undefined

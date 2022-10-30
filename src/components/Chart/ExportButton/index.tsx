@@ -68,6 +68,7 @@ export const ExportButton = ({
           dataString +=
             '\r\n' +
             results.data
+              // eslint-disable-next-line no-loop-func
               .map((item) =>
                 results.fields
                   .map((fieldKey) => {
@@ -78,6 +79,7 @@ export const ExportButton = ({
               .join('\r\n');
         } else {
           dataString += results.data
+            // eslint-disable-next-line no-loop-func
             .map((item) =>
               results.fields
                 .map((fieldKey) => {

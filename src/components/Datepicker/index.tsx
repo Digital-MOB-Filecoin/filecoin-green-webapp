@@ -1,14 +1,8 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import cn from 'classnames';
 import ReactDOM from 'react-dom';
 
-import {
-  format,
-  differenceInCalendarDays as DICD,
-  differenceInCalendarMonths as DICM,
-  sub,
-  isValid,
-} from 'date-fns';
+import { format, sub, isValid, intervalToDuration, Duration } from 'date-fns';
 import { MAX_DATEPICKER_DATE } from 'constant';
 
 import { Svg } from 'components/Svg';
@@ -46,28 +40,50 @@ export const Datepicker = ({
   const [calendarDateInterval, setCalendarDateInterval] =
     useState<DatepickerInterval>(dateInterval);
   const wrapperRef = useRef(null);
+  const [key, setKey] = useState(Math.random());
 
   const activeRange = useMemo(() => {
     if (isCustomRangeOpen) return RANGES.CUSTOM;
 
-    if (DICD(dateInterval.end, dateInterval.start) === 7) {
+    const isDiffIs = (duration: Duration): boolean => {
+      const helperDuration = {
+        years: 0,
+        months: 0,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
+      const inputDuration = { ...helperDuration, ...duration };
+      const intervalDuration = {
+        ...helperDuration,
+        ...intervalToDuration(dateInterval),
+      };
+
+      return Object.keys(inputDuration).every(
+        (key) => inputDuration[key] === intervalDuration[key]
+      );
+    };
+
+    if (isDiffIs({ days: 7 })) {
       return RANGES.WEEK;
     }
-    if (DICD(dateInterval.end, dateInterval.start) === 30) {
+    if (isDiffIs({ days: 30 })) {
       return RANGES.MONTH;
     }
-    if (DICM(dateInterval.end, dateInterval.start) === 3) {
+    if (isDiffIs({ months: 3 })) {
       return RANGES.QUARTER;
     }
-    if (DICM(dateInterval.end, dateInterval.start) === 6) {
+    if (isDiffIs({ months: 6 })) {
       return RANGES.HALF_YEAR;
     }
-    if (DICM(dateInterval.end, dateInterval.start) === 12) {
+    if (isDiffIs({ years: 1 })) {
       return RANGES.YEAR;
     }
 
     setIsCustomRangeOpen(true);
-  }, [isCustomRangeOpen, dateInterval.start, dateInterval.end]);
+    return RANGES.CUSTOM;
+  }, [isCustomRangeOpen, dateInterval]);
 
   useEffect(() => {
     const clickHandler = (e) => {
@@ -99,7 +115,7 @@ export const Datepicker = ({
 
     switch (range) {
       case RANGES.WEEK:
-        newStartDate = sub(MAX_DATEPICKER_DATE, { weeks: 1 });
+        newStartDate = sub(MAX_DATEPICKER_DATE, { days: 7 });
         break;
       case RANGES.MONTH:
         newStartDate = sub(MAX_DATEPICKER_DATE, { days: 30 });
@@ -126,13 +142,14 @@ export const Datepicker = ({
     setIsOpen(false);
   };
 
-  const handlerClear = () => {
+  const handlerClear = useCallback(() => {
     setCalendarDateInterval(dateInterval);
-  };
+    setKey(Math.random());
+  }, [dateInterval]);
 
   useEffect(() => {
     handlerClear();
-  }, [dateInterval.start, dateInterval.end]);
+  }, [handlerClear, dateInterval.start, dateInterval.end]);
 
   return (
     <div className={cn(s.wrap, className)} ref={wrapperRef}>
@@ -157,6 +174,7 @@ export const Datepicker = ({
         <div className={s.calendarsWrap}>
           {isCustomRangeOpen ? (
             <DateRangePicker
+              key={key}
               interval={calendarDateInterval}
               onChange={setCalendarDateInterval}
             />
