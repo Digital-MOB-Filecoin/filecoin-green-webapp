@@ -171,3 +171,11 @@
 .backButton:hover {
   color: #576C7E;
 }
+
+.description {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 32px;
+  color: #040505;
+  margin-top: 32px;
+}

@@ -1,4 +1,4 @@
-export default `
+export const markdown = `
 # Filecoin Energy Use Estimate Methodology
 
 **Filecoin is *the* data storage layer of Web3**, and the world's largest decentralized storage network. It is a permissionless system in which *Storage Providers* (SPs) offer data storage services to clients in return for payments denominated in the network's native token, Filecoin. The SPs submit regular proofs to the Filecoin blockchain, demonstrating that data is being stored safely over time.

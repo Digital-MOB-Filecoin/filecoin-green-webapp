@@ -2,18 +2,28 @@
   position: relative;
   flex-grow: 1;
   margin-right: 24px;
+  display: flex;
+  background: var(--theme-input-bg);
+  padding-left: 64px;
+  border-radius: 8px;
 }
 
 .form.hasFocus {
   margin-right: 0;
   box-shadow: 0 32px 64px rgba(4, 5, 5, 0.08);
+  border-radius: 8px 8px 0 0;
+}
+
+.minersWrapper {
+  display: flex;
+  /*overflow-y: auto;*/
+  /*max-width: 500px;*/
 }
 
 .icon {
   position: absolute;
-  top: 50%;
+  top: 24px;
   left: 24px;
-  transform: translateY(-50%);
   color: var(--theme-icon-color);
   pointer-events: none;
 }
@@ -22,7 +32,7 @@
   appearance: none;
   display: block;
   width: 100%;
-  padding: 24px 24px 24px 64px;
+  padding: 24px;
   font-family: inherit;
   font-size: 14px;
   font-style: normal;
@@ -32,13 +42,8 @@
   text-align: left;
   color: var(--theme-text-primary);
   border: 1px solid transparent;
-  background: var(--theme-input-bg);
-  border-radius: 8px;
+  background: transparent;
   outline: none;
-}
-
-.input.input.hasFocus {
-  border-radius: 8px 8px 0 0;
 }
 
 .input::placeholder {
@@ -49,4 +54,38 @@
 .input:active,
 .input:focus {
   /*border: var(--theme-input-border-active);*/
+}
+
+.miner {
+  display: inline-flex;
+  align-items: center;
+  background: var(--theme-background-primary);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  color: #040505;
+  padding: 8px 16px;
+  align-self: center;
+}
+
+.miner + .miner {
+  margin-left: 8px;
+}
+
+.minerRemoveButton {
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--theme-icon-color);
+}
+
+.minerRemoveButton:focus,
+.minerRemoveButton:hover {
+  color: var(--theme-text-secondary);
 }

@@ -9,7 +9,7 @@ import { LeaderboardTable } from './LeaderboadTable';
 import s from './s.module.css';
 
 export default function LeaderboardPage() {
-  const [query, setQuery] = useQueryParams({
+  const [query] = useQueryParams({
     miner: StringParam,
     limit: NumberParam,
     offset: NumberParam,
