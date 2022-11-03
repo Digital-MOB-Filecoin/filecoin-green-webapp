@@ -42,7 +42,7 @@ export const colorScale = (value, domain): string => {
 
 const defaultZoom = 1;
 const defaultCenter: Point = [15, 10];
-// const defaultCenter: Point = [0, 0];
+// const defaultCenter: Point = [10, 10];
 const defaultCountryZoom = 4;
 const defaultScale = 1.5;
 const width = 723;
@@ -51,6 +51,11 @@ const height = 381;
 const projection = geoEqualEarth()
   .scale(defaultScale * 100)
   .center(defaultCenter);
+// .clipExtent([
+//   [150, 0],
+//   [100 + width, height + 80],
+// ])
+// .translate([0, 0]);
 
 const geos: Feature[] = feature(
   geography,
@@ -59,11 +64,6 @@ const geos: Feature[] = feature(
 
 const path = geoPath(projection);
 
-console.log(
-  projection.translate(),
-  projection.scale(),
-  projection.clipExtent()
-);
 const getGeoByCountryCode = (
   countryCode?: string | null
 ): Feature | undefined => {
@@ -156,28 +156,28 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       countries.length &&
       availableCountryCodes.length
     ) {
+      const countryCode =
+        query.country === 'HK' ? 'cn' : query.country.toLowerCase();
       const isAvailable = availableCountryCodes.some(
-        (code) => code.toLowerCase() === query?.country?.toLowerCase()
+        (code) => code.toLowerCase() === countryCode
       );
 
       if (isAvailable) {
-        const centroid = getCentroid(getGeoByCountryCode(query.country));
-        const bounds = getBounds(getGeoByCountryCode(query.country));
+        const centroid = getCentroid(getGeoByCountryCode(countryCode));
+        const bounds = getBounds(getGeoByCountryCode(countryCode)); // [[x₀, y₀], [x₁, y₁]]
 
-        // [[x₀, y₀], [x₁, y₁]]
         if (bounds) {
           const x0 = bounds[0][0] * 1.5;
           const y0 = bounds[0][1] * 1.5;
           const x1 = bounds[1][0] * 1.5;
           const y1 = bounds[1][1] * 1.5;
 
-          const wd = width / (x1 - x0);
-          const hg = height / (y1 - y0);
+          const wd = width / (x1 - x0) / defaultScale;
+          const hg = height / (y1 - y0) / defaultScale;
 
           const zm = wd > hg ? wd : hg;
 
           setZoom(zm);
-          // console.log({ bounds, centroid, wd, hg, zm });
         } else {
           setZoom(defaultCountryZoom);
         }
@@ -195,21 +195,25 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       countries.length &&
       availableCountryCodes.length
     ) {
-      const isSameCountry = minerMarkers.every(
-        (marker) =>
-          marker.country.toLowerCase() === minerMarkers[0].country.toLowerCase()
+      const countryCode =
+        minerMarkers[0].country === 'HK'
+          ? 'cn'
+          : minerMarkers[0].country.toLowerCase();
+
+      const isSameCountry = minerMarkers.every((marker) =>
+        marker.country.toLowerCase() === 'hk'
+          ? 'cn' === countryCode
+          : marker.country.toLowerCase() === countryCode
       );
 
       const isAvailable =
         isSameCountry &&
         availableCountryCodes.some(
-          (code) => code.toLowerCase() === minerMarkers[0].country.toLowerCase()
+          (code) => code.toLowerCase() === countryCode
         );
 
       if (isAvailable) {
-        const centroid = getCentroid(
-          getGeoByCountryCode(minerMarkers[0].country)
-        );
+        const centroid = getCentroid(getGeoByCountryCode(countryCode));
 
         if (centroid) {
           setCenter(centroid);
@@ -266,8 +270,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         return '#FbFbFb';
       }
 
+      const countryCode = query.country === 'HK' ? 'CN' : query.country;
+
       if (query.country || query.miner) {
-        if (query.country === alpha2 || query.miner) {
+        if (countryCode === alpha2 || query.miner) {
           return '#F3F5F6';
         }
         return 'transparent';
@@ -315,27 +321,31 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         style={{ width: '100%', height: '100%' }}
       >
         <ZoomableGroup
+          // translateExtent={[
+          //   [119, 60],
+          //   [119 + width, 59 + height],
+          // ]}
           translateExtent={[
-            [119, 60],
-            [119 + width, 59 + height],
+            [60, 0],
+            [180 + width, 120 + height],
           ]}
           zoom={zoom}
           center={center}
           minZoom={1}
-          maxZoom={query.country || query.miner ? 300 : 2}
+          maxZoom={query.country || query.miner ? 500 : 2}
           onMoveEnd={({ zoom: zoomAfter, coordinates }) => {
-            if (zoomAfter < defaultCountryZoom) {
-              setQuery((prevQuery) => ({
-                ...prevQuery,
-                country: undefined,
-              }));
-            }
+            // if (zoomAfter < defaultCountryZoom) {
+            //   setQuery((prevQuery) => ({
+            //     ...prevQuery,
+            //     country: undefined,
+            //   }));
+            // }
             setZoom(zoomAfter);
             setCenter(coordinates);
           }}
         >
           <Geographies geography={geography}>
-            {({ geographies, projection, path }) =>
+            {({ geographies }) =>
               geographies.map((geo) => {
                 const alpha2 = geo.properties['Alpha-2'];
 

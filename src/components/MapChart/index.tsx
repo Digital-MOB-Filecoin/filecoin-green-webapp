@@ -46,10 +46,11 @@ export function MapChart() {
   useEffect(() => {
     const abortController = new AbortController();
 
+    setCountryMiners([]);
+    setMinerMarkers([]);
+
     if (query.country) {
       setIsDataLoading(true);
-      setCountryMiners([]);
-      setMinerMarkers([]);
 
       fetchMapChartCountryMiners({
         abortController,
@@ -78,10 +79,12 @@ export function MapChart() {
   useEffect(() => {
     const abortController = new AbortController();
 
+    setCountryMiners([]);
+    setMinerMarkers([]);
+
     if (query.miner) {
       setIsDataLoading(true);
-      setCountryMiners([]);
-      setMinerMarkers([]);
+
       setQuery((prevState) => ({
         ...prevState,
         country: undefined,
