@@ -5,27 +5,27 @@ import {
   Geographies,
   Geography,
   Marker,
-  Point,
   ZoomableGroup,
+  Point,
 } from 'react-simple-maps';
 import { feature } from 'topojson-client';
-
+import { StringParam, useQueryParams } from 'use-query-params';
+import { Feature } from 'geojson';
+import { scaleLinear } from 'd3-scale';
 import { geoPath, geoEqualEarth } from 'd3-geo';
 import ReactTooltip from 'react-tooltip';
 
 import { Spinner } from 'components/Spinner';
 
-import geography from './world-countries-sans-antarctica.json';
-import s from './s.module.css';
+import { getCountryNameByCode } from 'utils/country';
 import {
   TFetchMapChartCountries,
   TFetchMapChartCountryMiners,
   TFetchMapChartMinerMarkers,
 } from 'api';
-import { StringParam, useQueryParams } from 'use-query-params';
-import { Feature } from 'geojson';
-import { scaleLinear } from 'd3-scale';
-import { getCountryNameByCode } from 'utils/country';
+
+import geography from './world-countries-sans-antarctica.json';
+import s from './s.module.css';
 
 export const colorScale = (value, domain): string => {
   if (!value || !domain) {
@@ -42,7 +42,7 @@ export const colorScale = (value, domain): string => {
 
 const defaultZoom = 1;
 const defaultCenter: Point = [15, 10];
-// const defaultCenter: Point = [10, 10];
+// const defaultCenter: Point = [0, 0];
 const defaultCountryZoom = 4;
 const defaultScale = 1.5;
 const width = 723;
@@ -51,18 +51,18 @@ const height = 381;
 const projection = geoEqualEarth()
   .scale(defaultScale * 100)
   .center(defaultCenter);
+// .translate([width / 2, height / 2])
 // .clipExtent([
 //   [150, 0],
 //   [100 + width, height + 80],
-// ])
-// .translate([0, 0]);
+// ]);
+
+const path = geoPath(projection);
 
 const geos: Feature[] = feature(
   geography,
   geography.objects[Object.keys(geography.objects)[0]]
 ).features;
-
-const path = geoPath(projection);
 
 const getGeoByCountryCode = (
   countryCode?: string | null
@@ -167,17 +167,20 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         const bounds = getBounds(getGeoByCountryCode(countryCode)); // [[x₀, y₀], [x₁, y₁]]
 
         if (bounds) {
-          const x0 = bounds[0][0] * 1.5;
-          const y0 = bounds[0][1] * 1.5;
-          const x1 = bounds[1][0] * 1.5;
-          const y1 = bounds[1][1] * 1.5;
+          const x0 = bounds[0][0];
+          const y0 = bounds[0][1];
+          const x1 = bounds[1][0];
+          const y1 = bounds[1][1];
 
-          const wd = width / (x1 - x0) / defaultScale;
-          const hg = height / (y1 - y0) / defaultScale;
+          const zoomWidth = Math.abs(x0 - x1);
+          const zoomHeight = Math.abs(y0 - y1);
 
-          const zm = wd > hg ? wd : hg;
+          const maxXScale = width / zoomWidth;
+          const maxYScale = height / zoomHeight;
 
-          setZoom(zm);
+          const zoomScale = Math.min(maxXScale, maxYScale);
+
+          setZoom(zoomScale);
         } else {
           setZoom(defaultCountryZoom);
         }
@@ -252,9 +255,9 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   }, [countries]);
 
   const handlerGeoClick = useCallback(
-    ({ alpha2 }) =>
+    ({ alpha2, isAvailable }) =>
       () => {
-        if (!query.miner && !query.country) {
+        if (!query.miner && !query.country && isAvailable) {
           setQuery((prevQuery) => ({
             ...prevQuery,
             country: alpha2,
@@ -311,6 +314,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         display: 'flex',
         position: 'relative',
         flexShrink: 0,
+        borderRadius: '8px 0 0 8px',
+        overflow: 'hidden',
       }}
     >
       <ComposableMap
@@ -365,7 +370,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    onClick={handlerGeoClick({ alpha2 })}
+                    onClick={handlerGeoClick({ alpha2, isAvailable })}
                     fill={countryFill({
                       alpha2,
                       isAvailable,
