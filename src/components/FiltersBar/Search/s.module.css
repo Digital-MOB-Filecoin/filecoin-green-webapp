@@ -4,14 +4,14 @@
   margin-right: 24px;
   display: flex;
   background: var(--theme-input-bg);
-  padding-left: 64px;
   border-radius: 8px;
+  border: 1px solid transparent;
+  padding-left: 64px;
 }
 
+.form:hover,
 .form.hasFocus {
-  margin-right: 0;
-  box-shadow: 0 32px 64px rgba(4, 5, 5, 0.08);
-  border-radius: 8px 8px 0 0;
+  border: var(--theme-input-border-active);
 }
 
 .minersWrapper {
@@ -32,7 +32,8 @@
   appearance: none;
   display: block;
   width: 100%;
-  padding: 24px;
+  padding: 24px 24px 24px 16px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
   font-style: normal;
@@ -41,8 +42,8 @@
   letter-spacing: 0;
   text-align: left;
   color: var(--theme-text-primary);
-  border: 1px solid transparent;
-  background: transparent;
+  border: 0;
+  background: var(--theme-input-bg);
   outline: none;
 }
 
@@ -53,7 +54,7 @@
 .input:hover,
 .input:active,
 .input:focus {
-  /*border: var(--theme-input-border-active);*/
+
 }
 
 .miner {

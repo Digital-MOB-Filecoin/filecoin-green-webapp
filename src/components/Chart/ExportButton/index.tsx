@@ -28,6 +28,7 @@ export const ExportButton = ({
   const [miner] = useQueryParam('miner', StringParam);
 
   const handlerExport = async () => {
+    const abortController = new AbortController();
     setLoading(true);
 
     try {
@@ -39,13 +40,16 @@ export const ExportButton = ({
       const end = dateLightFormat(interval.end, 'yyyy-MM-dd');
 
       let results = await fetchExportData({
-        id,
-        offset,
-        limit,
-        start,
-        end,
-        miner,
-        filter,
+        abortController,
+        data: {
+          id,
+          offset,
+          limit,
+          start,
+          end,
+          miner,
+          filter,
+        },
       });
 
       const headerString = results.fields
@@ -55,13 +59,16 @@ export const ExportButton = ({
 
       while (results.data.length) {
         results = await fetchExportData({
-          id,
-          offset,
-          limit,
-          start,
-          end,
-          miner,
-          filter,
+          abortController,
+          data: {
+            id,
+            offset,
+            limit,
+            start,
+            end,
+            miner,
+            filter,
+          },
         });
 
         if (dataString) {

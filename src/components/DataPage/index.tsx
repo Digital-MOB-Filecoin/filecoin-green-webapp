@@ -17,6 +17,7 @@ import { Svg } from 'components/Svg';
 import { Filters } from 'components/DataPage/Filters';
 import { Chart } from 'components/Chart';
 import { Spinner } from 'components/Spinner';
+import { MapChart } from 'components/MapChart';
 
 import { MinersTable } from './MinersTable';
 import { ChartsModal } from './ChartsModal';
@@ -94,7 +95,7 @@ export default function DataPage() {
     setLoading(true);
     setFailed(false);
 
-    fetchChartModels(abortController)
+    fetchChartModels({ abortController })
       .then((results) => {
         setChartModels(results);
         setFailed(false);
@@ -116,16 +117,23 @@ export default function DataPage() {
   }, []);
 
   useEffect(() => {
+    const abortController = new AbortController();
     if (query.miner) {
-      fetchMinerData(query.miner).then((data) => {
-        setMinerData(data?.miners?.[0]);
-      });
+      fetchMinerData({ abortController, data: { miner: query.miner } }).then(
+        (data) => {
+          setMinerData(data?.miners?.[0]);
+        }
+      );
     } else {
       setMinerData(null);
     }
+
+    return () => {
+      abortController.abort();
+    };
   }, [query.miner]);
 
-  const handlerChangeFilter = (category) => {
+  const handlerChangeFilter = (category: TChartModel['category']) => {
     let newCharts: TChartModel[] = [];
     if (selectedCharts.every((model) => model.category === category)) {
       newCharts = chartModels;
@@ -177,6 +185,9 @@ export default function DataPage() {
           onChangeDateInterval={handlerSetDateInterval}
         />
       </div>
+
+      <MapChart />
+
       {query.miner ? (
         <div className={s.searchContainer}>
           <span>Storage Provider {query.miner}</span>

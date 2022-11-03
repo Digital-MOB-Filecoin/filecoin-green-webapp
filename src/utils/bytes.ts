@@ -1,46 +1,54 @@
 import BigNumber from 'bignumber.js';
 
-const units = ['byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+type TUnit =
+  | 'byte'
+  | 'KiB'
+  | 'MiB'
+  | 'GiB'
+  | 'TiB'
+  | 'PiB'
+  | 'EiB'
+  | 'ZiB'
+  | 'YiB';
 
-type TFormatBytesOptions = {
+const units: TUnit[] = [
+  'byte',
+  'KiB',
+  'MiB',
+  'GiB',
+  'TiB',
+  'PiB',
+  'EiB',
+  'ZiB',
+  'YiB',
+];
+
+type TFormatBytesOptions<AsObject> = {
+  output?: AsObject;
   precision?: number;
-  output?: 'object' | string;
-  inputUnit?:
-    | 'byte'
-    | 'KiB'
-    | 'MiB'
-    | 'GiB'
-    | 'TiB'
-    | 'PiB'
-    | 'EiB'
-    | 'ZiB'
-    | 'YiB';
+  inputUnit?: TUnit;
   iec?: boolean;
 };
 
-type FormatBytesOf<T> = T extends string
-  ? {
-      unit: string;
-      value: number;
-    }
-  : string;
-
-export function formatBytes(
-  size,
-  options: TFormatBytesOptions
-): FormatBytesOf<TFormatBytesOptions['output']> {
+export function formatBytes<AsObject extends string>(
+  size: string,
+  options: TFormatBytesOptions<AsObject> = {}
+): AsObject extends 'object' ? { unit: string; value: number } : string {
   const { precision, output, inputUnit, iec } = options;
   // let l = 0;
   let n = new BigNumber(size || 0);
   let l = inputUnit && units.includes(inputUnit) ? units.indexOf(inputUnit) : 0;
 
   if (n.isZero()) {
-    return output === 'object'
-      ? {
-          unit: 'bytes',
-          value: 0,
-        }
-      : '0 bytes';
+    if (output === 'object') {
+      // @ts-ignore
+      return {
+        unit: 'bytes',
+        value: 0,
+      };
+    }
+    // @ts-ignore
+    return '0 bytes';
   }
 
   const divider = iec ? 1100 : 1024;
@@ -52,10 +60,14 @@ export function formatBytes(
     n = n.decimalPlaces(precision, BigNumber.ROUND_FLOOR);
   }
 
-  return output === 'object'
-    ? {
-        unit: units[l],
-        value: n.toNumber(),
-      }
-    : `${n} ${units[l]}`;
+  if (output === 'object') {
+    // @ts-ignore
+    return {
+      unit: units[l],
+      value: n.toNumber(),
+    };
+  }
+
+  // @ts-ignore
+  return `${n} ${units[l]}`;
 }

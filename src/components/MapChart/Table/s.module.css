@@ -17,6 +17,7 @@
   top: 0;
   background: var(--theme-background-secondary);
   border-bottom: 1px solid var(--theme-border-color);
+  border-radius: 8px 8px 0 0;
 }
 
 .tableRow {
@@ -39,6 +40,14 @@
   padding: 24px;
   z-index: 1;
   flex-grow: 1;
+}
+
+.tableTh:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.tableTh:last-child {
+  border-radius: 0 8px 0 0;
 }
 
 .tableBody {

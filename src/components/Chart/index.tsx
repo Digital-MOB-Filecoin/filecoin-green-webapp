@@ -65,12 +65,15 @@ export const Chart = ({
     setLoading(true);
     setFailed(false);
 
-    fetchChart(abortController, {
-      id: model.id,
-      start: lightFormat(interval.start, 'yyyy-MM-dd'),
-      end: lightFormat(interval.end, 'yyyy-MM-dd'),
-      miner: query.miner,
-      filter: getNormalizedScale(query.charts?.[model.id]),
+    fetchChart({
+      abortController,
+      data: {
+        id: model.id,
+        start: lightFormat(interval.start, 'yyyy-MM-dd'),
+        end: lightFormat(interval.end, 'yyyy-MM-dd'),
+        miner: query.miner,
+        filter: getNormalizedScale(query.charts?.[model.id]),
+      },
     })
       .then((response) => {
         if (!response.data[0].data.length) {

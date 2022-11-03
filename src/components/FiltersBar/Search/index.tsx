@@ -1,21 +1,18 @@
 import { useState } from 'react';
-import cn from 'classnames';
 import { useQueryParam, StringParam } from 'use-query-params';
+import cn from 'classnames';
 
 // import { filterUniq } from 'utils/array';
 import { Svg } from 'components/Svg';
 
 import s from './s.module.css';
 
-type TSearch = {
-  isMapShown: boolean;
-  onShowMap: () => void;
-};
-export function Search({ isMapShown, onShowMap }: TSearch) {
+export function Search() {
   const [queryMiner, setQueryMiner] = useQueryParam('miner', StringParam, {
     skipUpdateWhenNoChange: false,
   });
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState<string>('');
+  const [hasFocus, setHasFocus] = useState<boolean>(false);
 
   const handlerSubmit = (e) => {
     e.preventDefault();
@@ -32,7 +29,7 @@ export function Search({ isMapShown, onShowMap }: TSearch) {
 
   return (
     <form
-      className={cn(s.form, { [s.hasFocus]: isMapShown })}
+      className={cn(s.form, { [s.hasFocus]: hasFocus })}
       onSubmit={handlerSubmit}
     >
       <Svg id="search" className={s.icon} />
@@ -54,11 +51,10 @@ export function Search({ isMapShown, onShowMap }: TSearch) {
         type="search"
         className={s.input}
         value={value || ''}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-        onFocus={() => onShowMap()}
+        onChange={(e) => setValue(e.target.value)}
         placeholder="Storage Provider ID"
+        onFocus={() => setHasFocus(true)}
+        onBlur={() => setHasFocus(false)}
       />
     </form>
   );

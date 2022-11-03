@@ -30,11 +30,14 @@ export const MinersTable = () => {
 
     setLoading(true);
 
-    fetchMiners(abortController, {
-      limit: query.limit ?? 10,
-      offset: query.offset ?? 0,
-      sortBy: query.sortBy ?? undefined,
-      order: query.order ?? undefined,
+    fetchMiners({
+      abortController,
+      data: {
+        limit: query.limit ?? 10,
+        offset: query.offset ?? 0,
+        sortBy: query.sortBy ?? undefined,
+        order: query.order ?? undefined,
+      },
     })
       .then((result) => {
         setData(result.miners);

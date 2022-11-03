@@ -3,16 +3,3 @@
   display: flex;
   width: 100%;
 }
-
-.chartWrapper {
-  background: #fff;
-  border-top: 1px solid var(--theme-border-color);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  display: flex;
-  box-shadow: 0 32px 64px rgba(4, 5, 5, 0.08);
-  border-radius: 0 0 8px 8px;
-}
