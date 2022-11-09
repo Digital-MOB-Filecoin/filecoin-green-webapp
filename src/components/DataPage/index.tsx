@@ -3,14 +3,16 @@ import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import {
   parse as dateParse,
-  sub as dateSub,
   lightFormat as dateLightFormat,
   isValid as dateIsValid,
   getTime as dateGetTime,
 } from 'date-fns';
 
 import { fetchChartModels, fetchMinerData } from 'api';
-import { MAX_DATEPICKER_DATE } from 'constant';
+import {
+  DEFAULT_DATEPICKER_END_DATE,
+  DEFAULT_DATEPICKER_START_DATE,
+} from 'constant';
 import { getNormalizedScale } from 'utils/string';
 import { FiltersBar } from 'components/FiltersBar';
 import { Svg } from 'components/Svg';
@@ -62,8 +64,8 @@ export default function DataPage() {
       !dateIsValid(parsedEndDate)
     ) {
       return {
-        start: dateGetTime(dateSub(MAX_DATEPICKER_DATE, { months: 6 })),
-        end: dateGetTime(MAX_DATEPICKER_DATE),
+        start: dateGetTime(DEFAULT_DATEPICKER_START_DATE),
+        end: dateGetTime(DEFAULT_DATEPICKER_END_DATE),
       };
     }
 
