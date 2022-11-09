@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
 import dateParse from 'date-fns/parse';
-import dateSub from 'date-fns/sub';
 import dateLightFormat from 'date-fns/lightFormat';
 import dateIsValid from 'date-fns/isValid';
 
 import { fetchChartModels, fetchMinerData } from 'api';
-import { MAX_DATEPICKER_DATE, defaultDataState } from 'constant';
+import {
+  defaultDataState,
+  DEFAULT_DATEPICKER_START_DATE,
+  DEFAULT_DATEPICKER_END_DATE,
+} from 'constant';
 import { getNormalizedScale } from 'utils/string';
 import { Search } from 'components/Search';
 import { Datepicker } from 'components/Datepicker';
@@ -44,8 +47,8 @@ export default function DataPage() {
 
     if (!dateIsValid(parsedStartDate) || !dateIsValid(parsedEndDate)) {
       return {
-        start: dateSub(MAX_DATEPICKER_DATE, { months: 6 }),
-        end: MAX_DATEPICKER_DATE,
+        start: DEFAULT_DATEPICKER_START_DATE,
+        end: DEFAULT_DATEPICKER_END_DATE,
       };
     }
 
