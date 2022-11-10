@@ -9,6 +9,7 @@
   --color-lochinvar: #4ea394;
   --rgb-lochinvar: 78, 163, 148;
   --color-kashmir-blue: #576c7e;
+  --rgb-kashmir-blue: 87, 108, 126;
   --color-oxford-blue: #2d3842;
   --color-link-water: #bcc7d1;
   --color-nepal: #98a9b8;
@@ -25,6 +26,7 @@
 
   --theme-text-primary: var(--color-black-pearl);
   --theme-text-secondary: var(--color-kashmir-blue);
+  --theme-text-secondary-rgb: var(--rgb-kashmir-blue);
   --theme-text-inactive: var(--color-link-water);
   --theme-text-primary-inverted: var(--color-white);
 

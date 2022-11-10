@@ -60,6 +60,10 @@
   margin: 0 4px 0 0;
 }
 
+.tooltipDt:empty {
+  margin: 0;
+}
+
 .tooltipDd {
   margin: 0;
   font-size: 14px;
@@ -75,4 +79,22 @@
   bottom: 8px;
   right: 8px;
   z-index: 1;
+}
+
+.infoButton {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  color: rgba(var(--theme-text-secondary-rgb), 0.4);
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.infoButton:focus,
+.infoButton:hover {
+  color: var(--theme-text-primary);
 }

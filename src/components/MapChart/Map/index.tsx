@@ -11,19 +11,21 @@ import {
 import { feature } from 'topojson-client';
 import { StringParam, useQueryParams } from 'use-query-params';
 import { Feature } from 'geojson';
-import { scaleLinear } from 'd3-scale';
+import { scaleLog } from 'd3-scale';
 import { geoPath, geoEqualEarth } from 'd3-geo';
 import ReactTooltip from 'react-tooltip';
 
-import { Spinner } from 'components/Spinner';
-
-import { getCountryNameByCode } from 'utils/country';
 import {
   TFetchMapChartCountries,
   TFetchMapChartCountryMiners,
   TFetchMapChartMinerMarkers,
 } from 'api';
 
+import { getCountryNameByCode } from 'utils/country';
+import { Spinner } from 'components/Spinner';
+import { Svg } from 'components/Svg';
+
+import { MapInfoModal } from '../MapInfoModal';
 import geography from './world-countries-sans-antarctica.json';
 import s from './s.module.css';
 
@@ -33,7 +35,7 @@ export const colorScale = (value, domain): string => {
   }
 
   return String(
-    scaleLinear()
+    scaleLog()
       .domain(domain)
       // @ts-ignore
       .range(['#F3F5F6', '#4EA394'])(value)
@@ -142,6 +144,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const [availableCountryCodes, setAvailableCountryCodes] = useState<string[]>(
     []
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!query.miner && !query.country) {
@@ -268,11 +271,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryFill = useCallback(
-    ({ alpha2, isAvailable, storageProviders }) => {
-      if (!isAvailable) {
-        return '#FbFbFb';
-      }
-
+    ({ alpha2, storageProviders }) => {
       const countryCode = query.country === 'HK' ? 'CN' : query.country;
 
       if (query.country || query.miner) {
@@ -289,8 +288,20 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
   const countryTip = useCallback(
     ({ isAvailable, name, storageProviders }) => {
-      if (!isAvailable || query.country || query.miner) {
+      if (query.country || query.miner) {
         return '';
+      }
+
+      if (!isAvailable || query.country || query.miner) {
+        return JSON.stringify({
+          title: name,
+          data: [
+            {
+              // value: storageProviders,
+              title: 'No data',
+            },
+          ],
+        });
       }
 
       return JSON.stringify({
@@ -373,7 +384,6 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                     onClick={handlerGeoClick({ alpha2, isAvailable })}
                     fill={countryFill({
                       alpha2,
-                      isAvailable,
                       storageProviders,
                     })}
                     stroke="#fff"
@@ -416,12 +426,17 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                 coordinates={[marker.long, marker.lat]}
                 data-tip={JSON.stringify({
                   title:
-                    marker.city +
-                    ', ' +
-                    getCountryNameByCode(marker.country) +
-                    ' (' +
-                    marker.miner +
-                    ')',
+                    marker.city === 'n/a'
+                      ? getCountryNameByCode(marker.country) +
+                        ' (' +
+                        marker.miner +
+                        ')'
+                      : marker.city +
+                        ', ' +
+                        getCountryNameByCode(marker.country) +
+                        ' (' +
+                        marker.miner +
+                        ')',
                   data: [{ value: marker.power, title: 'total raw power' }],
                 })}
               >
@@ -440,6 +455,16 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         key={query.country}
         getContent={handleTooltipContent}
       />
+
+      <button
+        type="button"
+        className={s.infoButton}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <Svg id="info" />
+      </button>
+
+      <MapInfoModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

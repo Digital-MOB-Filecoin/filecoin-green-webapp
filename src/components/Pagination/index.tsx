@@ -5,6 +5,10 @@ import { Svg } from 'components/Svg';
 import s from './s.module.css';
 
 function pagination(current, last, delta = 2) {
+  if (last >= 1 && last <= 3) {
+    return Array.from({ length: last }).map((_, idx) => idx + 1);
+  }
+
   const left = current - delta;
   const right = current + delta + 1;
   const range: number[] = [];

@@ -11,14 +11,6 @@
   margin: 0;
 }
 
-.subtitle {
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--theme-text-secondary);
-  margin: 8px 0 0;
-}
-
 .description {
   font-weight: 500;
   font-size: 16px;

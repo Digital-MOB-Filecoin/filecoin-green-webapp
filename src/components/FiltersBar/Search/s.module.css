@@ -54,7 +54,6 @@
 .input:hover,
 .input:active,
 .input:focus {
-
 }
 
 .miner {
@@ -65,7 +64,7 @@
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
-  color: #040505;
+  color: var(--theme-text-primary);
   padding: 8px 16px;
   align-self: center;
 }

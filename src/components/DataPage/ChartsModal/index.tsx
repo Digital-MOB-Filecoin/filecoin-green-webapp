@@ -11,6 +11,8 @@ import { Spinner } from 'components/Spinner';
 import s from './s.module.css';
 import { TChartModel } from '../index';
 
+const MODELS_PER_PAGE = 6;
+
 type TChartsModal = {
   open: boolean;
   models: TChartModel[];
@@ -29,6 +31,7 @@ export const ChartsModal = ({
 }: TChartsModal) => {
   const [modelDetails, setModelDetails] = useState<TChartModel | null>(null);
   const [localSelected, setLocalSelected] = useState<TChartModel[]>(selected);
+  const [page, setPage] = useState<number>(1);
 
   const handlerClose = useCallback(
     (arr?: TChartModel[]) => {
@@ -55,10 +58,6 @@ export const ChartsModal = ({
   if (!open) {
     return null;
   }
-
-  const handlerChangePage = () => {
-    console.log('change page');
-  };
 
   const handlerSelectAll = () => {
     if (models.length === localSelected.length) {
@@ -128,57 +127,59 @@ export const ChartsModal = ({
                 <Spinner />
               </div>
             ) : (
-              models.map((item) => {
-                const id = nanoid();
+              models
+                .slice((page - 1) * MODELS_PER_PAGE, page * MODELS_PER_PAGE)
+                .map((item) => {
+                  const id = nanoid();
 
-                return (
-                  <div className={s.itemWrap} key={id}>
-                    <input
-                      id={id}
-                      type="checkbox"
-                      name={id}
-                      className={s.itemInput}
-                      checked={localSelected.some(
-                        (model) => model.id === item.id
-                      )}
-                      onChange={() => handlerSelect(item)}
-                    />
-                    <div className={s.itemInner}>
-                      <label
-                        htmlFor={id}
-                        className={s.itemLabel}
-                        tabIndex={0}
+                  return (
+                    <div className={s.itemWrap} key={id}>
+                      <input
+                        id={id}
+                        type="checkbox"
+                        name={id}
+                        className={s.itemInput}
+                        checked={localSelected.some(
+                          (model) => model.id === item.id
+                        )}
+                        onChange={() => handlerSelect(item)}
                       />
-                      <div className={s.itemTitles}>
-                        <label className={s.itemTitle} htmlFor={id}>
-                          {item.name}
-                        </label>
-                        <div className={s.itemSubtitle}>
-                          <span>{getCategoryName(item.category)}</span>
-                          <span className={s.itemSubtitleSeparator} />
-                          <button
-                            type="button"
-                            className={s.itemDetailsButton}
-                            onClick={() => {
-                              setModelDetails(() => item);
-                            }}
-                          >
-                            Details
-                          </button>
+                      <div className={s.itemInner}>
+                        <label
+                          htmlFor={id}
+                          className={s.itemLabel}
+                          tabIndex={0}
+                        />
+                        <div className={s.itemTitles}>
+                          <label className={s.itemTitle} htmlFor={id}>
+                            {item.name}
+                          </label>
+                          <div className={s.itemSubtitle}>
+                            <span>{getCategoryName(item.category)}</span>
+                            <span className={s.itemSubtitleSeparator} />
+                            <button
+                              type="button"
+                              className={s.itemDetailsButton}
+                              onClick={() => {
+                                setModelDetails(() => item);
+                              }}
+                            >
+                              Details
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })
             )}
           </div>
           <div className={s.footer}>
             <Pagination
-              skip={0}
-              take={10}
-              total={10}
-              onChangePage={handlerChangePage}
+              skip={(page - 1) * MODELS_PER_PAGE}
+              take={MODELS_PER_PAGE}
+              total={models.length}
+              onChangePage={setPage}
             />
             <button
               className="button-primary"

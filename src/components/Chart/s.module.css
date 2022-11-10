@@ -43,13 +43,11 @@
   background: transparent;
   padding: 0;
   border: 0;
-  color: var(--theme-text-secondary);
-  opacity: 0.4;
+  color: rgba(var(--theme-text-secondary-rgb), 0.4);
 }
 
 .detailsButton:focus,
 .detailsButton:hover {
-  opacity: 1;
   color: var(--theme-text-primary);
 }
 

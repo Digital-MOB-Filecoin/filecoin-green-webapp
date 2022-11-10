@@ -57,8 +57,8 @@
 }
 
 .itemInner {
-  background: #fff;
-  border: 1px solid #E0E5EA;
+  background: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border-color);
   border-radius: 8px;
   position: relative;
   display: flex;
@@ -74,8 +74,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  border: 1px solid #E0E5EA;
+  background: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border-color);
   border-radius: 8px;
   flex-shrink: 0;
 }
@@ -89,7 +89,7 @@
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
-  color: #040505;
+  color: var(--theme-text-primary);
   cursor: pointer;
 }
 
@@ -97,7 +97,7 @@
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
-  color: #576C7E;
+  color: var(--theme-text-secondary);
   display: flex;
   align-items: center;
 }
@@ -107,7 +107,7 @@
 }
 
 .itemSubtitleSeparator {
-  background: #98A9B8;
+  background: var(--color-nepal);
   border-radius: 100px;
   width: 4px;
   height: 4px;
@@ -119,19 +119,19 @@
   font-weight: 700;
   font-size: 12px;
   line-height: 16px;
-  color: #4EA394;
+  color: var(--theme-color-primary);
   background: transparent;
   border: 0;
   padding: 0;
 }
 
 .itemInput:checked ~ .itemInner {
-  border-color: #4EA394;
-  background: rgba(78, 163, 148, 0.08);
+  border-color: var(--theme-color-primary);
+  background: rgba(var(--theme-color-primary-rgb), 0.08);
 }
 
 .itemInput:checked ~ .itemInner .itemLabel {
-  border-color: #4EA394;
+  border-color: var(--theme-color-primary);
 }
 
 .itemInput:checked ~ .itemInner .itemLabel::after {
@@ -139,7 +139,7 @@
   width: 16px;
   height: 16px;
   display: block;
-  background: #4EA394;
+  background: var(--theme-color-primary);
   border-radius: 4px;
   pointer-events: none;
 }
@@ -158,24 +158,24 @@
   padding: 0;
   background: transparent;
   border: 0;
-  color: #98A9B8;
+  color: var(--theme-icon-color);
   display: inline-flex;
   align-items: center;
 }
 
 .backButton span {
-  color: #576C7E;
+  color: var(--theme-text-secondary);
   margin-left: 8px;
 }
 
 .backButton:hover {
-  color: #576C7E;
+  color: var(--theme-text-secondary);
 }
 
 .description {
   font-weight: 500;
   font-size: 16px;
   line-height: 32px;
-  color: #040505;
+  color: var(--theme-text-primary);
   margin-top: 32px;
 }
