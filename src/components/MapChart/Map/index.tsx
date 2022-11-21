@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-
+import { StringParam, useQueryParams } from 'use-query-params';
+import ReactTooltip from 'react-tooltip';
 import {
   ComposableMap,
   Geographies,
@@ -8,12 +9,10 @@ import {
   ZoomableGroup,
   Point,
 } from 'react-simple-maps';
-import { feature } from 'topojson-client';
-import { StringParam, useQueryParams } from 'use-query-params';
 import { Feature } from 'geojson';
+import { feature } from 'topojson-client';
 import { scaleLog } from 'd3-scale';
 import { geoPath, geoEqualEarth } from 'd3-geo';
-import ReactTooltip from 'react-tooltip';
 
 import {
   TFetchMapChartCountries,
@@ -26,7 +25,8 @@ import { Spinner } from 'components/Spinner';
 import { Svg } from 'components/Svg';
 
 import { MapInfoModal } from '../MapInfoModal';
-import geography from './world-countries-sans-antarctica.json';
+// import geography from './world-countries-sans-antarctica.json';
+import geography from './geography.json';
 import s from './s.module.css';
 
 export const colorScale = (value, domain): string => {
@@ -53,11 +53,6 @@ const height = 381;
 const projection = geoEqualEarth()
   .scale(defaultScale * 100)
   .center(defaultCenter);
-// .translate([width / 2, height / 2])
-// .clipExtent([
-//   [150, 0],
-//   [100 + width, height + 80],
-// ]);
 
 const path = geoPath(projection);
 
@@ -75,7 +70,7 @@ const getGeoByCountryCode = (
 
   return geos.find(
     (geo) =>
-      geo?.properties?.['Alpha-2']?.toLowerCase() === countryCode.toLowerCase()
+      geo?.properties?.['ISO_A2']?.toLowerCase() === countryCode.toLowerCase()
   );
 };
 
@@ -153,41 +148,43 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       return;
     }
 
+    const getCountryScaledZoom = (countryCode: string): number => {
+      const bounds = getBounds(getGeoByCountryCode(countryCode)); // [[x₀, y₀], [x₁, y₁]]
+
+      if (bounds) {
+        const x0 = bounds[0][0];
+        const y0 = bounds[0][1];
+        const x1 = bounds[1][0];
+        const y1 = bounds[1][1];
+
+        const geoWidth = Math.abs(x1 - x0);
+        const geoHeight = Math.abs(y1 - y0);
+
+        const maxXScale = width / geoWidth;
+        const maxYScale = height / geoHeight;
+
+        return Math.min(maxXScale, maxYScale);
+      }
+
+      return defaultCountryZoom;
+    };
+
     if (
       !query.miner &&
       query.country &&
       countries.length &&
       availableCountryCodes.length
     ) {
-      const countryCode =
-        query.country === 'HK' ? 'cn' : query.country.toLowerCase();
+      const countryCode = query.country;
       const isAvailable = availableCountryCodes.some(
-        (code) => code.toLowerCase() === countryCode
+        (code) => code === countryCode
       );
 
       if (isAvailable) {
+        const zoomScale = getCountryScaledZoom(countryCode);
         const centroid = getCentroid(getGeoByCountryCode(countryCode));
-        const bounds = getBounds(getGeoByCountryCode(countryCode)); // [[x₀, y₀], [x₁, y₁]]
 
-        if (bounds) {
-          const x0 = bounds[0][0];
-          const y0 = bounds[0][1];
-          const x1 = bounds[1][0];
-          const y1 = bounds[1][1];
-
-          const zoomWidth = Math.abs(x0 - x1);
-          const zoomHeight = Math.abs(y0 - y1);
-
-          const maxXScale = width / zoomWidth;
-          const maxYScale = height / zoomHeight;
-
-          const zoomScale = Math.min(maxXScale, maxYScale);
-
-          setZoom(zoomScale);
-        } else {
-          setZoom(defaultCountryZoom);
-        }
-
+        setZoom(zoomScale);
         if (centroid) {
           setCenter(centroid);
         }
@@ -201,15 +198,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       countries.length &&
       availableCountryCodes.length
     ) {
-      const countryCode =
-        minerMarkers[0].country === 'HK'
-          ? 'cn'
-          : minerMarkers[0].country.toLowerCase();
+      const countryCode = minerMarkers[0].country.toLowerCase();
 
-      const isSameCountry = minerMarkers.every((marker) =>
-        marker.country.toLowerCase() === 'hk'
-          ? 'cn' === countryCode
-          : marker.country.toLowerCase() === countryCode
+      const isSameCountry = minerMarkers.every(
+        (marker) => marker.country.toLowerCase() === countryCode
       );
 
       const isAvailable =
@@ -220,10 +212,11 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
       if (isAvailable) {
         const centroid = getCentroid(getGeoByCountryCode(countryCode));
+        const zoomScale = getCountryScaledZoom(countryCode);
 
         if (centroid) {
           setCenter(centroid);
-          setZoom(defaultCountryZoom);
+          setZoom(zoomScale);
         }
       } else {
         setCenter(defaultCenter);
@@ -272,10 +265,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
   const countryFill = useCallback(
     ({ alpha2, storageProviders }) => {
-      const countryCode = query.country === 'HK' ? 'CN' : query.country;
-
       if (query.country || query.miner) {
-        if (countryCode === alpha2 || query.miner) {
+        if (query.country === alpha2 || query.miner) {
           return '#F3F5F6';
         }
         return 'transparent';
@@ -348,7 +339,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           zoom={zoom}
           center={center}
           minZoom={1}
-          maxZoom={query.country || query.miner ? 500 : 2}
+          maxZoom={query.country || query.miner ? 500 : 4}
           onMoveEnd={({ zoom: zoomAfter, coordinates }) => {
             // if (zoomAfter < defaultCountryZoom) {
             //   setQuery((prevQuery) => ({
@@ -363,7 +354,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           <Geographies geography={geography}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                const alpha2 = geo.properties['Alpha-2'];
+                const alpha2 = geo.properties['ISO_A2'];
 
                 const isAvailable =
                   alpha2 &&
@@ -377,20 +368,24 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       ?.storage_providers) ||
                   0;
 
+                const bgColor = countryFill({
+                  alpha2,
+                  storageProviders,
+                });
+
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     onClick={handlerGeoClick({ alpha2, isAvailable })}
-                    fill={countryFill({
-                      alpha2,
-                      storageProviders,
-                    })}
-                    stroke="#fff"
+                    fill={bgColor}
+                    stroke={
+                      geo?.geometry?.type === 'Polygon' ? bgColor : '#fff'
+                    }
                     strokeWidth={0.5}
                     data-tip={countryTip({
                       isAvailable,
-                      name: geo.properties.name,
+                      name: geo.properties.NAME,
                       storageProviders,
                     })}
                   />
