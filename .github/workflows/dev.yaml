@@ -55,7 +55,7 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: dev-frontend
+          name: frontend
           path: ${{ env.BUILD_PATH }}
 
       - name: Notify Slack success
@@ -98,7 +98,7 @@ jobs:
       - name: Get artifacts
         uses: actions/download-artifact@v2
         with:
-          name: dev-frontend
+          name: frontend
 
       - name: Configure AWS credetials
         uses: aws-actions/configure-aws-credentials@v1
