@@ -99,6 +99,7 @@ export const fetchChart = async ({
     end: string;
     miner?: string | null;
     filter?: TChartFiler | null;
+    country?: string | null;
   };
 }): Promise<TFetchChartResponse> => {
   const queryParams = `?${queryString.stringify(data)}`;

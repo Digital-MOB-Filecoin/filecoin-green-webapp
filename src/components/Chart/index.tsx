@@ -56,6 +56,7 @@ export const Chart = ({
   const [query] = useQueryParams({
     charts: ObjectParam,
     miner: StringParam,
+    country: StringParam,
   });
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export const Chart = ({
         end: lightFormat(interval.end, 'yyyy-MM-dd'),
         miner: query.miner,
         filter: getNormalizedScale(query.charts?.[model.id]),
+        country: query.country,
       },
     })
       .then((response) => {
@@ -129,6 +131,7 @@ export const Chart = ({
     model.id,
     query.charts?.[model.id],
     query.miner,
+    query.country,
   ]);
 
   return (
