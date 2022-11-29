@@ -171,9 +171,22 @@ export function MapChart() {
     }
 
     if (query.miner) {
-      return minerMarkers.map((item) => ({
-        data: [{ value: item.miner }, { value: item.power, alignRight: true }],
-      }));
+      if (minerMarkers.length) {
+        return [
+          {
+            data: [
+              { value: minerMarkers[0].miner },
+              { value: minerMarkers[0].power, alignRight: true },
+            ],
+          },
+        ];
+      } else {
+        return [];
+      }
+
+      // return minerMarkers.map((item) => ({
+      //   data: [{ value: item.miner }, { value: item.power, alignRight: true }],
+      // }));
     }
 
     return [];
