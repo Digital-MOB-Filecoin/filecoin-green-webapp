@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  NumberParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 import cn from 'classnames';
 
 import { fetchMiners, TFetchMinersResponseMiners } from 'api';
@@ -16,7 +21,7 @@ export const MinersTable = () => {
   const [failed, setFailed] = useState(false);
   const [total, setTotal] = useState(0);
   const [query, setQuery] = useQueryParams({
-    miner: StringParam,
+    miners: DelimitedArrayParam,
     limit: NumberParam,
     offset: NumberParam,
     start: StringParam,
@@ -112,7 +117,7 @@ export const MinersTable = () => {
               onClick={() => {
                 setQuery((prevQuery) => ({
                   ...prevQuery,
-                  miner: item.miner,
+                  miners: [item.miner],
                 }));
                 window.scroll({ top: 0 });
               }}

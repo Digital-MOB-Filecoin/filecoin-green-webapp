@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  ObjectParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 
 import lightFormat from 'date-fns/lightFormat';
 
@@ -55,7 +60,7 @@ export const Chart = ({
 
   const [query] = useQueryParams({
     charts: ObjectParam,
-    miner: StringParam,
+    miners: DelimitedArrayParam,
     country: StringParam,
   });
 
@@ -72,7 +77,7 @@ export const Chart = ({
         id: model.id,
         start: lightFormat(interval.start, 'yyyy-MM-dd'),
         end: lightFormat(interval.end, 'yyyy-MM-dd'),
-        miner: query.miner,
+        miners: query.miners,
         filter: getNormalizedScale(query.charts?.[model.id]),
         country: query.country,
       },
@@ -130,7 +135,8 @@ export const Chart = ({
     interval.start,
     model.id,
     query.charts?.[model.id],
-    query.miner,
+    query.miners,
+    query.miners?.length,
     query.country,
   ]);
 

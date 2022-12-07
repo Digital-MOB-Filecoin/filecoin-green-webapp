@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import cn from 'classnames';
-import { useQueryParam, StringParam } from 'use-query-params';
+import { useQueryParam, DelimitedArrayParam } from 'use-query-params';
 import { lightFormat as dateLightFormat } from 'date-fns';
 
 import { fetchExportData, TChartFiler } from 'api';
@@ -25,7 +25,7 @@ export const ExportButton = ({
   filter,
 }: TExportButton) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [miner] = useQueryParam('miner', StringParam);
+  const [miners] = useQueryParam('miners', DelimitedArrayParam);
 
   const handlerExport = async () => {
     const abortController = new AbortController();
@@ -47,7 +47,7 @@ export const ExportButton = ({
           limit,
           start,
           end,
-          miner,
+          miners,
           filter,
         },
       });
@@ -66,7 +66,7 @@ export const ExportButton = ({
             limit,
             start,
             end,
-            miner,
+            miners,
             filter,
           },
         });

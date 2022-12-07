@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StringParam, useQueryParams } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 import ReactTooltip from 'react-tooltip';
 import {
   ComposableMap,
@@ -131,7 +135,7 @@ type TMap = {
 export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const [query, setQuery] = useQueryParams({
     country: StringParam,
-    miner: StringParam,
+    miners: DelimitedArrayParam,
   });
   const [zoom, setZoom] = useState(defaultZoom);
   const [center, setCenter] = useState<Point>(defaultCenter);
@@ -142,7 +146,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!query.miner && !query.country) {
+    if (!query.miners?.length && !query.country) {
       setCenter(defaultCenter);
       setZoom(defaultZoom);
       return;
@@ -170,7 +174,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
     };
 
     if (
-      !query.miner &&
+      !query.miners?.length &&
       query.country &&
       countries.length &&
       availableCountryCodes.length
@@ -193,7 +197,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
     if (
       !query.country &&
-      query.miner &&
+      query.miners?.length &&
       minerMarkers.length &&
       countries.length &&
       availableCountryCodes.length
@@ -230,7 +234,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
     minerMarkers,
     minerMarkers.length,
     query.country,
-    query.miner,
+    query.miners,
+    query.miners?.length,
   ]);
 
   useEffect(() => {
@@ -253,20 +258,20 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const handlerGeoClick = useCallback(
     ({ alpha2, isAvailable }) =>
       () => {
-        if (!query.miner && !query.country && isAvailable) {
+        if (!query.miners?.length && !query.country && isAvailable) {
           setQuery((prevQuery) => ({
             ...prevQuery,
             country: alpha2,
           }));
         }
       },
-    [query.country, query.miner, setQuery]
+    [query.country, query.miners, setQuery]
   );
 
   const countryFill = useCallback(
     ({ alpha2, storageProviders }) => {
-      if (query.country || query.miner) {
-        if (query.country === alpha2 || query.miner) {
+      if (query.country || query.miners?.length) {
+        if (query.country === alpha2 || query.miners?.length) {
           return '#F3F5F6';
         }
         return 'transparent';
@@ -274,16 +279,16 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
       return colorScale(storageProviders, domain);
     },
-    [domain, query.country, query.miner]
+    [domain, query.country, query.miners]
   );
 
   const countryTip = useCallback(
     ({ isAvailable, name, storageProviders }) => {
-      if (query.country || query.miner) {
+      if (query.country || query.miners?.length) {
         return '';
       }
 
-      if (!isAvailable || query.country || query.miner) {
+      if (!isAvailable || query.country || query.miners?.length) {
         return JSON.stringify({
           title: name,
           data: [
@@ -305,7 +310,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         ],
       });
     },
-    [query.country, query.miner]
+    [query.country, query.miners]
   );
 
   return (
@@ -339,7 +344,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           zoom={zoom}
           center={center}
           minZoom={1}
-          maxZoom={query.country || query.miner ? 500 : 4}
+          maxZoom={query.country || query.miners?.length ? 500 : 4}
           onMoveEnd={({ zoom: zoomAfter, coordinates }) => {
             // if (zoomAfter < defaultCountryZoom) {
             //   setQuery((prevQuery) => ({

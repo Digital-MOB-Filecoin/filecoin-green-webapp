@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 
 import { config } from 'config';
+import { encodeDelimitedArray } from 'use-query-params';
 
 export type TChartFiler = 'day' | 'week' | 'month';
 
@@ -97,12 +98,16 @@ export const fetchChart = async ({
     id: number;
     start: string;
     end: string;
-    miner?: string | null;
+    miners?: (string | null)[] | null;
     filter?: TChartFiler | null;
     country?: string | null;
   };
 }): Promise<TFetchChartResponse> => {
-  const queryParams = `?${queryString.stringify(data)}`;
+  const queryParams = `?${queryString.stringify(data, {
+    arrayFormat: 'comma',
+    skipNull: true,
+    skipEmptyString: true,
+  })}`;
 
   return api(`${config.apiBaseUrl}models/model${queryParams}`, {
     signal: abortController?.signal,
@@ -124,11 +129,15 @@ export const fetchExportData = async ({
     limit: number;
     start: string;
     end: string;
-    miner?: string | null;
+    miners?: (string | null)[] | null;
     filter?: TChartFiler | null;
   };
 }): Promise<TFetchExportDataResponse> => {
-  const queryParams = `?${queryString.stringify(data)}`;
+  const queryParams = `?${queryString.stringify(data, {
+    arrayFormat: 'comma',
+    skipNull: true,
+    skipEmptyString: true,
+  })}`;
 
   return api(`${config.apiBaseUrl}models/export${queryParams}`, {
     signal: abortController?.signal,
@@ -140,10 +149,12 @@ export const fetchMinerData = async ({
   data,
 }: {
   abortController: AbortController;
-  data: { miner: string };
+  data: { miners: (string | null)[] | null | undefined };
 }): Promise<any> => {
+  const encodedMiners = encodeDelimitedArray(data.miners, ',');
+
   return api(
-    `https://api.filrep.io/api/miners?limit=10&offset=0&search=${data.miner}`,
+    `https://api.filrep.io/api/miners?limit=10&offset=0&search=${encodedMiners}`,
     { signal: abortController?.signal }
   );
 };
@@ -197,9 +208,11 @@ export const fetchMapChartMinerMarkers = async ({
   data,
 }: {
   abortController: AbortController;
-  data: { miner: string };
+  data: { miners: (string | null)[] | null | undefined };
 }): Promise<TFetchMapChartMinerMarkers[]> => {
-  return api(`${config.apiBaseUrl}map/list/miner?miner=${data.miner}`, {
+  const encodedMiners = encodeDelimitedArray(data.miners, ',');
+
+  return api(`${config.apiBaseUrl}map/list/miner?miner=${encodedMiners}`, {
     signal: abortController?.signal,
   });
 };

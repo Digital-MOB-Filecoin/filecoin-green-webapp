@@ -14,12 +14,6 @@
   border: var(--theme-input-border-active);
 }
 
-.minersWrapper {
-  display: flex;
-  /*overflow-y: auto;*/
-  /*max-width: 500px;*/
-}
-
 .icon {
   position: absolute;
   top: 24px;
@@ -56,6 +50,14 @@
 .input:focus {
 }
 
+.minersWrapper {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 0 8px;
+  margin-right: 8px;
+}
+
 .miner {
   display: inline-flex;
   align-items: center;
@@ -67,10 +69,6 @@
   color: var(--theme-text-primary);
   padding: 8px 16px;
   align-self: center;
-}
-
-.miner + .miner {
-  margin-left: 8px;
 }
 
 .minerRemoveButton {
@@ -88,4 +86,11 @@
 .minerRemoveButton:focus,
 .minerRemoveButton:hover {
   color: var(--theme-text-secondary);
+}
+
+.minersCount {
+  color: var(--theme-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+  pointer-events: none;
 }

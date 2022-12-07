@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { StringParam, useQueryParams } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 
 import {
   fetchMapChartCountries,
@@ -18,7 +22,7 @@ import s from './s.module.css';
 
 export function MapChart() {
   const [query, setQuery] = useQueryParams({
-    miner: StringParam,
+    miners: DelimitedArrayParam,
     country: StringParam,
   });
   const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
@@ -57,8 +61,13 @@ export function MapChart() {
         data: { country: query.country },
       })
         .then((data) => {
+          const filteredData = data.filter(
+            (item, pos, self) =>
+              self.findIndex((v) => v.miner === item.miner) === pos
+          );
+
           setCountryMiners(
-            data.map((item) => ({
+            filteredData.map((item) => ({
               ...item,
               power: formatBytes(item.power, {
                 precision: 2,
@@ -82,7 +91,7 @@ export function MapChart() {
     setCountryMiners([]);
     setMinerMarkers([]);
 
-    if (query.miner) {
+    if (query.miners?.length) {
       setIsDataLoading(true);
 
       setQuery((prevState) => ({
@@ -92,11 +101,16 @@ export function MapChart() {
 
       fetchMapChartMinerMarkers({
         abortController,
-        data: { miner: query.miner },
+        data: { miners: query.miners },
       })
         .then((data) => {
+          const filteredData = data.filter(
+            (item, pos, self) =>
+              self.findIndex((v) => v.miner === item.miner) === pos
+          );
+
           setMinerMarkers(
-            data.map((item) => ({
+            filteredData.map((item) => ({
               ...item,
               power: formatBytes(item.power, {
                 precision: 2,
@@ -112,10 +126,10 @@ export function MapChart() {
     return () => {
       abortController.abort();
     };
-  }, [query.miner, setQuery]);
+  }, [query.miners, query.miners?.length, setQuery]);
 
   const tableHeader = useMemo(() => {
-    if (!query.country && !query.miner) {
+    if (!query.country && !query.miners?.length) {
       return [
         { title: 'Country' },
         { title: '# of storage providers', alignRight: true },
@@ -129,7 +143,7 @@ export function MapChart() {
       ];
     }
 
-    if (query.miner) {
+    if (query.miners?.length) {
       return [
         { title: 'Storage provider' },
         { title: 'Total raw power', alignRight: true },
@@ -137,14 +151,14 @@ export function MapChart() {
     }
 
     return [{ title: '' }, { title: '' }];
-  }, [query.country, query.miner]);
+  }, [query.country, query.miners]);
 
   const tableData: TMapChartTableRow[] = useMemo(() => {
     if (isDataLoading) {
       return [];
     }
 
-    if (!query.country && !query.miner) {
+    if (!query.country && !query.miners?.length) {
       return countries.map((item) => ({
         onClick: () =>
           setQuery((prevState) => ({
@@ -163,37 +177,24 @@ export function MapChart() {
         onClick: () =>
           setQuery((prevState) => ({
             ...prevState,
-            miner: item.miner,
+            miners: [item.miner],
             country: undefined,
           })),
         data: [{ value: item.miner }, { value: item.power, alignRight: true }],
       }));
     }
 
-    if (query.miner) {
-      if (minerMarkers.length) {
-        return [
-          {
-            data: [
-              { value: minerMarkers[0].miner },
-              { value: minerMarkers[0].power, alignRight: true },
-            ],
-          },
-        ];
-      } else {
-        return [];
-      }
-
-      // return minerMarkers.map((item) => ({
-      //   data: [{ value: item.miner }, { value: item.power, alignRight: true }],
-      // }));
+    if (query.miners?.length) {
+      return minerMarkers.map((item) => ({
+        data: [{ value: item.miner }, { value: item.power, alignRight: true }],
+      }));
     }
 
     return [];
   }, [
     isDataLoading,
     query.country,
-    query.miner,
+    query.miners,
     countries,
     setQuery,
     countryMiners,
@@ -201,19 +202,19 @@ export function MapChart() {
   ]);
 
   const handlerBackToCountries = useMemo(() => {
-    if (query.country || query.miner) {
+    if (query.country || query.miners?.length) {
       return () => {
         setCountryMiners([]);
         setMinerMarkers([]);
         setQuery((prevQuery) => ({
           ...prevQuery,
-          miner: undefined,
+          miners: undefined,
           country: undefined,
         }));
       };
     }
     return undefined;
-  }, [query.country, query.miner, setQuery]);
+  }, [query.country, query.miners, setQuery]);
 
   return (
     <div className={s.wrapper}>

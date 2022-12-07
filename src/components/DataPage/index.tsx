@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ObjectParam, StringParam, useQueryParams } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  ObjectParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 
 import {
   parse as dateParse,
@@ -15,7 +20,6 @@ import {
 } from 'constant';
 import { getNormalizedScale } from 'utils/string';
 import { FiltersBar } from 'components/FiltersBar';
-import { Svg } from 'components/Svg';
 import { Filters } from 'components/DataPage/Filters';
 import { Chart } from 'components/Chart';
 import { Spinner } from 'components/Spinner';
@@ -36,7 +40,7 @@ export type TChartModel = {
 export default function DataPage() {
   const [query, setQuery] = useQueryParams({
     charts: ObjectParam,
-    miner: StringParam,
+    miners: DelimitedArrayParam,
     start: StringParam,
     end: StringParam,
   });
@@ -46,7 +50,7 @@ export default function DataPage() {
   const [failed, setFailed] = useState<boolean>(false);
   const [showChartsModal, setShowChartsModal] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<TChartModel[]>([]);
-  const [minerData, setMinerData] = useState<any>(null);
+  const [minersData, setMinersData] = useState<any>(null);
 
   const [dateInterval, setDateInterval] = useState<Interval>(() => {
     const parsedStartDate = query.start
@@ -120,20 +124,24 @@ export default function DataPage() {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (query.miner) {
-      fetchMinerData({ abortController, data: { miner: query.miner } }).then(
+    if (query.miners) {
+      fetchMinerData({ abortController, data: { miners: query.miners } }).then(
         (data) => {
-          setMinerData(data?.miners?.[0]);
+          const filteredData = data?.miners.filter(
+            (item) => item?.energy?.pageUrl
+          );
+
+          setMinersData(filteredData);
         }
       );
     } else {
-      setMinerData(null);
+      setMinersData(null);
     }
 
     return () => {
       abortController.abort();
     };
-  }, [query.miner]);
+  }, [query.miners]);
 
   const handlerChangeFilter = (category: TChartModel['category']) => {
     let newCharts: TChartModel[] = [];
@@ -178,7 +186,7 @@ export default function DataPage() {
   const showCategory =
     selectedCharts.some(({ category }) => category === 'capacity') &&
     selectedCharts.some(({ category }) => category === 'energy');
-
+  console.log(minersData);
   return (
     <div className="container">
       <div className={s.header}>
@@ -190,33 +198,38 @@ export default function DataPage() {
 
       <MapChart />
 
-      {query.miner ? (
+      {minersData?.length ? (
         <div className={s.searchContainer}>
-          <span>Storage Provider {query.miner}</span>
-          <button
-            type="button"
-            className={s.searchClear}
-            onClick={() =>
-              setQuery((prevQuery) => ({
-                ...prevQuery,
-                miner: undefined,
-              }))
-            }
-          >
-            <Svg id="close" width={16} height={16} />
-          </button>
-          {minerData?.energy?.pageUrl ? (
-            <div className={s.searchContainerSub}>
-              Renewable energy purchases for{' '}
-              <a
-                href={minerData.energy.pageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {minerData?.address || '--'}
-              </a>
-            </div>
-          ) : null}
+          {/*<span>Storage Provider {query.miners?.join(', ')}</span>*/}
+          {/*<button*/}
+          {/*  type="button"*/}
+          {/*  className={s.searchClear}*/}
+          {/*  onClick={() =>*/}
+          {/*    setQuery((prevQuery) => ({*/}
+          {/*      ...prevQuery,*/}
+          {/*      miner: undefined,*/}
+          {/*    }))*/}
+          {/*  }*/}
+          {/*>*/}
+          {/*  <Svg id="close" width={16} height={16} />*/}
+          {/*</button>*/}
+          <div className={s.searchContainerSub}>
+            Renewable energy purchases for{' '}
+            {minersData.map((item, idx, self) => {
+              return (
+                <>
+                  <a
+                    href={item.energy.pageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item?.address || '--'}
+                  </a>
+                  {idx + 1 < self.length ? ', ' : ''}
+                </>
+              );
+            })}
+          </div>
         </div>
       ) : null}
 
