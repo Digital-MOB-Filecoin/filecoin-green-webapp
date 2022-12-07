@@ -186,7 +186,7 @@ export default function DataPage() {
   const showCategory =
     selectedCharts.some(({ category }) => category === 'capacity') &&
     selectedCharts.some(({ category }) => category === 'energy');
-  console.log(minersData);
+
   return (
     <div className="container">
       <div className={s.header}>
