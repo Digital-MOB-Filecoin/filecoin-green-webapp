@@ -410,7 +410,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                 onClick={() => {
                   setQuery((prevQuery) => ({
                     ...prevQuery,
-                    miner: marker.miner,
+                    miners: [marker.miner],
                   }));
                 }}
               >
