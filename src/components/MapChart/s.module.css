@@ -1,0 +1,6 @@
+.wrapper {
+  display: flex;
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  margin: 32px 0;
+}

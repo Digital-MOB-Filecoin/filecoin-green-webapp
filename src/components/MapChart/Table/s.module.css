@@ -1,0 +1,97 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 381px;
+  border-left: 1px solid var(--theme-border-color);
+  flex-grow: 1;
+}
+
+.tableWrapper {
+  position: relative;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.tableHead {
+  position: sticky;
+  top: 0;
+  background: var(--theme-background-secondary);
+  border-bottom: 1px solid var(--theme-border-color);
+  border-radius: 8px 8px 0 0;
+}
+
+.tableRow {
+  width: 100%;
+  font: inherit;
+  display: flex;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.tableTh {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: left;
+  color: var(--color-nepal);
+  padding: 24px;
+  z-index: 1;
+  flex-grow: 1;
+}
+
+.tableTh:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.tableTh:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.tableBody {
+  overflow-y: auto;
+}
+
+.tableTd {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--theme-text-primary);
+  padding: 12px 24px;
+  flex-grow: 1;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.backButton {
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  padding: 16px 24px;
+  color: var(--color-nepal);
+  border: 0;
+  border-top: 1px solid var(--theme-border-color);
+  background: transparent;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.backButton:hover {
+  color: var(--theme-text-secondary);
+}
+
+.backButton svg {
+  margin-right: 4px;
+  flex-shrink: 0;
+}

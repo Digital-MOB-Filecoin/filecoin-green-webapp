@@ -5,33 +5,43 @@
   "dependencies": {
     "bignumber.js": "^9.0.1",
     "classnames": "^2.3.1",
-    "date-fns": "^2.26.0",
+    "d3-geo": "^3.0.1",
+    "d3-scale": "^4.0.2",
+    "date-fns": "^2.29.3",
     "filesize": "^6.4.0",
     "nanoid": "^3.1.23",
-    "outy": "^0.1.2",
     "query-string": "^7.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-markdown": "^7.0.1",
-    "react-router-dom": "^5.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "8.0.3",
+    "react-router-dom": "6.4.2",
     "react-scripts": "4.0.3",
-    "recharts": "2.1.6",
+    "react-simple-maps": "^3.0.0",
+    "react-tooltip": "^4.4.0",
+    "recharts": "2.1.15",
     "rehype-raw": "^6.1.0",
     "remark-gfm": "^3.0.1",
-    "use-debounce": "^7.0.0",
-    "use-query-params": "^1.2.2",
+    "topojson-client": "^3.1.0",
+    "use-query-params": "2.1.2",
     "wicg-inert": "^3.1.1"
   },
   "devDependencies": {
-    "eslint-config-prettier": "8.3.0",
+    "@types/jest": "^29.2.0",
+    "@types/node": "^18.11.7",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/react-simple-maps": "^3.0.0",
+    "@typescript-eslint/typescript-estree": "^5.41.0",
+    "eslint-config-prettier": "8.5.0",
     "eslint-plugin-css-modules": "2.11.0",
-    "eslint-plugin-prettier": "4.0.0",
-    "eslint-plugin-react": "7.27.1",
-    "eslint-plugin-react-hooks": "4.3.0",
-    "prettier": "2.5.0",
-    "stylelint": "14.1.0",
-    "stylelint-config-prettier": "9.0.2",
-    "stylelint-prettier": "2.0.0"
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.31.10",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "prettier": "2.7.1",
+    "stylelint": "14.14.0",
+    "stylelint-config-prettier": "9.0.3",
+    "stylelint-prettier": "2.0.0",
+    "typescript": "^4.8.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,6 +50,23 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
+    "plugins": [
+      "css-modules"
+    ],
+    "rules": {
+      "css-modules/no-unused-class": [
+        1,
+        {
+          "camelCase": true
+        }
+      ],
+      "css-modules/no-undef-class": [
+        1,
+        {
+          "camelCase": true
+        }
+      ]
+    },
     "extends": [
       "react-app",
       "react-app/jest"

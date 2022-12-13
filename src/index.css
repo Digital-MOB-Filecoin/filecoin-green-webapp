@@ -9,6 +9,8 @@
   --color-lochinvar: #4ea394;
   --rgb-lochinvar: 78, 163, 148;
   --color-kashmir-blue: #576c7e;
+  --rgb-kashmir-blue: 87, 108, 126;
+  --color-oxford-blue: #2d3842;
   --color-link-water: #bcc7d1;
   --color-nepal: #98a9b8;
   --color-sunshade: #ff974d;
@@ -24,6 +26,7 @@
 
   --theme-text-primary: var(--color-black-pearl);
   --theme-text-secondary: var(--color-kashmir-blue);
+  --theme-text-secondary-rgb: var(--rgb-kashmir-blue);
   --theme-text-inactive: var(--color-link-water);
   --theme-text-primary-inverted: var(--color-white);
 
@@ -39,6 +42,10 @@
   --theme-table-row-bg: rgba(var(--rgb-solitude), 0.64);
 
   --theme-border-color: var(--color-solitude-dark);
+
+  --theme-tooltip-bg: var(--color-oxford-blue);
+  --theme-tooltip-color-primary: var(--color-white);
+  --theme-tooltip-color-secondary: var(--color-nepal);
 }
 
 *,
@@ -95,7 +102,7 @@ main {
   margin: 0 auto;
   max-width: 1118px;
   position: relative;
-  min-width: 768px;
+  min-width: 1118px;
 }
 
 .h2 {
@@ -165,4 +172,17 @@ main {
 
 .markdown table tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
+}
+
+.rsm-svg {
+  /*height: 100%;*/
+}
+
+.rsm-geography {
+  transition: fill 0.2s ease-out;
+  outline: none;
+}
+
+.rsm-marker {
+  outline: none;
 }
