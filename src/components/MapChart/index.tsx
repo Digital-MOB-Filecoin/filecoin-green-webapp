@@ -104,13 +104,8 @@ export function MapChart() {
         data: { miners: query.miners },
       })
         .then((data) => {
-          const filteredData = data.filter(
-            (item, pos, self) =>
-              self.findIndex((v) => v.miner === item.miner) === pos
-          );
-
           setMinerMarkers(
-            filteredData.map((item) => ({
+            data.map((item) => ({
               ...item,
               power: formatBytes(item.power, {
                 precision: 2,
@@ -185,7 +180,12 @@ export function MapChart() {
     }
 
     if (query.miners?.length) {
-      return minerMarkers.map((item) => ({
+      const filteredData = minerMarkers.filter(
+        (item, pos, self) =>
+          self.findIndex((v) => v.miner === item.miner) === pos
+      );
+
+      return filteredData.map((item) => ({
         data: [{ value: item.miner }, { value: item.power, alignRight: true }],
       }));
     }
