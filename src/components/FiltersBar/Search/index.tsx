@@ -21,27 +21,34 @@ export function Search() {
     e.preventDefault();
 
     if (value) {
-      setValue('');
-
       setQueryMiners((prevQuery) => {
-        if (prevQuery && prevQuery?.length >= 100) {
+        const filteredValue: string[] = value
+          .split(',')
+          .map((item) => item.trim());
+
+        if (prevQuery && prevQuery?.length + filteredValue.length >= 100) {
           return prevQuery;
         }
 
         const filteredData: string[] =
-          prevQuery?.reduce((acc, item) => {
-            // @ts-ignore
-            if (item && !acc.includes(item?.toLowerCase())) {
-              // @ts-ignore
+          prevQuery?.reduce((acc: string[], item) => {
+            if (
+              item &&
+              !acc.includes(item?.toLowerCase()) &&
+              !filteredValue.includes(item?.toLowerCase())
+            ) {
               acc.push(item.toLowerCase());
             }
+
             return acc;
           }, []) || [];
 
-        filteredData.push(value);
+        filteredData.push(...filteredValue);
 
         return filteredData;
       });
+
+      setValue('');
     }
   };
 
@@ -69,7 +76,7 @@ export function Search() {
         <div className={s.minersWrapper}>
           {queryMiners.slice(0, MINERS_DISPLAYED).map((minerId) => {
             return (
-              <span className={s.miner}>
+              <span key={minerId} className={s.miner}>
                 <span>{minerId}</span>
                 <button
                   type="button"
