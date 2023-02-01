@@ -1,4 +1,4 @@
-name: Build production
+name: Build Production FE
 
 on:
   push:
@@ -9,137 +9,20 @@ env:
   AWS_REGION: us-east-1
   S3_BUCKET: production-filecoinenergy-origin
   CDN_NAME: filecoin.energy
-  BUILD_PATH: build
+  BUILD_ENVS: |
+    REACT_APP_API_BASE_URL="https://api.filecoin.energy/"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Notify Slack
-        if: success()
-        id: slack
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+      - uses: cristi-mb/build-fe@main
         with:
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: STARTED
-          color: warning
-
-      - name: Setup Nodejs
-        uses: actions/setup-node@v1
-        with:
-          node-version: '16.x'
-
-      - name: Cache dependencies
-        id: node-cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-          key: dev-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: yarn install --pure-lockfile
-
-      - name: Build
-        run: yarn build
-        env:
-          CI: false
-          REACT_APP_API_BASE_URL: 'https://api.filecoin.energy/'
-
-      - name: Save artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: frontend
-          path: ${{ env.BUILD_PATH }}
-
-      - name: Notify Slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: SUCCESS
-          color: good
-
-      - name: Notify Slack failure
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: FAILED
-          color: danger
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify Slack
-        if: success()
-        id: slack
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: STARTED
-          color: warning
-
-      - name: Get artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: frontend
-
-      - name: Configure AWS credetials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Deploy static site to S3
-        run: ls -l && aws s3 sync . s3://${{ env.S3_BUCKET }} --delete
-
-      - name: Invalidate CloudFront cache
-        run: |
-          #!/usr/bin/env bash
-          set -eou pipefail
-          CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, '${{ env.CDN_NAME }}')].Id | [0]" | tr -d \")
-          echo "Clearing cache for ${CF_DIST_ID}..."
-          CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
-          while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
-            echo "CF_DIST_ID=${CF_DIST_ID} CF_INVALIDATION_ID=${CF_INVALIDATION_ID}: Waiting for CloudFront cache invalidation to complete..."
-            sleep 5
-          done
-
-      - name: Notify Slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: SUCCESS
-          color: good
-
-      - name: Notify Slack failure
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel: ${{ env.SLACK_CHANNEL }}
-          status: FAILED
-          color: danger
+          aws-s3-name: ${{ env.S3_BUCKET }}
+          aws-cloudfront-name: ${{ env.CDN_NAME }}
+          slack-channel: ${{ env.SLACK_CHANNEL }}
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          build-envs: ${{ env.BUILD_ENVS }}
