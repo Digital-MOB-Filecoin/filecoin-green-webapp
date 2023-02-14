@@ -23,7 +23,7 @@ export const CHART_SCALE: {
 ];
 
 export const MAX_DATEPICKER_DATE: Date | number = sub(new Date(), {
-  days: 2,
+  days: 3,
 });
 
 export const DEFAULT_DATEPICKER_START_DATE = new Date(2020, 7, 25);
