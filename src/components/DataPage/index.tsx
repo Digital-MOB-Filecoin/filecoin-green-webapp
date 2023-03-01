@@ -200,19 +200,6 @@ export default function DataPage() {
 
       {minersData?.length ? (
         <div className={s.searchContainer}>
-          {/*<span>Storage Provider {query.miners?.join(', ')}</span>*/}
-          {/*<button*/}
-          {/*  type="button"*/}
-          {/*  className={s.searchClear}*/}
-          {/*  onClick={() =>*/}
-          {/*    setQuery((prevQuery) => ({*/}
-          {/*      ...prevQuery,*/}
-          {/*      miner: undefined,*/}
-          {/*    }))*/}
-          {/*  }*/}
-          {/*>*/}
-          {/*  <Svg id="close" width={16} height={16} />*/}
-          {/*</button>*/}
           <div className={s.searchContainerSub}>
             Renewable energy purchases for{' '}
             {minersData.map((item, idx, self) => {

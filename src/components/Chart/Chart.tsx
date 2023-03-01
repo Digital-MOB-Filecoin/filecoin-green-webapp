@@ -39,24 +39,29 @@ const getFormattedValue = ({
   value,
   precision = 2,
   filter,
-}: TGetFormattedValue) => {
+}: TGetFormattedValue): any => {
   let temp;
   switch (type) {
     case 'day':
+      if (!value) return null;
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
     case 'week':
+      if (!value) return null;
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'month':
+      if (!value) return null;
       temp = new Date(value);
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'time':
+      if (!value) return null;
       temp = new Date(value);
       if (filter === 'month') {
         return isValid(temp) ? format(temp, 'MMMM, yyyy') : value;
       }
       return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
+
     case 'GiB':
       return formatBytes(value, { inputUnit: 'GiB', precision });
     case 'percentage':
@@ -105,14 +110,16 @@ const StyledTooltip = (props: any) => {
   const { payload, filter, type: dataFormatType } = props;
   if (!payload) return null;
 
-  const formattedStartDate = getFormattedValue({
-    type: 'day',
-    value: payload[0]?.payload.start_date,
-  });
-  const formattedEndDate = getFormattedValue({
-    type: 'day',
-    value: payload[0]?.payload.end_date,
-  });
+  const formattedStartDate =
+    getFormattedValue({
+      type: 'day',
+      value: payload[0]?.payload.start_date,
+    }) || ' N/A';
+  const formattedEndDate =
+    getFormattedValue({
+      type: 'day',
+      value: payload[0]?.payload.end_date,
+    }) || ' N/A';
 
   const date =
     filter === 'day'
@@ -276,7 +283,7 @@ export const ChartComponent = ({
                 tickLine={false}
                 stroke="var(--color-nepal)"
                 tickFormatter={(value) =>
-                  getFormattedValue({ type: x, value, filter })
+                  value ? getFormattedValue({ type: x, value, filter }) : ''
                 }
                 interval="preserveEnd"
                 y={1}

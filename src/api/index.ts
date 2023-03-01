@@ -95,7 +95,8 @@ export const fetchChart = async ({
 }: {
   abortController: AbortController;
   data: {
-    id: number;
+    id?: number;
+    code_name?: 'CumulativeEnergyModel_v_1_0_1' | string;
     start: string;
     end: string;
     miners?: (string | null)[] | null;
@@ -162,6 +163,7 @@ export const fetchMinerData = async ({
 export type TFetchMapChartCountries = {
   country: string;
   storage_providers: string;
+  emissions: string;
 };
 
 export const fetchMapChartCountries = async ({

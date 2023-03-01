@@ -15,7 +15,8 @@ import {
 } from 'react-simple-maps';
 import { Feature } from 'geojson';
 import { feature } from 'topojson-client';
-import { scaleLog } from 'd3-scale';
+import { scaleSqrt } from 'd3-scale';
+
 import { geoPath, geoEqualEarth } from 'd3-geo';
 
 import {
@@ -24,11 +25,12 @@ import {
   TFetchMapChartMinerMarkers,
 } from 'api';
 
+import { formatCO2 } from 'utils/numbers';
 import { getCountryNameByCode } from 'utils/country';
 import { Spinner } from 'components/Spinner';
-import { Svg } from 'components/Svg';
+// import { Svg } from 'components/Svg';
 
-import { MapInfoModal } from '../MapInfoModal';
+// import { MapInfoModal } from '../MapInfoModal';
 // import geography from './world-countries-sans-antarctica.json';
 import geography from './geography.json';
 import s from './s.module.css';
@@ -39,10 +41,10 @@ export const colorScale = (value, domain): string => {
   }
 
   return String(
-    scaleLog()
-      .domain(domain)
+    scaleSqrt()
+      .domain([domain[0], domain[1] / 2, domain[1]])
       // @ts-ignore
-      .range(['#F3F5F6', '#4EA394'])(value)
+      .range(['#bcc7d1', '#4EA394', '#FF974D'])(value)
   );
 };
 
@@ -143,7 +145,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const [availableCountryCodes, setAvailableCountryCodes] = useState<string[]>(
     []
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!query.miners?.length && !query.country) {
@@ -243,15 +245,15 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   }, [countries.length, query.country, countryMiners?.length, loading]);
 
   useEffect(() => {
-    const providers: number[] = [];
+    const emissions: number[] = [];
     const codes: string[] = [];
 
     countries.forEach((item) => {
-      providers.push(Number(item.storage_providers));
+      emissions.push(Number(item.emissions));
       codes.push(item.country);
     });
 
-    setDomain(getMinMax(providers));
+    setDomain(getMinMax(emissions));
     setAvailableCountryCodes(codes);
   }, [countries]);
 
@@ -269,7 +271,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryFill = useCallback(
-    ({ alpha2, storageProviders }) => {
+    ({ alpha2, emissions }) => {
       if (query.country || query.miners?.length) {
         if (query.country === alpha2 || query.miners?.length) {
           return '#F3F5F6';
@@ -277,13 +279,13 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         return 'transparent';
       }
 
-      return colorScale(storageProviders, domain);
+      return colorScale(emissions, domain);
     },
     [domain, query.country, query.miners]
   );
 
   const countryTip = useCallback(
-    ({ isAvailable, name, storageProviders }) => {
+    ({ isAvailable, name, storageProviders, emissions }) => {
       if (query.country || query.miners?.length) {
         return '';
       }
@@ -306,6 +308,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           {
             value: storageProviders,
             title: 'storage providers',
+          },
+          {
+            value: formatCO2(emissions, { precision: 2 }),
+            title: 'emissions',
           },
         ],
       });
@@ -367,15 +373,22 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                     (code) => code.toLowerCase() === alpha2.toLowerCase()
                   );
 
-                const storageProviders =
-                  (isAvailable &&
-                    countries.find((item) => item.country === alpha2)
-                      ?.storage_providers) ||
-                  0;
+                let storageProviders: string | number = 0;
+                let emissions: string | number = 0;
+                if (isAvailable) {
+                  const item = countries.find(
+                    (item) => item.country === alpha2
+                  );
+
+                  if (item) {
+                    storageProviders = item.storage_providers;
+                    emissions = item.emissions;
+                  }
+                }
 
                 const bgColor = countryFill({
                   alpha2,
-                  storageProviders,
+                  emissions,
                 });
 
                 return (
@@ -392,6 +405,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       isAvailable,
                       name: geo.properties.NAME,
                       storageProviders,
+                      emissions,
                     })}
                   />
                 );
@@ -456,15 +470,15 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         getContent={handleTooltipContent}
       />
 
-      <button
-        type="button"
-        className={s.infoButton}
-        onClick={() => setIsModalOpen(true)}
-      >
-        <Svg id="info" />
-      </button>
+      {/*<button*/}
+      {/*  type="button"*/}
+      {/*  className={s.infoButton}*/}
+      {/*  onClick={() => setIsModalOpen(true)}*/}
+      {/*>*/}
+      {/*  <Svg id="info" />*/}
+      {/*</button>*/}
 
-      <MapInfoModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {/*<MapInfoModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />*/}
     </div>
   );
 }
