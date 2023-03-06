@@ -115,6 +115,31 @@ export const fetchChart = async ({
   });
 };
 
+type TFetchExportDataHeaderResponse = Record<string, string>[];
+export const fetchExportDataHeader = async ({
+  abortController,
+  data,
+}: {
+  abortController: AbortController;
+  data: {
+    id: number;
+    start: string;
+    end: string;
+    miners?: (string | null)[] | null;
+    country?: string | null;
+  };
+}): Promise<TFetchExportDataHeaderResponse> => {
+  const queryParams = `?${queryString.stringify(data, {
+    arrayFormat: 'comma',
+    skipNull: true,
+    skipEmptyString: true,
+  })}`;
+
+  return api(`${config.apiBaseUrl}models/export/header${queryParams}`, {
+    signal: abortController?.signal,
+  });
+};
+
 type TFetchExportDataResponse = {
   fields: string[];
   data: Record<string, string>[];
@@ -131,6 +156,7 @@ export const fetchExportData = async ({
     start: string;
     end: string;
     miners?: (string | null)[] | null;
+    country?: string | null;
     filter?: TChartFiler | null;
   };
 }): Promise<TFetchExportDataResponse> => {

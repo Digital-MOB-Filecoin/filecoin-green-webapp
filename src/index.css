@@ -16,6 +16,8 @@
   --color-sunshade: #ff974d;
   --rgb-sunshade: 255, 151, 77;
 
+  --color-error: #dc2626;
+
   --theme-color-primary: var(--color-lochinvar);
   --theme-color-primary-rgb: var(--rgb-lochinvar);
   --theme-color-secondary: var(--color-sunshade);

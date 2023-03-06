@@ -18,6 +18,11 @@
   border-color: var(--theme-color-primary);
 }
 
+.error.error {
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
 .spinnerWrap {
   display: flex;
   position: absolute;

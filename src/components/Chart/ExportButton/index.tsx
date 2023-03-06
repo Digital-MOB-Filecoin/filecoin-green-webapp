@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import cn from 'classnames';
-import { useQueryParam, DelimitedArrayParam } from 'use-query-params';
+import {
+  DelimitedArrayParam,
+  useQueryParams,
+  StringParam,
+} from 'use-query-params';
 import { lightFormat as dateLightFormat } from 'date-fns';
 
-import { fetchExportData, TChartFiler } from 'api';
+import { fetchExportData, fetchExportDataHeader, TChartFiler } from 'api';
 
 import { Spinner } from 'components/Spinner';
 
@@ -25,13 +29,18 @@ export const ExportButton = ({
   filter,
 }: TExportButton) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [miners] = useQueryParam('miners', DelimitedArrayParam);
+  const [query] = useQueryParams({
+    miners: DelimitedArrayParam,
+    country: StringParam,
+  });
+  const [error, setError] = useState<string>('');
 
   const handlerExport = async () => {
     const abortController = new AbortController();
-    setLoading(true);
+    const headerAbortController = new AbortController();
 
     try {
+      setError('');
       setLoading(true);
 
       let offset = 0;
@@ -47,14 +56,42 @@ export const ExportButton = ({
           limit,
           start,
           end,
-          miners,
+          miners: query.miners,
+          country: query.country,
           filter,
         },
       });
 
-      const headerString = results.fields
-        .map((field) => `"${field}"`)
-        .join(',');
+      const headers = await fetchExportDataHeader({
+        abortController: headerAbortController,
+        data: {
+          id,
+          start,
+          end,
+          miners: query.miners,
+          country: query.country,
+        },
+      });
+
+      let headerString = '';
+
+      if (headers) {
+        const commasString = Array.from({ length: results.fields.length - 1 })
+          .map(() => ',')
+          .join('');
+
+        headerString =
+          Object.keys(headers)
+            .map((key) => {
+              return `"${key}: ${headers[key]}"` + commasString;
+            })
+            .join('\r\n') +
+          commasString +
+          '\r\n';
+      }
+
+      headerString += results.fields.map((field) => `"${field}"`).join(',');
+
       let dataString = '';
 
       while (results.data.length) {
@@ -66,7 +103,8 @@ export const ExportButton = ({
             limit,
             start,
             end,
-            miners,
+            miners: query.miners,
+            country: query.country,
             filter,
           },
         });
@@ -120,9 +158,11 @@ export const ExportButton = ({
           document.body.removeChild(link);
         }
       }
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      setError('true');
+      console.error(err);
     } finally {
+      setError('');
       setLoading(false);
     }
   };
@@ -130,7 +170,7 @@ export const ExportButton = ({
   return (
     <button
       type="button"
-      className={cn(s.button, className)}
+      className={cn(s.button, className, { [s.error]: error })}
       onClick={handlerExport}
     >
       Export
