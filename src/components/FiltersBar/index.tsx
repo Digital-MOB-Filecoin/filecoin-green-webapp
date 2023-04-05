@@ -12,7 +12,7 @@ import lightFormat from 'date-fns/lightFormat';
 
 import { formatWatts } from 'utils/numbers';
 import { fetchChart } from 'api';
-import { Spinner } from 'components/Spinner';
+// import { Spinner } from 'components/Spinner';
 import { Datepicker } from 'components/Datepicker';
 
 import { Search } from './Search';
@@ -28,22 +28,22 @@ export const FiltersBar = ({
   dateInterval,
   onChangeDateInterval,
 }: TFiltersBar) => {
-  const { consumption, consumptionLoading } = useConsumption(dateInterval);
+  // const { consumption, consumptionLoading } = useConsumption(dateInterval);
 
   return (
     <div style={{ width: '100%', textAlign: 'right' }}>
-      <div style={{ marginBottom: 8 }}>
-        Estimate Cumulative Energy Use:{' '}
-        {consumptionLoading ? (
-          <Spinner
-            width={16}
-            height={16}
-            style={{ marginLeft: 4, verticalAlign: 'middle' }}
-          />
-        ) : (
-          consumption || 'N/A'
-        )}
-      </div>
+      {/*<div style={{ marginBottom: 8 }}>*/}
+      {/*  Estimate Cumulative Energy Use:{' '}*/}
+      {/*  {consumptionLoading ? (*/}
+      {/*    <Spinner*/}
+      {/*      width={16}*/}
+      {/*      height={16}*/}
+      {/*      style={{ marginLeft: 4, verticalAlign: 'middle' }}*/}
+      {/*    />*/}
+      {/*  ) : (*/}
+      {/*    consumption || 'N/A'*/}
+      {/*  )}*/}
+      {/*</div>*/}
       <div className={cn(s.wrapper, className)}>
         <Search />
         <Datepicker
