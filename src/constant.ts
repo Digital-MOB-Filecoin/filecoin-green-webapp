@@ -28,6 +28,4 @@ export const MAX_DATEPICKER_DATE: Date | number = sub(new Date(), {
 
 export const DEFAULT_DATEPICKER_END_DATE = MAX_DATEPICKER_DATE;
 
-export const DEFAULT_DATEPICKER_START_DATE = sub(DEFAULT_DATEPICKER_END_DATE, {
-  months: 3,
-});
+export const DEFAULT_DATEPICKER_START_DATE = new Date(2020, 7, 25);

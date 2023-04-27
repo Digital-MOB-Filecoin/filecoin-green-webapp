@@ -84,7 +84,8 @@
 .infoButton {
   width: 24px;
   height: 24px;
-  display: inline-flex;
+  /*display: inline-flex;*/
+  display: none;
   background: transparent;
   padding: 0;
   border: 0;
