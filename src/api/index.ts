@@ -189,6 +189,7 @@ export const fetchMinerData = async ({
 export type TFetchMapChartCountries = {
   country: string;
   storage_providers: string;
+  emissions_intensity: string;
   emissions: string;
 };
 

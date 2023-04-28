@@ -15,7 +15,7 @@ import {
 } from 'react-simple-maps';
 import { Feature } from 'geojson';
 import { feature } from 'topojson-client';
-import { scaleSqrt } from 'd3-scale';
+import { scaleLinear } from 'd3-scale';
 
 import { geoPath, geoEqualEarth } from 'd3-geo';
 
@@ -41,10 +41,10 @@ export const colorScale = (value, domain): string => {
   }
 
   return String(
-    scaleSqrt()
+    scaleLinear()
       .domain([domain[0], domain[1] / 2, domain[1]])
       // @ts-ignore
-      .range(['#bcc7d1', '#4EA394', '#FF974D'])(value)
+      .range(['#4EA394', '#FF974D'])(value)
   );
 };
 
@@ -245,15 +245,15 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   }, [countries.length, query.country, countryMiners?.length, loading]);
 
   useEffect(() => {
-    const emissions: number[] = [];
+    const emissionsIntensity: number[] = [];
     const codes: string[] = [];
 
     countries.forEach((item) => {
-      emissions.push(Number(item.emissions));
+      emissionsIntensity.push(Number(item.emissions_intensity));
       codes.push(item.country);
     });
 
-    setDomain(getMinMax(emissions));
+    setDomain(getMinMax(emissionsIntensity));
     setAvailableCountryCodes(codes);
   }, [countries]);
 
@@ -271,7 +271,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryFill = useCallback(
-    ({ alpha2, emissions }) => {
+    ({ alpha2, emissionsIntensity }) => {
       if (query.country || query.miners?.length) {
         if (query.country === alpha2 || query.miners?.length) {
           return '#F3F5F6';
@@ -279,7 +279,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         return 'transparent';
       }
 
-      return colorScale(emissions, domain);
+      return colorScale(emissionsIntensity, domain);
     },
     [domain, query.country, query.miners]
   );
@@ -375,6 +375,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
                 let storageProviders: string | number = 0;
                 let emissions: string | number = 0;
+                let emissionsIntensity: string | number = 0;
+
                 if (isAvailable) {
                   const item = countries.find(
                     (item) => item.country === alpha2
@@ -383,12 +385,13 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                   if (item) {
                     storageProviders = item.storage_providers;
                     emissions = item.emissions;
+                    emissionsIntensity = Number(item.emissions_intensity);
                   }
                 }
 
                 const bgColor = countryFill({
                   alpha2,
-                  emissions,
+                  emissionsIntensity,
                 });
 
                 return (
