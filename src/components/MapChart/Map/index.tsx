@@ -25,7 +25,7 @@ import {
   TFetchMapChartMinerMarkers,
 } from 'api';
 
-import { formatCO2 } from 'utils/numbers';
+import { formatCO2, formatNumber } from 'utils/numbers';
 import { getCountryNameByCode } from 'utils/country';
 import { Spinner } from 'components/Spinner';
 // import { Svg } from 'components/Svg';
@@ -36,7 +36,7 @@ import geography from './geography.json';
 import s from './s.module.css';
 
 export const colorScale = (value, domain): string => {
-  if (!value || !domain) {
+  if ((typeof value !== 'number' && !value) || !domain) {
     return '#F3F5F6';
   }
 
@@ -271,8 +271,12 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryFill = useCallback(
-    ({ alpha2, emissionsIntensity }) => {
-      if (query.country || query.miners?.length) {
+    ({ alpha2, emissionsIntensity, isAvailable }) => {
+      if (!isAvailable && !query.country) {
+        return '#F3F5F6';
+      }
+
+      if (query.country || query.miners?.length || !isAvailable) {
         if (query.country === alpha2 || query.miners?.length) {
           return '#F3F5F6';
         }
@@ -285,7 +289,13 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryTip = useCallback(
-    ({ isAvailable, name, storageProviders, emissions }) => {
+    ({
+      isAvailable,
+      name,
+      storageProviders,
+      emissions,
+      emissionsIntensity,
+    }) => {
       if (query.country || query.miners?.length) {
         return '';
       }
@@ -312,6 +322,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           {
             value: formatCO2(emissions, { precision: 2 }),
             title: 'emissions',
+          },
+          {
+            value: formatNumber(emissionsIntensity, 5),
+            title: 'emissions power',
           },
         ],
       });
@@ -392,6 +406,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                 const bgColor = countryFill({
                   alpha2,
                   emissionsIntensity,
+                  isAvailable,
                 });
 
                 return (
@@ -409,6 +424,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       name: geo.properties.NAME,
                       storageProviders,
                       emissions,
+                      emissionsIntensity,
                     })}
                   />
                 );
