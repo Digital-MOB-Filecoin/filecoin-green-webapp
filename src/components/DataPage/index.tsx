@@ -37,6 +37,10 @@ export type TChartModel = {
   details: string;
 };
 
+type MinerData = {
+  id: string;
+  link: string;
+};
 export default function DataPage() {
   const [query, setQuery] = useQueryParams({
     charts: ObjectParam,
@@ -50,7 +54,7 @@ export default function DataPage() {
   const [failed, setFailed] = useState<boolean>(false);
   const [showChartsModal, setShowChartsModal] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<TChartModel[]>([]);
-  const [minersData, setMinersData] = useState<any>(null);
+  const [minersData, setMinersData] = useState<MinerData[]>([]);
 
   const [dateInterval, setDateInterval] = useState<Interval>(() => {
     const parsedStartDate = query.start
@@ -124,18 +128,22 @@ export default function DataPage() {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (query.miners) {
-      fetchMinerData({ abortController, data: { miners: query.miners } }).then(
-        (data) => {
-          const filteredData = data?.miners.filter(
-            (item) => item?.energy?.pageUrl
-          );
+    if (query.miners && query.miners.length) {
+      fetchMinerData({ abortController }).then(({ data }) => {
+        const filteredData: MinerData[] = data.reduce((acc, item) => {
+          if (item.id && query.miners?.includes(item.id)) {
+            acc.push({
+              id: item.id,
+              link: `https://proofs.zerolabs.green/partners/filecoin/nodes/${item.id}/beneficiary`,
+            });
+          }
+          return acc;
+        }, [] as MinerData[]);
 
-          setMinersData(filteredData);
-        }
-      );
+        setMinersData(filteredData);
+      });
     } else {
-      setMinersData(null);
+      setMinersData([]);
     }
 
     return () => {
@@ -205,12 +213,8 @@ export default function DataPage() {
             {minersData.map((item, idx, self) => {
               return (
                 <>
-                  <a
-                    href={item.energy.pageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {item?.address || '--'}
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    {item.id || '--'}
                   </a>
                   {idx + 1 < self.length ? ', ' : ''}
                 </>

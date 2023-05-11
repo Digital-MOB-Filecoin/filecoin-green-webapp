@@ -171,19 +171,27 @@ export const fetchExportData = async ({
   });
 };
 
+type TFetchMinerDataResponse = {
+  data: {
+    id: string;
+    buyerId: string;
+    blockchainAddress: string;
+    region: string;
+    country: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  total: number;
+  count: number;
+};
 export const fetchMinerData = async ({
   abortController,
-  data,
 }: {
   abortController: AbortController;
-  data: { miners: (string | null)[] | null | undefined };
-}): Promise<any> => {
-  const encodedMiners = encodeDelimitedArray(data.miners, ',');
-
-  return api(
-    `https://api.filrep.io/api/miners?limit=10&offset=0&search=${encodedMiners}`,
-    { signal: abortController?.signal }
-  );
+}): Promise<TFetchMinerDataResponse> => {
+  return api(`https://proofs-api.zerolabs.green/api/partners/filecoin/nodes`, {
+    signal: abortController?.signal,
+  });
 };
 
 export type TFetchMapChartCountries = {
