@@ -293,8 +293,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       isAvailable,
       name,
       storageProviders,
-      emissions,
-      // emissionsIntensity,
+      // emissions,
+      emissionsIntensity,
     }) => {
       if (query.country || query.miners?.length) {
         return '';
@@ -319,14 +319,14 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
             value: storageProviders,
             title: 'storage providers',
           },
-          {
-            value: formatCO2(emissions, { precision: 2 }),
-            title: 'emissions',
-          },
           // {
-          //   value: formatNumber(emissionsIntensity, 5),
-          //   title: 'emissions power',
+          //   value: formatCO2(emissions, { precision: 2 }),
+          //   title: 'emissions',
           // },
+          {
+            value: formatNumber(emissionsIntensity, 5),
+            title: 'emissions power',
+          },
         ],
       });
     },
@@ -423,8 +423,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       isAvailable,
                       name: geo.properties.NAME,
                       storageProviders,
-                      emissions,
-                      // emissionsIntensity,
+                      // emissions,
+                      emissionsIntensity,
                     })}
                   />
                 );
