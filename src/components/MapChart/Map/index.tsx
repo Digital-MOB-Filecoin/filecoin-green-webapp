@@ -245,25 +245,15 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   }, [countries.length, query.country, countryMiners?.length, loading]);
 
   useEffect(() => {
-    // const emissionsIntensity: number[] = [];
-    // const codes: string[] = [];
-    //
-    // countries.forEach((item) => {
-    //   emissionsIntensity.push(Number(item.emissions_intensity));
-    //   codes.push(item.country);
-    // });
-    //
-    // setDomain(getMinMax(emissionsIntensity));
-    // setAvailableCountryCodes(codes);
-    const emissions: number[] = [];
+    const emissionsIntensity: number[] = [];
     const codes: string[] = [];
 
     countries.forEach((item) => {
-      emissions.push(Number(item.emissions));
+      emissionsIntensity.push(Number(item.emissions_intensity));
       codes.push(item.country);
     });
 
-    setDomain(getMinMax(emissions));
+    setDomain(getMinMax(emissionsIntensity));
     setAvailableCountryCodes(codes);
   }, [countries]);
 
@@ -281,7 +271,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   );
 
   const countryFill = useCallback(
-    ({ alpha2, emissions, emissionsIntensity, isAvailable }) => {
+    ({ alpha2, emissionsIntensity, isAvailable }) => {
       if (!isAvailable && !query.country) {
         return '#F3F5F6';
       }
@@ -293,8 +283,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         return 'transparent';
       }
 
-      return colorScale(emissions, domain);
-      // return colorScale(emissionsIntensity, domain);
+      return colorScale(emissionsIntensity, domain);
     },
     [domain, query.country, query.miners]
   );
@@ -305,7 +294,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       name,
       storageProviders,
       emissions,
-      emissionsIntensity,
+      // emissionsIntensity,
     }) => {
       if (query.country || query.miners?.length) {
         return '';
@@ -416,7 +405,6 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
                 const bgColor = countryFill({
                   alpha2,
-                  emissions,
                   emissionsIntensity,
                   isAvailable,
                 });
@@ -436,7 +424,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       name: geo.properties.NAME,
                       storageProviders,
                       emissions,
-                      emissionsIntensity,
+                      // emissionsIntensity,
                     })}
                   />
                 );
