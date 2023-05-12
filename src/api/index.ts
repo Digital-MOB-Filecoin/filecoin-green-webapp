@@ -199,6 +199,7 @@ export type TFetchMapChartCountries = {
   storage_providers: string;
   emissions_intensity: string;
   emissions: string;
+  power: string;
 };
 
 export const fetchMapChartCountries = async ({

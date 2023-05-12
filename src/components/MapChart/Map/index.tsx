@@ -25,7 +25,7 @@ import {
   TFetchMapChartMinerMarkers,
 } from 'api';
 
-import { formatCO2, formatNumber } from 'utils/numbers';
+// import { formatCO2, formatNumber } from 'utils/numbers';
 import { getCountryNameByCode } from 'utils/country';
 import { Spinner } from 'components/Spinner';
 // import { Svg } from 'components/Svg';
@@ -294,7 +294,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       name,
       storageProviders,
       // emissions,
-      emissionsIntensity,
+      // emissionsIntensity,
+      // power,
     }) => {
       if (query.country || query.miners?.length) {
         return '';
@@ -323,10 +324,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           //   value: formatCO2(emissions, { precision: 2 }),
           //   title: 'emissions',
           // },
-          {
-            value: formatNumber(emissionsIntensity, 5),
-            title: 'emissions power',
-          },
+          // {
+          //   value: formatCO2(power, { precision: 2 }),
+          //   title: 'emissions power',
+          // },
         ],
       });
     },
@@ -388,8 +389,9 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                   );
 
                 let storageProviders: string | number = 0;
-                let emissions: string | number = 0;
+                // let emissions: string | number = 0;
                 let emissionsIntensity: string | number = 0;
+                // let power: string | number = 0;
 
                 if (isAvailable) {
                   const item = countries.find(
@@ -398,8 +400,9 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
                   if (item) {
                     storageProviders = item.storage_providers;
-                    emissions = item.emissions;
+                    // emissions = item.emissions;
                     emissionsIntensity = Number(item.emissions_intensity);
+                    // power = item.power;
                   }
                 }
 
@@ -424,7 +427,8 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                       name: geo.properties.NAME,
                       storageProviders,
                       // emissions,
-                      emissionsIntensity,
+                      // emissionsIntensity,
+                      // power,
                     })}
                   />
                 );
