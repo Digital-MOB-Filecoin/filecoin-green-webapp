@@ -323,10 +323,10 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
             value: formatCO2(emissions, { precision: 2 }),
             title: 'emissions',
           },
-          {
-            value: formatNumber(emissionsIntensity, 5),
-            title: 'emissions power',
-          },
+          // {
+          //   value: formatNumber(emissionsIntensity, 5),
+          //   title: 'emissions power',
+          // },
         ],
       });
     },
