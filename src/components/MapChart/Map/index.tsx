@@ -245,13 +245,24 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   }, [countries.length, query.country, countryMiners?.length, loading]);
 
   useEffect(() => {
-    const emissionsIntensity: number[] = [];
-    const codes: string[] = [];
+    const { emissionsIntensity, codes } = countries.reduce(
+      (acc, item) => {
+        const intensity = Number(item.emissions_intensity);
 
-    countries.forEach((item) => {
-      emissionsIntensity.push(Number(item.emissions_intensity));
-      codes.push(item.country);
-    });
+        if (intensity > 1) {
+          return acc;
+        }
+
+        acc.emissionsIntensity.push(intensity);
+        acc.codes.push(item.country);
+
+        return acc;
+      },
+      {
+        codes: [] as string[],
+        emissionsIntensity: [] as number[],
+      }
+    );
 
     setDomain(getMinMax(emissionsIntensity));
     setAvailableCountryCodes(codes);
