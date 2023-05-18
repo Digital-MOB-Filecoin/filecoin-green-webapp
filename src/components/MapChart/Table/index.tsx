@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { ReactElement } from 'react';
 
 import { Spinner } from 'components/Spinner';
 import { Svg } from 'components/Svg';
@@ -25,17 +26,14 @@ export const MapChartTable = ({
   head,
   data,
   onBackToCountries,
-}: TMapChartTable) => {
+}: TMapChartTable): ReactElement => {
   return (
     <div className={s.wrapper}>
       <div className={s.tableWrapper}>
         <div className={s.tableHead}>
           <div className={s.tableRow}>
             {head.map((item, idx) => (
-              <div
-                key={idx}
-                className={cn(s.tableTh, { [s.alignRight]: item.alignRight })}
-              >
+              <div key={idx} className={cn(s.tableTh, { [s.alignRight]: item.alignRight })}>
                 <div>{item.title || <>&nbsp;</>}</div>
               </div>
             ))}
@@ -62,12 +60,7 @@ export const MapChartTable = ({
               ));
 
               return row.onClick ? (
-                <button
-                  key={idx}
-                  type="button"
-                  className={s.tableRow}
-                  onClick={row.onClick}
-                >
+                <button key={idx} type="button" className={s.tableRow} onClick={row.onClick}>
                   {children}
                 </button>
               ) : (
@@ -83,12 +76,9 @@ export const MapChartTable = ({
           )}
         </div>
       </div>
+
       {onBackToCountries ? (
-        <button
-          type="button"
-          className={s.backButton}
-          onClick={onBackToCountries}
-        >
+        <button type="button" className={s.backButton} onClick={onBackToCountries}>
           <Svg id="navigation-left" />
           <span>Back to countries</span>
         </button>

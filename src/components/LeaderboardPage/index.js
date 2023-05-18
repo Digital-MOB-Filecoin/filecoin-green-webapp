@@ -1,10 +1,10 @@
 import cn from 'classnames';
+import sub from 'date-fns/sub';
 import { NavLink } from 'react-router-dom';
 import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
 
-import sub from 'date-fns/sub';
-
 import { Chart } from 'components/Chart';
+
 import { LeaderboardTable } from './LeaderboadTable';
 import s from './s.module.css';
 

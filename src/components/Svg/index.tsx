@@ -22,12 +22,7 @@ export interface TSvg extends SVGProps<SVGSVGElement> {
   id: TSvgIds;
 }
 
-export const Svg = ({
-  id,
-  width = 24,
-  height = 24,
-  ...rest
-}: TSvg): ReactElement<SVGElement> => (
+export const Svg = ({ id, width = 24, height = 24, ...rest }: TSvg): ReactElement<SVGElement> => (
   <svg width={width} height={height} aria-label={id} {...rest}>
     <use xlinkHref={`/sprite.svg#icon__${id}`} />
   </svg>

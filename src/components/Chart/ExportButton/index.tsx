@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import cn from 'classnames';
-import {
-  DelimitedArrayParam,
-  useQueryParams,
-  StringParam,
-} from 'use-query-params';
-import { lightFormat as dateLightFormat } from 'date-fns';
+import { ReactElement, useState } from 'react';
+import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
 
-import { fetchExportData, fetchExportDataHeader, TChartFiler } from 'api';
+import { TChartFiler, fetchExportData, fetchExportDataHeader } from 'api';
+import { encodeDateToQueryDate } from 'utils/dates';
 
 import { Spinner } from 'components/Spinner';
 
@@ -27,7 +23,7 @@ export const ExportButton = ({
   filename,
   interval,
   filter,
-}: TExportButton) => {
+}: TExportButton): ReactElement => {
   const [loading, setLoading] = useState<boolean>(false);
   const [query] = useQueryParams({
     miners: DelimitedArrayParam,
@@ -44,9 +40,9 @@ export const ExportButton = ({
       setLoading(true);
 
       let offset = 0;
-      let limit = 1000;
-      const start = dateLightFormat(interval.start, 'yyyy-MM-dd');
-      const end = dateLightFormat(interval.end, 'yyyy-MM-dd');
+      const limit = 1000;
+      const start = encodeDateToQueryDate(interval.start);
+      const end = encodeDateToQueryDate(interval.end);
 
       let results = await fetchExportData({
         abortController,
@@ -143,8 +139,10 @@ export const ExportButton = ({
         type: 'text/csv;charset=utf-8;',
       });
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (navigator?.msSaveBlob) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         navigator?.msSaveBlob(blob, `${filename}_${filter}.csv`);
       } else {

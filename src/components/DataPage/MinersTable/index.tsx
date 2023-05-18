@@ -1,21 +1,16 @@
-import { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
-import {
-  DelimitedArrayParam,
-  NumberParam,
-  StringParam,
-  useQueryParams,
-} from 'use-query-params';
 import cn from 'classnames';
+import { nanoid } from 'nanoid';
+import { ReactElement, useEffect, useState } from 'react';
+import { DelimitedArrayParam, NumberParam, StringParam, useQueryParams } from 'use-query-params';
 
-import { fetchMiners, TFetchMinersResponseMiners } from 'api';
+import { TFetchMinersResponseMiners, fetchMiners } from 'api';
+import { formatBytes } from 'utils/bytes';
 
 import { Table } from 'components/Table';
-import { formatBytes } from 'utils/bytes';
 
 import s from './s.module.css';
 
-export const MinersTable = () => {
+export const MinersTable = (): ReactElement => {
   const [data, setData] = useState<TFetchMinersResponseMiners[]>([]);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);

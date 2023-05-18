@@ -1,7 +1,7 @@
 import queryString from 'query-string';
+import { encodeDelimitedArray } from 'use-query-params';
 
 import { config } from 'config';
-import { encodeDelimitedArray } from 'use-query-params';
 
 export type TChartFiler = 'day' | 'week' | 'month';
 
@@ -60,11 +60,19 @@ export const fetchMiners = async ({
   });
 };
 
+export type TChartModel = {
+  id: number;
+  name: string;
+  code_name: string;
+  category: 'capacity' | 'energy';
+  details: string;
+};
+
 export const fetchChartModels = async ({
   abortController,
 }: {
   abortController: AbortController;
-}) => {
+}): Promise<TChartModel[]> => {
   return api(`${config.apiBaseUrl}models/list`, {
     signal: abortController?.signal,
   });

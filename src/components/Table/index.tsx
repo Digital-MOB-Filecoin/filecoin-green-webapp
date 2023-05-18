@@ -1,14 +1,17 @@
 import cn from 'classnames';
+import { ReactElement } from 'react';
 
-import { Spinner } from 'components/Spinner';
+import { TFetchMinersResponseMiners } from 'api';
+
 import { Pagination } from 'components/Pagination';
+import { Spinner } from 'components/Spinner';
+
 import { SortButton } from './SortButton';
-// eslint-disable-next-line css-modules/no-unused-class
 import s from './s.module.css';
 
 type TTable = {
   title: string;
-  data: any[];
+  data: TFetchMinersResponseMiners[];
   loading: boolean;
   failed: boolean;
   columns: {
@@ -17,7 +20,7 @@ type TTable = {
     sortKey?: string;
     align?: string;
     width?: string;
-    format?: (item: any, column: any) => void;
+    format?: (item: 'miner' | 'power' | 'used', column: TFetchMinersResponseMiners) => void;
   }[];
   limit: number;
   offset: number;
@@ -36,7 +39,7 @@ export const Table = ({
   total,
   onChangePage,
   className,
-}: TTable) => {
+}: TTable): ReactElement => {
   return (
     <div className={cn(s.wrap, className)}>
       <div className={s.header}>
@@ -52,9 +55,7 @@ export const Table = ({
                 style={column.width ? { width: column.width } : {}}
               >
                 {column.sortKey ? (
-                  <SortButton sortKey={column.sortKey}>
-                    {column.title}
-                  </SortButton>
+                  <SortButton sortKey={column.sortKey}>{column.title}</SortButton>
                 ) : (
                   column.title
                 )}
@@ -77,9 +78,7 @@ export const Table = ({
                       className={column.align ? s[column.align] : ''}
                       style={column.width ? { width: column.width } : {}}
                     >
-                      {column.format
-                        ? column.format(item[column.key], item)
-                        : item[column.key]}
+                      {column.format ? column.format(item[column.key], item) : item[column.key]}
                     </td>
                   ))}
                 </tr>

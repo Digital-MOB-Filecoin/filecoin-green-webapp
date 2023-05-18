@@ -1,27 +1,8 @@
 import BigNumber from 'bignumber.js';
 
-type TUnit =
-  | 'byte'
-  | 'KiB'
-  | 'MiB'
-  | 'GiB'
-  | 'TiB'
-  | 'PiB'
-  | 'EiB'
-  | 'ZiB'
-  | 'YiB';
+type TUnit = 'byte' | 'KiB' | 'MiB' | 'GiB' | 'TiB' | 'PiB' | 'EiB' | 'ZiB' | 'YiB';
 
-const units: TUnit[] = [
-  'byte',
-  'KiB',
-  'MiB',
-  'GiB',
-  'TiB',
-  'PiB',
-  'EiB',
-  'ZiB',
-  'YiB',
-];
+const units: TUnit[] = ['byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 
 type TFormatBytesOptions<AsObject> = {
   output?: AsObject;
@@ -41,12 +22,15 @@ export function formatBytes<AsObject extends string>(
 
   if (n.isZero()) {
     if (output === 'object') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return {
         unit: 'bytes',
         value: 0,
       };
     }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return '0 bytes';
   }
@@ -61,6 +45,7 @@ export function formatBytes<AsObject extends string>(
   }
 
   if (output === 'object') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return {
       unit: units[l],
@@ -68,6 +53,7 @@ export function formatBytes<AsObject extends string>(
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return `${n} ${units[l]}`;
 }

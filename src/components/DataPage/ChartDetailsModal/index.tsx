@@ -1,11 +1,11 @@
+import { ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
-
 import { getCategoryName } from 'utils/string';
+
 import { Modal } from 'components/Modal';
 
+import { TChartModel } from 'api';
 import s from './s.module.css';
-import { TChartModel } from '../index';
-import { ReactElement } from 'react';
 
 type TChartDetailsModal = {
   open?: boolean | null;
@@ -17,7 +17,7 @@ export const ChartDetailsModal = ({
   open,
   model,
   onClose,
-}: TChartDetailsModal) => {
+}: TChartDetailsModal): ReactElement | null => {
   if (!open || !model) {
     return null;
   }
@@ -34,7 +34,7 @@ export const ChartDetailsModal = ({
         </hgroup>
       }
     >
-      <ReactMarkdown className={s.description} children={model.details} />
+      <ReactMarkdown className={s.description}>{model.details}</ReactMarkdown>
     </Modal>
   );
 };

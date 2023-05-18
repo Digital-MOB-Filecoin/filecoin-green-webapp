@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
 
-import { Table } from 'components/Table';
 import { Svg } from 'components/Svg';
+import { Table } from 'components/Table';
 
 import s from './s.module.css';
 

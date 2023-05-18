@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { ReactElement } from 'react';
 
 import { Svg } from 'components/Svg';
 
@@ -56,7 +57,7 @@ export function Pagination({
   total,
   onChangePage,
   className,
-}: TPagination) {
+}: TPagination): ReactElement {
   const currentPage = skip / take + 1;
   const pages = Math.ceil(total / take);
   const paginationList = pagination(currentPage, pages);

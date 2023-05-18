@@ -26,18 +26,19 @@
     "wicg-inert": "^3.1.1"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/react-simple-maps": "^3.0.0",
-    "@typescript-eslint/typescript-estree": "^5.41.0",
+    "@typescript-eslint/typescript-estree": "^5.59.6",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-css-modules": "2.11.0",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.31.10",
     "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.7.1",
+    "prettier": "^2.7.1",
     "stylelint": "14.14.0",
     "stylelint-config-prettier": "9.0.3",
     "stylelint-prettier": "2.0.0",
@@ -48,29 +49,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "plugins": [
-      "css-modules"
-    ],
-    "rules": {
-      "css-modules/no-unused-class": [
-        1,
-        {
-          "camelCase": true
-        }
-      ],
-      "css-modules/no-undef-class": [
-        1,
-        {
-          "camelCase": true
-        }
-      ]
-    },
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [

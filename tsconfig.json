@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "target": "es5",
+    "target": "esnext",
     "baseUrl": "src/",
     "jsx": "react-jsx",
     "allowJs": true,

@@ -1,45 +1,43 @@
-import { useMemo, useState } from 'react';
-import { nanoid } from 'nanoid';
 import cn from 'classnames';
+import { Interval, format, isValid } from 'date-fns';
+import { nanoid } from 'nanoid';
+import { CSSProperties, ReactElement, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  AreaChart,
   Area,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from 'recharts';
 import { Payload } from 'recharts/types/component/DefaultLegendContent';
 
-import { format, isValid } from 'date-fns';
-
+import { TChartFiler } from 'api';
+import { TChartModel } from 'api';
 import { formatBytes } from 'utils/bytes';
 import { formatCO2, formatNumber, formatWatts } from 'utils/numbers';
 import { convertNumberToPercent } from 'utils/numbers';
 import { camelCase, getCategoryName } from 'utils/string';
 
+import { ChartDetailsModal } from 'components/DataPage/ChartDetailsModal';
 import { Spinner } from 'components/Spinner';
 import { Svg } from 'components/Svg';
-import { ChartDetailsModal } from 'components/DataPage/ChartDetailsModal';
-import { TimeIntervalButtons } from './TimeIntervalButtons';
+
 import { ExportButton } from './ExportButton';
+import { TimeIntervalButtons } from './TimeIntervalButtons';
 import s from './s.module.css';
 
 type TGetFormattedValue = {
   type: string;
-  value: any;
+  value: string;
   precision?: number;
   filter?: string;
 };
-const getFormattedValue = ({
-  type,
-  value,
-  precision = 2,
-  filter,
-}: TGetFormattedValue): any => {
+const getFormattedValue = ({ type, value, precision = 2, filter }: TGetFormattedValue): any => {
   let temp;
   switch (type) {
     case 'day':
@@ -79,24 +77,35 @@ const getFormattedValue = ({
   }
 };
 
-const renderLegend = (
-  payload: Payload[] | undefined,
-  showMethodologyLink: boolean
-) => {
+const renderLegend = (payload: Payload[] | undefined, showMethodologyLink?: boolean) => {
   if (!payload) return null;
+
+  const midValue = payload.find((item) => item['dataKey'] === 'value_mid');
 
   return (
     <div className={s.legend}>
-      {payload.map((entry, idx) => (
-        <span
-          key={idx}
-          className={s.legendItem}
-          // @ts-ignore
-          style={{ '--color': entry.color }}
-        >
-          {entry.value}
+      {payload.map((entry, idx) => {
+        if (entry['dataKey'] === 'value_mid') {
+          return null;
+        }
+
+        return (
+          <span
+            key={idx}
+            className={s.legendItem}
+            style={{ '--color': entry.color } as CSSProperties}
+          >
+            {entry.value}
+          </span>
+        );
+      })}
+
+      {midValue ? (
+        <span className={s.legendItem} style={{ '--color': midValue.color } as CSSProperties}>
+          {midValue.value}
         </span>
-      ))}
+      ) : null}
+
       {showMethodologyLink ? (
         <Link to="/methodology" className={s.legendLink}>
           View methodology
@@ -110,6 +119,8 @@ const StyledTooltip = (props: any) => {
   const { payload, filter, type: dataFormatType } = props;
   if (!payload) return null;
 
+  const midValue = payload.find((item) => item['dataKey'] === 'value_mid');
+
   const formattedStartDate =
     getFormattedValue({
       type: 'day',
@@ -122,21 +133,19 @@ const StyledTooltip = (props: any) => {
     }) || ' N/A';
 
   const date =
-    filter === 'day'
-      ? formattedStartDate
-      : `${formattedStartDate} – ${formattedEndDate}`;
+    filter === 'day' ? formattedStartDate : `${formattedStartDate} – ${formattedEndDate}`;
 
   return (
     <div className={s.tooltip}>
       <div className={s.tooltipDate}>{date}</div>
       {payload.map((item, idx) => {
+        if (item['dataKey'] === 'value_mid') {
+          return null;
+        }
+
         return (
           <div className={s.tooltipItem} key={idx}>
-            <span
-              className={s.tooltipItemName}
-              // @ts-ignore
-              style={{ '--color': item.color }}
-            >
+            <span className={s.tooltipItemName} style={{ '--color': item.color } as CSSProperties}>
               {item.name}
             </span>
             <span className={s.tooltipItemValue}>
@@ -149,10 +158,42 @@ const StyledTooltip = (props: any) => {
           </div>
         );
       })}
+
+      {midValue ? (
+        <div className={s.tooltipItem}>
+          <span
+            className={s.tooltipItemName}
+            style={{ '--color': midValue.color } as CSSProperties}
+          >
+            {midValue.name}
+          </span>
+          <span className={s.tooltipItemValue}>
+            {getFormattedValue({
+              type: dataFormatType,
+              value: midValue.value,
+              precision: 3,
+            })}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 };
 
+interface IChartComponent {
+  name: string;
+  x: string;
+  y: string;
+  filter: TChartFiler;
+  data: any[];
+  meta: { title: string; color: string }[];
+  loading: boolean;
+  failed: boolean;
+  interval: Interval;
+  model: TChartModel;
+  showCategory?: boolean;
+  showMethodologyLink?: boolean;
+}
 export const ChartComponent = ({
   name,
   x,
@@ -166,7 +207,7 @@ export const ChartComponent = ({
   interval,
   showCategory,
   model,
-}) => {
+}: IChartComponent): ReactElement => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const colors = useMemo(
@@ -187,7 +228,7 @@ export const ChartComponent = ({
         fill: 'var(--theme-background-secondary)',
       },
     }),
-    []
+    [],
   );
 
   return (
@@ -208,9 +249,7 @@ export const ChartComponent = ({
                   </button>
                 </h2>
                 {showCategory ? (
-                  <h3 className={s.subtitle}>
-                    {getCategoryName(model.category)}
-                  </h3>
+                  <h3 className={s.subtitle}>{getCategoryName(model.category)}</h3>
                 ) : null}
               </>
             ) : null}
@@ -249,27 +288,12 @@ export const ChartComponent = ({
       ) : null} */}
         <div style={{ position: 'relative' }}>
           <ResponsiveContainer width="100%" aspect={2.5}>
-            <AreaChart data={data}>
+            <ComposedChart data={data}>
               <defs>
                 {Object.values(colors).map((color) => (
-                  <linearGradient
-                    key={color.id}
-                    id={color.id}
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="0"
-                      stopColor={color.stroke}
-                      stopOpacity={0.12}
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={color.stroke}
-                      stopOpacity={0}
-                    />
+                  <linearGradient key={color.id} id={color.id} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor={color.stroke} stopOpacity={0.12} />
+                    <stop offset="100%" stopColor={color.stroke} stopOpacity={0} />
                   </linearGradient>
                 ))}
               </defs>
@@ -292,9 +316,8 @@ export const ChartComponent = ({
                 axisLine={false}
                 tickLine={false}
                 domain={[0, 'auto']}
-                tickFormatter={(value) =>
-                  getFormattedValue({ type: y, value, precision: 3 })
-                }
+                tickFormatter={(value) => getFormattedValue({ type: y, value, precision: 3 })}
+                // hide={meta.length >= 3 ? true : undefined}
                 stroke="var(--color-nepal)"
               />
               <Tooltip
@@ -310,11 +333,26 @@ export const ChartComponent = ({
                 allowEscapeViewBox={{ x: false, y: true }}
                 position={{ y: -100 }}
               />
+
+              {meta && data[0]?.['value_mid'] ? (
+                <Line
+                  strokeWidth={2}
+                  type="monotone"
+                  dataKey="value_mid"
+                  stroke="var(--color-solitude-dark)"
+                  activeDot={false}
+                  dot={false}
+                  isAnimationActive={false}
+                  name={'Average'}
+                />
+              ) : null}
+
               {meta?.map((item, idx) => {
                 const color = colors[item.color] || colors.green;
 
                 return (
                   <Area
+                    // stackId={meta.length >= 3 ? model.id : undefined}
                     key={`area-${idx}`}
                     dataKey={`value${idx}`}
                     name={item.title}
@@ -337,8 +375,9 @@ export const ChartComponent = ({
                   return renderLegend(payload, showMethodologyLink);
                 }}
               />
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
+
           {loading ? (
             <div className={s.loader}>
               <Spinner className={s.spinner} width={40} height={40} />

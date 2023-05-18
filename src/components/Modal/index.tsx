@@ -1,40 +1,59 @@
-import { useRef, useEffect, forwardRef, ForwardedRef } from 'react';
-import ReactDOM from 'react-dom';
 import cn from 'classnames';
+import { ForwardedRef, ReactElement, forwardRef, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 
 import { Svg } from 'components/Svg';
+
 import s from './s.module.css';
 
 const root = document.getElementById('root');
 const rootModal = document.getElementById('root-modal') || document.body;
 
+interface IModal {
+  open: boolean;
+  onClose: () => void;
+  children: ReactElement;
+  header: ReactElement;
+  className: string;
+}
+
+interface IModalChildren {
+  header: IModal['header'];
+  children: IModal['children'];
+  className: IModal['className'];
+  onClose: IModal['onClose'];
+}
 const ModalChildren = forwardRef(
-  ({ header, children, className, onClose }: any, ref: ForwardedRef<any>) =>
+  ({ header, children, className, onClose }: IModalChildren, ref: ForwardedRef<any>) =>
     ReactDOM.createPortal(
       <div className={s.wrap}>
         <div className={cn(s.inner, className)} ref={ref}>
           <div className={s.header}>
             {header}
-            <button
-              className={s.closeButton}
-              type="button"
-              onClick={() => onClose()}
-            >
+            <button className={s.closeButton} type="button" onClick={() => onClose()}>
               <Svg id="close" />
             </button>
           </div>
           {children}
         </div>
       </div>,
-      rootModal
-    )
+      rootModal,
+    ),
 );
+ModalChildren.displayName = 'ModalChildren';
 
-export const Modal = ({ open, onClose, children, header, className }) => {
-  const innerRef = useRef<any>();
+export const Modal = ({
+  open,
+  onClose,
+  children,
+  header,
+  className,
+}: IModal): ReactElement | null => {
+  const innerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
     const clickHandler = (e) => {
+      // eslint-disable-next-line react/no-find-dom-node
       if (!ReactDOM.findDOMNode(innerRef.current)?.contains(e.target)) {
         onClose();
       }
@@ -68,12 +87,8 @@ export const Modal = ({ open, onClose, children, header, className }) => {
   if (!open || !rootModal) return null;
 
   return (
-    <ModalChildren
-      ref={innerRef}
-      header={header}
-      children={children}
-      onClose={onClose}
-      className={className}
-    />
+    <ModalChildren ref={innerRef} header={header} onClose={onClose} className={className}>
+      {children}
+    </ModalChildren>
   );
 };

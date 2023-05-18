@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import cn from 'classnames';
+import { Duration, Interval, format, intervalToDuration, isValid, sub } from 'date-fns';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import { format, sub, isValid, intervalToDuration, Duration } from 'date-fns';
 import { MAX_DATEPICKER_DATE } from 'constant';
 
 import { Svg } from 'components/Svg';
@@ -30,15 +30,10 @@ type TDatepicker = {
   onChange: (interval: Interval) => void;
 };
 
-export const Datepicker = ({
-  className,
-  dateInterval,
-  onChange,
-}: TDatepicker) => {
+export const Datepicker = ({ className, dateInterval, onChange }: TDatepicker): ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustomRangeOpen, setIsCustomRangeOpen] = useState(false);
-  const [calendarDateInterval, setCalendarDateInterval] =
-    useState<DatepickerInterval>(dateInterval);
+  const [calendarDateInterval, setCalendarDateInterval] = useState<Interval>(dateInterval);
   const wrapperRef = useRef(null);
   const [key, setKey] = useState(Math.random());
 
@@ -61,7 +56,7 @@ export const Datepicker = ({
       };
 
       return Object.keys(inputDuration).every(
-        (key) => inputDuration[key] === intervalDuration[key]
+        (key) => inputDuration[key] === intervalDuration[key],
       );
     };
 
@@ -87,6 +82,7 @@ export const Datepicker = ({
 
   useEffect(() => {
     const clickHandler = (e) => {
+      // eslint-disable-next-line react/no-find-dom-node
       if (!ReactDOM.findDOMNode(wrapperRef.current)?.contains(e.target)) {
         setIsOpen(false);
       }
@@ -158,18 +154,11 @@ export const Datepicker = ({
         onClick={() => setIsOpen((prevState) => !prevState)}
         className={cn(s.button, { [s.active]: isOpen })}
       >
-        {isValid(dateInterval.start)
-          ? format(dateInterval.start, 'LLL d, yyyy')
-          : '--'}
+        {isValid(dateInterval.start) ? format(dateInterval.start, 'LLL d, yyyy') : '--'}
         <span className={s.dateSeparator}>-</span>
-        {isValid(dateInterval.end)
-          ? format(dateInterval.end, 'LLL d, yyyy')
-          : '--'}
+        {isValid(dateInterval.end) ? format(dateInterval.end, 'LLL d, yyyy') : '--'}
       </button>
-      <Svg
-        id="dropdown-arrow-down"
-        className={cn(s.iconArrow, { [s.rotate]: isOpen })}
-      />
+      <Svg id="dropdown-arrow-down" className={cn(s.iconArrow, { [s.rotate]: isOpen })} />
       <div className={cn(s.datePickerWrap, { [s.active]: isOpen })}>
         <div className={s.calendarsWrap}>
           {isCustomRangeOpen ? (
@@ -255,20 +244,14 @@ export const Datepicker = ({
               </div>
             </div>
             <div className={s.buttonsWarp}>
-              <button
-                type="button"
-                className={s.clearButton}
-                onClick={handlerClear}
-              >
+              <button type="button" className={s.clearButton} onClick={handlerClear}>
                 Clear
               </button>
               <button
                 type="button"
                 className={s.applyButton}
                 onClick={() => handlerSetRange(RANGES.CUSTOM)}
-                disabled={
-                  !calendarDateInterval.start || !calendarDateInterval.end
-                }
+                disabled={!calendarDateInterval.start || !calendarDateInterval.end}
               >
                 Apply
               </button>

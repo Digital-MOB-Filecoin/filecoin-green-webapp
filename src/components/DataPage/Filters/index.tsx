@@ -1,6 +1,7 @@
 import cn from 'classnames';
 
 import s from './s.module.css';
+import { ReactElement } from 'react';
 
 type TFilters = {
   items: {
@@ -10,7 +11,7 @@ type TFilters = {
   }[];
   className?: string;
 };
-export const Filters = ({ items, className }: TFilters) => {
+export const Filters = ({ items, className }: TFilters): ReactElement => {
   return (
     <nav className={cn(s.wrap, className)}>
       {items.map(({ isActive, ...rest }, idx) => {

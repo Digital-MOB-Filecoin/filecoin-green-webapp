@@ -1,17 +1,12 @@
-import { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { Interval } from 'date-fns';
-import {
-  DelimitedArrayParam,
-  ObjectParam,
-  StringParam,
-  useQueryParams,
-} from 'use-query-params';
+import { ReactElement, useEffect, useState } from 'react';
+import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
-import lightFormat from 'date-fns/lightFormat';
-
-import { formatWatts } from 'utils/numbers';
 import { fetchChart } from 'api';
+import { encodeDateToQueryDate } from 'utils/dates';
+import { formatWatts } from 'utils/numbers';
+
 // import { Spinner } from 'components/Spinner';
 import { Datepicker } from 'components/Datepicker';
 
@@ -27,7 +22,7 @@ export const FiltersBar = ({
   className,
   dateInterval,
   onChangeDateInterval,
-}: TFiltersBar) => {
+}: TFiltersBar): ReactElement => {
   // const { consumption, consumptionLoading } = useConsumption(dateInterval);
 
   return (
@@ -46,10 +41,7 @@ export const FiltersBar = ({
       {/*</div>*/}
       <div className={cn(s.wrapper, className)}>
         <Search />
-        <Datepicker
-          dateInterval={dateInterval}
-          onChange={onChangeDateInterval}
-        />
+        <Datepicker dateInterval={dateInterval} onChange={onChangeDateInterval} />
       </div>
     </div>
   );
@@ -72,8 +64,8 @@ function useConsumption(dateInterval: Interval) {
       abortController,
       data: {
         code_name: 'CumulativeEnergyModel_v_1_0_1',
-        start: lightFormat(dateInterval.start, 'yyyy-MM-dd'),
-        end: lightFormat(dateInterval.end, 'yyyy-MM-dd'),
+        start: encodeDateToQueryDate(dateInterval.start),
+        end: encodeDateToQueryDate(dateInterval.end),
         miners: query.miners,
         country: query.country,
         filter: 'week',
@@ -81,8 +73,7 @@ function useConsumption(dateInterval: Interval) {
     })
       .then(({ data }) => {
         const estimateData =
-          data.find((item) => item.title.toLowerCase() === 'estimate')?.data ||
-          [];
+          data.find((item) => item.title.toLowerCase() === 'estimate')?.data || [];
 
         setConsumption(
           estimateData.length
@@ -94,20 +85,14 @@ function useConsumption(dateInterval: Interval) {
         setConsumptionLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setConsumptionLoading(false);
       });
 
     return () => {
       abortController.abort();
     };
-  }, [
-    dateInterval.start,
-    dateInterval.end,
-    query.miners,
-    query.miners?.length,
-    query.country,
-  ]);
+  }, [dateInterval.start, dateInterval.end, query.miners, query.miners?.length, query.country]);
 
   return {
     consumption,

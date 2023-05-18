@@ -1,38 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
-import {
-  DelimitedArrayParam,
-  StringParam,
-  useQueryParams,
-} from 'use-query-params';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
+import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
 
 import {
-  fetchMapChartCountries,
-  fetchMapChartCountryMiners,
-  fetchMapChartMinerMarkers,
   TFetchMapChartCountries,
   TFetchMapChartCountryMiners,
   TFetchMapChartMinerMarkers,
+  fetchMapChartCountries,
+  fetchMapChartCountryMiners,
+  fetchMapChartMinerMarkers,
 } from 'api';
 import { formatBytes } from 'utils/bytes';
 import { getCountryNameByCode } from 'utils/country';
 
-import { MapChartTable, TMapChartTableRow } from './Table';
 import { Map } from './Map';
+import { MapChartTable, TMapChartTableRow } from './Table';
 import s from './s.module.css';
 
-export function MapChart() {
+export function MapChart(): ReactElement {
   const [query, setQuery] = useQueryParams({
     miners: DelimitedArrayParam,
     country: StringParam,
   });
   const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
   const [countries, setCountries] = useState<TFetchMapChartCountries[]>([]);
-  const [countryMiners, setCountryMiners] = useState<
-    TFetchMapChartCountryMiners[]
-  >([]);
-  const [minerMarkers, setMinerMarkers] = useState<
-    TFetchMapChartMinerMarkers[]
-  >([]);
+  const [countryMiners, setCountryMiners] = useState<TFetchMapChartCountryMiners[]>([]);
+  const [minerMarkers, setMinerMarkers] = useState<TFetchMapChartMinerMarkers[]>([]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -62,8 +54,7 @@ export function MapChart() {
       })
         .then((data) => {
           const filteredData = data.filter(
-            (item, pos, self) =>
-              self.findIndex((v) => v.miner === item.miner) === pos
+            (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos
           );
 
           setCountryMiners(
@@ -125,24 +116,15 @@ export function MapChart() {
 
   const tableHeader = useMemo(() => {
     if (!query.country && !query.miners?.length) {
-      return [
-        { title: 'Country' },
-        { title: '# of storage providers', alignRight: true },
-      ];
+      return [{ title: 'Country' }, { title: '# of storage providers', alignRight: true }];
     }
 
     if (query.country) {
-      return [
-        { title: 'Storage provider' },
-        { title: 'Total raw power', alignRight: true },
-      ];
+      return [{ title: 'Storage provider' }, { title: 'Total raw power', alignRight: true }];
     }
 
     if (query.miners?.length) {
-      return [
-        { title: 'Storage provider' },
-        { title: 'Total raw power', alignRight: true },
-      ];
+      return [{ title: 'Storage provider' }, { title: 'Total raw power', alignRight: true }];
     }
 
     return [{ title: '' }, { title: '' }];
@@ -181,8 +163,7 @@ export function MapChart() {
 
     if (query.miners?.length) {
       const filteredData = minerMarkers.filter(
-        (item, pos, self) =>
-          self.findIndex((v) => v.miner === item.miner) === pos
+        (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos
       );
 
       return filteredData.map((item) => ({

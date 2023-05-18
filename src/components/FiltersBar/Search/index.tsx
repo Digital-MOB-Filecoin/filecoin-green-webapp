@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useQueryParam, DelimitedArrayParam } from 'use-query-params';
 import cn from 'classnames';
+import { ReactElement, useState } from 'react';
+import { DelimitedArrayParam, useQueryParam } from 'use-query-params';
 
 // import { filterUniq } from 'utils/array';
 import { Svg } from 'components/Svg';
@@ -9,11 +9,8 @@ import s from './s.module.css';
 
 const MINERS_DISPLAYED = 3;
 
-export function Search() {
-  const [queryMiners, setQueryMiners] = useQueryParam(
-    'miners',
-    DelimitedArrayParam
-  );
+export function Search(): ReactElement {
+  const [queryMiners, setQueryMiners] = useQueryParam('miners', DelimitedArrayParam);
   const [value, setValue] = useState<string>('');
   const [hasFocus, setHasFocus] = useState<boolean>(false);
 
@@ -22,9 +19,7 @@ export function Search() {
 
     if (value) {
       setQueryMiners((prevQuery) => {
-        const filteredValue: string[] = value
-          .split(',')
-          .map((item) => item.trim());
+        const filteredValue: string[] = value.split(',').map((item) => item.trim());
 
         if (prevQuery && prevQuery?.length + filteredValue.length >= 100) {
           return prevQuery;
@@ -58,8 +53,7 @@ export function Search() {
         ?.filter(Boolean)
         .filter(
           (item, idx, self) =>
-            self.indexOf(item) === idx &&
-            item?.toLowerCase() !== minerId?.toLowerCase()
+            self.indexOf(item) === idx && item?.toLowerCase() !== minerId?.toLowerCase()
         );
 
       return filteredQuery?.length ? filteredQuery : undefined;
@@ -67,10 +61,7 @@ export function Search() {
   };
 
   return (
-    <form
-      className={cn(s.form, { [s.hasFocus]: hasFocus })}
-      onSubmit={handlerSubmit}
-    >
+    <form className={cn(s.form, { [s.hasFocus]: hasFocus })} onSubmit={handlerSubmit}>
       <Svg id="search" className={s.icon} />
       {queryMiners?.length ? (
         <div className={s.minersWrapper}>
@@ -89,9 +80,7 @@ export function Search() {
             );
           })}
           {queryMiners.length > MINERS_DISPLAYED ? (
-            <span className={s.minersCount}>
-              +{queryMiners.length - MINERS_DISPLAYED} more
-            </span>
+            <span className={s.minersCount}>+{queryMiners.length - MINERS_DISPLAYED} more</span>
           ) : null}
         </div>
       ) : null}

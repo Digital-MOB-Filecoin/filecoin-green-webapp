@@ -1,24 +1,24 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
 import cn from 'classnames';
-
+import { MAX_DATEPICKER_DATE } from 'constant';
 import {
-  getWeeksInMonth,
-  getDate,
+  add,
   addDays,
   differenceInCalendarMonths,
-  startOfWeek,
-  add,
-  sub,
-  set,
   format,
-  isWithinInterval,
+  getDate,
+  getWeeksInMonth,
   isValid as isValidDate,
+  isWithinInterval,
+  set,
+  startOfWeek,
+  sub,
 } from 'date-fns';
+import { Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
 
 import { Svg } from 'components/Svg';
-import s from './s.module.css';
-import { MAX_DATEPICKER_DATE } from 'constant';
+
 import { DatepickerInterval } from '../../index';
+import s from './s.module.css';
 
 enum EnumMONTH {
   CURRENT = 'current',
@@ -54,15 +54,12 @@ export const Month = ({
   onChangeHoverDate,
   calendarMonth,
   setCalendarMonth,
-}: TMonth) => {
+}: TMonth): ReactElement => {
   const shownMonth = isStartCalendar ? calendarMonth.start : calendarMonth.end;
 
   const calendarMonthDays = useMemo(() => {
-    const calendarDaysInMonth =
-      getWeeksInMonth(shownMonth || calendarMonth.start) * 7;
-    const firstDayInCalendarWeek = startOfWeek(
-      set(shownMonth || calendarMonth.start, { date: 1 })
-    );
+    const calendarDaysInMonth = getWeeksInMonth(shownMonth || calendarMonth.start) * 7;
+    const firstDayInCalendarWeek = startOfWeek(set(shownMonth || calendarMonth.start, { date: 1 }));
 
     return Array.from({ length: calendarDaysInMonth }).map((_, idx) => {
       const dayDate = addDays(firstDayInCalendarWeek, idx);
@@ -107,11 +104,7 @@ export const Month = ({
   };
 
   const isDayInRange = (dayDate) => {
-    if (
-      !isValidDate(interval.start) ||
-      !isValidDate(interval.end) ||
-      !isValidDate(dayDate)
-    ) {
+    if (!isValidDate(interval.start) || !isValidDate(interval.end) || !isValidDate(dayDate)) {
       return false;
     }
 
@@ -122,8 +115,7 @@ export const Month = ({
         seconds: 59,
         milliseconds: 999,
       }),
-      // @ts-ignore
-      interval
+      interval as Interval
     );
   };
 
@@ -147,10 +139,10 @@ export const Month = ({
         seconds: 59,
         milliseconds: 999,
       }),
-      // @ts-ignore
-      interval.start.getDate() > endDate.getTime()
-        ? { start: endDate, end: interval.start }
-        : { start: interval.start, end: endDate }
+
+      Number(interval.start) > Number(endDate)
+        ? ({ start: endDate, end: interval.start } as Interval)
+        : ({ start: interval.start, end: endDate } as Interval)
     );
   };
 
@@ -190,8 +182,7 @@ export const Month = ({
   };
 
   const handlerChangePreviewInterval = (dayDate: Date) => {
-    const isIntervalDatesValid =
-      isValidDate(interval.start) && isValidDate(interval.end);
+    const isIntervalDatesValid = isValidDate(interval.start) && isValidDate(interval.end);
 
     if (isEndCalendar && isIntervalDatesValid) {
       setCalendarMonth({
@@ -201,9 +192,7 @@ export const Month = ({
     }
 
     onChange(
-      isIntervalDatesValid
-        ? { start: dayDate, end: null }
-        : { start: interval.start, end: dayDate }
+      isIntervalDatesValid ? { start: dayDate, end: null } : { start: interval.start, end: dayDate }
     );
   };
 
@@ -214,9 +203,7 @@ export const Month = ({
           type="button"
           onClick={handlerPrevMonth}
           className={cn(s.navButton, {
-            [s.disabled]:
-              isEndCalendar &&
-              isSameMonth(calendarMonth.start, calendarMonth.end),
+            [s.disabled]: isEndCalendar && isSameMonth(calendarMonth.start, calendarMonth.end),
           })}
         >
           <Svg id="calendar-arrow-left" />
@@ -228,8 +215,7 @@ export const Month = ({
           className={cn(s.navButton, {
             [s.disabled]:
               isSameMonth(shownMonth, new Date()) ||
-              (isStartCalendar &&
-                isSameMonth(calendarMonth.start, calendarMonth.end)),
+              (isStartCalendar && isSameMonth(calendarMonth.start, calendarMonth.end)),
           })}
           disabled={isSameMonth(shownMonth, new Date())}
         >
@@ -250,9 +236,7 @@ export const Month = ({
               ? MAX_DATEPICKER_DATE
               : MAX_DATEPICKER_DATE.getTime();
           const intervalStartTime =
-            typeof interval.start === 'number'
-              ? interval.start
-              : interval.start.getTime();
+            typeof interval.start === 'number' ? interval.start : interval.start.getTime();
           const isDisabled =
             dayDate.getTime() > maxDateTime ||
             (isStartCalendar && !interval.end) ||
@@ -266,22 +250,15 @@ export const Month = ({
                 [s.prev]: monthType === EnumMONTH.PREV,
                 [s.next]: monthType === EnumMONTH.NEXT,
                 [s.inRange]:
-                  isValidDate(interval.start) &&
-                  isValidDate(interval.end) &&
-                  isDayInRange(dayDate),
-                [s.rangeStart]:
-                  isValidDate(interval.start) &&
-                  isSameDay(dayDate, interval.start),
-                [s.rangeEnd]:
-                  isValidDate(interval.end) && isSameDay(dayDate, interval.end),
+                  isValidDate(interval.start) && isValidDate(interval.end) && isDayInRange(dayDate),
+                [s.rangeStart]: isValidDate(interval.start) && isSameDay(dayDate, interval.start),
+                [s.rangeEnd]: isValidDate(interval.end) && isSameDay(dayDate, interval.end),
                 [s.disabled]: isDisabled,
                 [s.today]: isSameDay(dayDate, new Date()),
-                [s.hover]:
-                  isValidDate(hoverDate) && isSameDay(dayDate, hoverDate),
+                [s.hover]: isValidDate(hoverDate) && isSameDay(dayDate, hoverDate),
                 [s.inPreviewRange]: isDayInPreviewRange(dayDate),
                 [s.previewRangeStart]:
-                  !isValidDate(interval.end) &&
-                  isSameDay(interval.start, dayDate),
+                  !isValidDate(interval.end) && isSameDay(interval.start, dayDate),
                 [s.previewRangeEnd]:
                   !isValidDate(interval.end) &&
                   isValidDate(hoverDate) &&

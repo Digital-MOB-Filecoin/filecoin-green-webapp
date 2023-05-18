@@ -1,13 +1,15 @@
-import { useCallback } from 'react';
 import cn from 'classnames';
-import { ObjectParam, useQueryParam } from 'use-query-params';
-
 import { CHART_SCALE } from 'constant';
+import { ReactElement, useCallback } from 'react';
+import { ObjectParam, useQueryParam } from 'use-query-params';
 import { getNormalizedScale } from 'utils/string';
 
 import s from './s.module.css';
 
-export const TimeIntervalButtons = ({ chartId }) => {
+interface ITimeIntervalButtons {
+  chartId: number;
+}
+export const TimeIntervalButtons = ({ chartId }: ITimeIntervalButtons): ReactElement => {
   const [chartsQuery, setChartsQuery] = useQueryParam('charts', ObjectParam);
 
   const handlerClick = useCallback(
@@ -34,8 +36,7 @@ export const TimeIntervalButtons = ({ chartId }) => {
                 handlerClick(item.queryKey);
               }}
               className={cn(s.button, {
-                [s.active]:
-                  getNormalizedScale(chartsQuery?.[chartId]) === item.queryKey,
+                [s.active]: getNormalizedScale(chartsQuery?.[chartId]) === item.queryKey,
               })}
             >
               {item.title}

@@ -1,18 +1,16 @@
-import { useState } from 'react';
+import { Interval } from 'date-fns';
+import { ReactElement, useState } from 'react';
 
 import { Month } from './Month';
 import s from './s.module.css';
-import { DatepickerInterval } from '../index';
 
 type TDateRangePicker = {
-  interval: DatepickerInterval;
-  onChange: (interval: DatepickerInterval) => void;
+  interval: Interval;
+  onChange: (interval: Interval) => void;
 };
-export const DateRangePicker = ({ interval, onChange }: TDateRangePicker) => {
+export const DateRangePicker = ({ interval, onChange }: TDateRangePicker): ReactElement => {
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
-  const [calendarMonth, setCalendarMonth] =
-    // @ts-ignore
-    useState<Interval>(interval);
+  const [calendarMonth, setCalendarMonth] = useState<Interval>(interval);
 
   const handlerChangePreviewInterval = (newPreviewInterval) => {
     if (newPreviewInterval.start && newPreviewInterval.end) {

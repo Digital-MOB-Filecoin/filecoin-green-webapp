@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { Navigate, Route, Routes, Outlet } from 'react-router-dom';
 
 import { Header } from 'components/Header';
@@ -16,7 +17,7 @@ function AppSkeleton() {
   );
 }
 
-function App() {
+export default function App(): ReactElement {
   return (
     <Routes>
       <Route path="/" element={<AppSkeleton />}>
@@ -29,5 +30,3 @@ function App() {
     </Routes>
   );
 }
-
-export default App;

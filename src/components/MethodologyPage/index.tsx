@@ -1,27 +1,29 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import cn from 'classnames';
+import { ReactElement } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 import { markdown } from './methodology.md.js';
-
 import s from './s.module.css';
 
-export default function MethodologyPage() {
+export default function MethodologyPage(): ReactElement {
   return (
     <div className="container">
       <ReactMarkdown
         className={cn(s.wrap, 'markdown')}
-        children={markdown}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          a: ({ node, ...props }) => (
-            // eslint-disable-next-line jsx-a11y/anchor-has-content
-            <a {...props} target="_blank" rel="noopener noreferrer" />
+          a: ({ node, children, ...props }) => (
+            <a {...props} target="_blank" rel="noopener noreferrer">
+              {children}
+            </a>
           ),
         }}
-      />
+      >
+        {markdown}
+      </ReactMarkdown>
     </div>
   );
 }

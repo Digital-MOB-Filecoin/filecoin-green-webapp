@@ -2,6 +2,8 @@ import sub from 'date-fns/sub';
 
 import { TChartFiler } from './api';
 
+export const QUERY_DATE_FORMAT = 'yyyy-MM-dd'; // date-fns format
+
 export const CHART_SCALE: {
   title: string;
   queryKey: TChartFiler;

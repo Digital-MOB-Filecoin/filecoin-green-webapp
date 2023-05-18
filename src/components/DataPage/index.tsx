@@ -1,47 +1,26 @@
-import { useState, useEffect } from 'react';
-import {
-  DelimitedArrayParam,
-  ObjectParam,
-  StringParam,
-  useQueryParams,
-} from 'use-query-params';
+import { ReactElement, useEffect, useState } from 'react';
+import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
-import {
-  parse as dateParse,
-  lightFormat as dateLightFormat,
-  isValid as dateIsValid,
-  getTime as dateGetTime,
-} from 'date-fns';
-
-import { fetchChartModels, fetchMinerData } from 'api';
-import {
-  DEFAULT_DATEPICKER_END_DATE,
-  DEFAULT_DATEPICKER_START_DATE,
-} from 'constant';
+import { fetchChartModels, fetchMinerData, TChartModel } from 'api';
+import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
 import { getNormalizedScale } from 'utils/string';
-import { FiltersBar } from 'components/FiltersBar';
-import { Filters } from 'components/DataPage/Filters';
+
 import { Chart } from 'components/Chart';
-import { Spinner } from 'components/Spinner';
+import { Filters } from 'components/DataPage/Filters';
+import { FiltersBar } from 'components/FiltersBar';
 import { MapChart } from 'components/MapChart';
+import { Spinner } from 'components/Spinner';
 
-import { MinersTable } from './MinersTable';
 import { ChartsModal } from './ChartsModal';
+import { MinersTable } from './MinersTable';
 import s from './s.module.css';
-
-export type TChartModel = {
-  id: number;
-  name: string;
-  code_name: string;
-  category: 'capacity' | 'energy';
-  details: string;
-};
 
 type MinerData = {
   id: string;
   link: string;
 };
-export default function DataPage() {
+
+export default function DataPage(): ReactElement {
   const [query, setQuery] = useQueryParams({
     charts: ObjectParam,
     miners: DelimitedArrayParam,
@@ -56,47 +35,17 @@ export default function DataPage() {
   const [selectedCharts, setSelectedCharts] = useState<TChartModel[]>([]);
   const [minersData, setMinersData] = useState<MinerData[]>([]);
 
-  const [dateInterval, setDateInterval] = useState<Interval>(() => {
-    const parsedStartDate = query.start
-      ? dateParse(query.start, 'yyyy-MM-dd', new Date()).getTime()
-      : undefined;
-
-    const parsedEndDate = query.end
-      ? dateParse(query.end, 'yyyy-MM-dd', new Date()).getTime()
-      : undefined;
-
-    if (
-      !parsedStartDate ||
-      !parsedEndDate ||
-      !dateIsValid(parsedStartDate) ||
-      !dateIsValid(parsedEndDate)
-    ) {
-      return {
-        start: dateGetTime(DEFAULT_DATEPICKER_START_DATE),
-        end: dateGetTime(DEFAULT_DATEPICKER_END_DATE),
-      };
-    }
-
-    if (parsedStartDate > parsedEndDate) {
-      return {
-        start: dateGetTime(parsedEndDate),
-        end: dateGetTime(parsedStartDate),
-      };
-    }
-
-    return {
-      start: dateGetTime(parsedStartDate),
-      end: dateGetTime(parsedEndDate),
-    };
-  });
+  const [dateInterval, setDateInterval] = useState<Interval>(
+    parseIntervalFromQuery(query.start, query.end)
+  );
 
   const handlerSetDateInterval = (newDateInterval: Interval) => {
     setDateInterval(newDateInterval);
 
     setQuery((prevQuery) => ({
       ...prevQuery,
-      start: dateLightFormat(newDateInterval.start, 'yyyy-MM-dd'),
-      end: dateLightFormat(newDateInterval.end, 'yyyy-MM-dd'),
+      start: encodeDateToQueryDate(newDateInterval.start),
+      end: encodeDateToQueryDate(newDateInterval.end),
     }));
   };
 
@@ -151,6 +100,10 @@ export default function DataPage() {
     };
   }, [query.miners]);
 
+  useEffect(() => {
+    setDateInterval(parseIntervalFromQuery(query.start, query.end));
+  }, [query.start, query.end]);
+
   const handlerChangeFilter = (category: TChartModel['category']) => {
     let newCharts: TChartModel[] = [];
     if (selectedCharts.every((model) => model.category === category)) {
@@ -198,10 +151,7 @@ export default function DataPage() {
   return (
     <div className="container">
       <div className={s.header}>
-        <FiltersBar
-          dateInterval={dateInterval}
-          onChangeDateInterval={handlerSetDateInterval}
-        />
+        <FiltersBar dateInterval={dateInterval} onChangeDateInterval={handlerSetDateInterval} />
       </div>
 
       <MapChart />
@@ -249,9 +199,7 @@ export default function DataPage() {
           className={s.chooseChartsButton}
           onClick={() => setShowChartsModal(true)}
         >
-          <span className={s.chooseChartsButtonCounter}>
-            {selectedCharts.length}
-          </span>
+          <span className={s.chooseChartsButtonCounter}>{selectedCharts.length}</span>
           Charts displayed
         </button>
       </div>
@@ -268,12 +216,7 @@ export default function DataPage() {
         </div>
       ) : selectedCharts.length && chartModels.length ? (
         selectedCharts.map((model) => (
-          <Chart
-            key={model.id}
-            model={model}
-            interval={dateInterval}
-            showCategory={showCategory}
-          />
+          <Chart key={model.id} model={model} showCategory={showCategory} />
         ))
       ) : (
         <div className={s.noCharts}>
@@ -284,8 +227,8 @@ export default function DataPage() {
       <MinersTable />
 
       <div className={s.notification}>
-        These numbers are approximate projections based on the current network
-        state and may be incorrect, do your own research
+        These numbers are approximate projections based on the current network state and may be
+        incorrect, do your own research
       </div>
       <ChartsModal
         loading={loading}

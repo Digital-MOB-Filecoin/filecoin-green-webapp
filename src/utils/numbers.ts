@@ -1,35 +1,40 @@
-import BN from 'bignumber.js';
 import BigNumber from 'bignumber.js';
 
-export const convertNumberToPercent = (value, precision = 5) => {
-  BN.config({ DECIMAL_PLACES: precision });
-  const valueBN = new BN(value, 10);
+export const convertNumberToPercent = (value: string | number, precision = 5): string => {
+  BigNumber.config({ DECIMAL_PLACES: precision });
+  const valueBN = new BigNumber(value, 10);
   return `${valueBN.multipliedBy(100).toString()}%`;
 };
 
-export const formatNumber = (value, precision = 3) => {
-  BN.config({ DECIMAL_PLACES: precision });
-  const valueBN = new BN(value, 10);
+export const formatNumber = (value: string | number, precision = 3): string => {
+  BigNumber.config({ DECIMAL_PLACES: precision });
+  const valueBN = new BigNumber(value, 10);
 
   return valueBN.toString();
 };
 
-const wattsUnits = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
+type TWattsUnit = 'kW' | 'MW' | 'GW' | 'TW' | 'PW' | 'EW' | 'ZW' | 'YW';
+const wattsUnits: TWattsUnit[] = ['kW', 'MW', 'GW', 'TW', 'PW', 'EW', 'ZW', 'YW'];
 
 type TFormatWattsOptions = {
   precision?: number;
   output?: 'object';
-  inputUnit?: 'kW' | 'MW' | 'GW' | 'TW' | 'PW' | 'EW' | 'ZW' | 'YW';
+  inputUnit?: TWattsUnit;
 };
-export function formatWatts(size: string, options: TFormatWattsOptions = {}) {
+export function formatWatts(
+  size: string,
+  options: TFormatWattsOptions = {}
+):
+  | string
+  | {
+      unit: TWattsUnit;
+      value: number;
+    } {
   const { precision, output, inputUnit } = options;
 
   let n = new BigNumber(size || 0);
   const isNegative = n.isNegative();
-  let l =
-    inputUnit && wattsUnits.includes(inputUnit)
-      ? wattsUnits.indexOf(inputUnit)
-      : 0;
+  let l = inputUnit && wattsUnits.includes(inputUnit) ? wattsUnits.indexOf(inputUnit) : 0;
 
   if (isNegative) {
     while (n.isLessThanOrEqualTo(-1000) && ++l) {
@@ -55,19 +60,28 @@ export function formatWatts(size: string, options: TFormatWattsOptions = {}) {
     : `${n} ${unit}`;
 }
 
-const CO2Units = ['gC02', 'kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
+type TCO2Unit = 'gC02' | 'kgCO2' | 'tCO2' | 'MtCO2' | 'GtCO2';
+const CO2Units: TCO2Unit[] = ['gC02', 'kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
 
 type TFormatCO2Options = {
   precision?: number;
   output?: 'object';
-  inputUnit?: 'gC02' | 'kgCO2' | 'tCO2' | 'MtCO2' | 'GtCO2';
+  inputUnit?: TCO2Unit;
 };
-export function formatCO2(size, options: TFormatCO2Options = {}) {
-  const { precision, output, inputUnit } = options;
+
+export function formatCO2(
+  size: string | number,
+  options: TFormatCO2Options = {}
+):
+  | string
+  | {
+      unit: TFormatCO2Options['inputUnit'];
+      value: number;
+    } {
+  const { precision, output, inputUnit } = options || {};
   let n = new BigNumber(size || 0);
   const isNegative = n.isNegative();
-  let l =
-    inputUnit && CO2Units.includes(inputUnit) ? CO2Units.indexOf(inputUnit) : 0;
+  let l = inputUnit && CO2Units.includes(inputUnit) ? CO2Units.indexOf(inputUnit) : 0;
 
   if (isNegative) {
     while (n.isLessThanOrEqualTo(-1000) && ++l) {

@@ -1,6 +1,18 @@
 {
   "semi": true,
-  "singleQuote": true,
+  "useTabs": false,
   "tabWidth": 2,
-  "useTabs": false
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "jsxBracketSameLine": false,
+  "parser": "typescript",
+  "importOrder": [
+    "constant|config",
+    "^utils|^api",
+    "^components/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

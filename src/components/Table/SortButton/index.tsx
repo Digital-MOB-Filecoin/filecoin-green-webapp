@@ -1,11 +1,15 @@
 import cn from 'classnames';
-import { useQueryParams, StringParam } from 'use-query-params';
-
+import { ReactElement, ReactNode } from 'react';
+import { StringParam, useQueryParams } from 'use-query-params';
 import { Svg } from 'components/Svg';
-
 import s from './s.module.css';
 
-export const SortButton = ({ children, sortKey }) => {
+interface ISortButton {
+  children: ReactNode;
+  sortKey: string;
+}
+
+export const SortButton = ({ children, sortKey }: ISortButton): ReactElement => {
   const [query, setQuery] = useQueryParams({
     sortBy: StringParam,
     order: StringParam,

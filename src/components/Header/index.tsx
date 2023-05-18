@@ -1,9 +1,10 @@
-import { Link, NavLink } from 'react-router-dom';
 import cn from 'classnames';
+import { ReactElement } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 
 import s from './s.module.css';
 
-export const Header = () => {
+export const Header = (): ReactElement => {
   return (
     <header className={s.header}>
       <div className="container">
@@ -18,9 +19,7 @@ export const Header = () => {
             <NavLink
               end
               to="/"
-              className={({ isActive }) =>
-                cn(s.navLink, { [s.active]: isActive })
-              }
+              className={({ isActive }) => cn(s.navLink, { [s.active]: isActive })}
             >
               <span>Data</span>
             </NavLink>
@@ -36,20 +35,14 @@ export const Header = () => {
             <NavLink
               end
               to="/methodology"
-              className={({ isActive }) =>
-                cn(s.navLink, { [s.active]: isActive })
-              }
+              className={({ isActive }) => cn(s.navLink, { [s.active]: isActive })}
             >
               <span>Methodology</span>
             </NavLink>
           </nav>
           <div className={s.slack}>
             Feedback? Join{' '}
-            <a
-              href="https://filecoin.io/slack"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://filecoin.io/slack" target="_blank" rel="noopener noreferrer">
               #fil-green
             </a>{' '}
             on Slack!

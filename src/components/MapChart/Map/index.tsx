@@ -1,41 +1,36 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  DelimitedArrayParam,
-  StringParam,
-  useQueryParams,
-} from 'use-query-params';
-import ReactTooltip from 'react-tooltip';
+import { geoEqualEarth, geoPath } from 'd3-geo';
+import { scaleLinear } from 'd3-scale';
+import { Feature } from 'geojson';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import {
   ComposableMap,
   Geographies,
   Geography,
   Marker,
-  ZoomableGroup,
   Point,
+  ZoomableGroup,
 } from 'react-simple-maps';
-import { Feature } from 'geojson';
+import ReactTooltip from 'react-tooltip';
 import { feature } from 'topojson-client';
-import { scaleLinear } from 'd3-scale';
-
-import { geoPath, geoEqualEarth } from 'd3-geo';
+import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
 
 import {
   TFetchMapChartCountries,
   TFetchMapChartCountryMiners,
   TFetchMapChartMinerMarkers,
 } from 'api';
-
 // import { formatCO2, formatNumber } from 'utils/numbers';
 import { getCountryNameByCode } from 'utils/country';
-import { Spinner } from 'components/Spinner';
-// import { Svg } from 'components/Svg';
 
+import { Spinner } from 'components/Spinner';
+
+// import { Svg } from 'components/Svg';
 // import { MapInfoModal } from '../MapInfoModal';
 // import geography from './world-countries-sans-antarctica.json';
 import geography from './geography.json';
 import s from './s.module.css';
 
-export const colorScale = (value, domain): string => {
+export const colorScale = (value: any, domain: [number, number]): string => {
   if ((typeof value !== 'number' && !value) || !domain) {
     return '#F3F5F6';
   }
@@ -43,8 +38,7 @@ export const colorScale = (value, domain): string => {
   return String(
     scaleLinear()
       .domain([domain[0], domain[1] / 2, domain[1]])
-      // @ts-ignore
-      .range(['#4EA394', '#FF974D'])(value)
+      .range(['#4EA394', '#FF974D'] as any)(value),
   );
 };
 
@@ -64,19 +58,16 @@ const path = geoPath(projection);
 
 const geos: Feature[] = feature(
   geography,
-  geography.objects[Object.keys(geography.objects)[0]]
+  geography.objects[Object.keys(geography.objects)[0]],
 ).features;
 
-const getGeoByCountryCode = (
-  countryCode?: string | null
-): Feature | undefined => {
+const getGeoByCountryCode = (countryCode?: string | null): Feature | undefined => {
   if (!countryCode || !geos || !geos.length) {
     return undefined;
   }
 
   return geos.find(
-    (geo) =>
-      geo?.properties?.['ISO_A2']?.toLowerCase() === countryCode.toLowerCase()
+    (geo) => geo?.properties?.['ISO_A2']?.toLowerCase() === countryCode.toLowerCase(),
   );
 };
 
@@ -85,13 +76,12 @@ const getCentroid = (geo?: Feature): Point | null => {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return projection.invert(path.centroid(geo));
 };
 
-const getBounds = (
-  geo?: Feature
-): [[number, number], [number, number]] | undefined => {
+const getBounds = (geo?: Feature): [[number, number], [number, number]] | undefined => {
   if (!geo) {
     return undefined;
   }
@@ -134,7 +124,7 @@ type TMap = {
   minerMarkers: TFetchMapChartMinerMarkers[];
 };
 
-export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
+export function Map({ loading, countries, countryMiners, minerMarkers }: TMap): ReactElement {
   const [query, setQuery] = useQueryParams({
     country: StringParam,
     miners: DelimitedArrayParam,
@@ -142,9 +132,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
   const [zoom, setZoom] = useState(defaultZoom);
   const [center, setCenter] = useState<Point>(defaultCenter);
   const [domain, setDomain] = useState<Point>([0, 0]);
-  const [availableCountryCodes, setAvailableCountryCodes] = useState<string[]>(
-    []
-  );
+  const [availableCountryCodes, setAvailableCountryCodes] = useState<string[]>([]);
   // const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -182,9 +170,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       availableCountryCodes.length
     ) {
       const countryCode = query.country;
-      const isAvailable = availableCountryCodes.some(
-        (code) => code === countryCode
-      );
+      const isAvailable = availableCountryCodes.some((code) => code === countryCode);
 
       if (isAvailable) {
         const zoomScale = getCountryScaledZoom(countryCode);
@@ -207,14 +193,11 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       const countryCode = minerMarkers[0].country.toLowerCase();
 
       const isSameCountry = minerMarkers.every(
-        (marker) => marker.country.toLowerCase() === countryCode
+        (marker) => marker.country.toLowerCase() === countryCode,
       );
 
       const isAvailable =
-        isSameCountry &&
-        availableCountryCodes.some(
-          (code) => code.toLowerCase() === countryCode
-        );
+        isSameCountry && availableCountryCodes.some((code) => code.toLowerCase() === countryCode);
 
       if (isAvailable) {
         const centroid = getCentroid(getGeoByCountryCode(countryCode));
@@ -261,7 +244,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       {
         codes: [] as string[],
         emissionsIntensity: [] as number[],
-      }
+      },
     );
 
     setDomain(getMinMax(emissionsIntensity));
@@ -278,7 +261,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
           }));
         }
       },
-    [query.country, query.miners, setQuery]
+    [query.country, query.miners, setQuery],
   );
 
   const countryFill = useCallback(
@@ -296,7 +279,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
       return colorScale(emissionsIntensity, domain);
     },
-    [domain, query.country, query.miners]
+    [domain, query.country, query.miners],
   );
 
   const countryTip = useCallback(
@@ -342,7 +325,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
         ],
       });
     },
-    [query.country, query.miners]
+    [query.country, query.miners],
   );
 
   return (
@@ -358,6 +341,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
       }}
     >
       <ComposableMap
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         projection={projection}
         width={width}
@@ -395,9 +379,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
 
                 const isAvailable =
                   alpha2 &&
-                  availableCountryCodes.find(
-                    (code) => code.toLowerCase() === alpha2.toLowerCase()
-                  );
+                  availableCountryCodes.find((code) => code.toLowerCase() === alpha2.toLowerCase());
 
                 let storageProviders: string | number = 0;
                 // let emissions: string | number = 0;
@@ -405,9 +387,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                 // let power: string | number = 0;
 
                 if (isAvailable) {
-                  const item = countries.find(
-                    (item) => item.country === alpha2
-                  );
+                  const item = countries.find((item) => item.country === alpha2);
 
                   if (item) {
                     storageProviders = item.storage_providers;
@@ -429,9 +409,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                     geography={geo}
                     onClick={handlerGeoClick({ alpha2, isAvailable })}
                     fill={bgColor}
-                    stroke={
-                      geo?.geometry?.type === 'Polygon' ? bgColor : '#fff'
-                    }
+                    stroke={geo?.geometry?.type === 'Polygon' ? bgColor : '#fff'}
                     strokeWidth={0.5}
                     data-tip={countryTip({
                       isAvailable,
@@ -475,10 +453,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap) {
                 data-tip={JSON.stringify({
                   title:
                     marker.city === 'n/a'
-                      ? getCountryNameByCode(marker.country) +
-                        ' (' +
-                        marker.miner +
-                        ')'
+                      ? getCountryNameByCode(marker.country) + ' (' + marker.miner + ')'
                       : marker.city +
                         ', ' +
                         getCountryNameByCode(marker.country) +
