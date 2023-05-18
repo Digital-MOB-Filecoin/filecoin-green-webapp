@@ -1,4 +1,4 @@
-import { geoEqualEarth, geoPath } from 'd3-geo';
+import { GeoProjection, geoEqualEarth, geoPath } from 'd3-geo';
 import { scaleLinear } from 'd3-scale';
 import { Feature } from 'geojson';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -11,7 +11,7 @@ import {
   ZoomableGroup,
 } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
-import * as topojson from 'topojson-client';
+import { feature } from 'topojson-client';
 import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
 
 import {
@@ -50,20 +50,15 @@ const defaultScale = 1.5;
 const width = 723;
 const height = 381;
 
-const projection = geoEqualEarth()
+const projection: GeoProjection = geoEqualEarth()
   .scale(defaultScale * 100)
   .center(defaultCenter);
 
 const path = geoPath(projection);
 
-const geos = topojson.feature(
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  geography,
-  geography.objects[Object.keys(geography.objects)[0]],
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-).features;
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const geos = feature(geography, geography.objects['ne_10m_admin_0_countries']).features;
 
 const getGeoByCountryCode = (countryCode?: string | null): Feature | undefined => {
   if (!countryCode || !geos || !geos.length) {
@@ -79,7 +74,6 @@ const getCentroid = (geo?: Feature): Point | null => {
   if (!geo) {
     return null;
   }
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return projection.invert(path.centroid(geo));
@@ -341,7 +335,9 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap): 
       }}
     >
       <ComposableMap
-        projection={() => projection}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        projection={projection}
         width={width}
         height={height}
         style={{ width: '100%', height: '100%' }}
