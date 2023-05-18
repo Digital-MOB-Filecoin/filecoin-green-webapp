@@ -1,10 +1,10 @@
 import { ReactElement } from 'react';
-import { Navigate, Route, Routes, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 
-import { Header } from 'components/Header';
 import DataPage from 'components/DataPage';
-import MethodologyPage from 'components/MethodologyPage';
+import { Header } from 'components/Header';
 import LeaderboardPage from 'components/LeaderboardPage';
+import MethodologyPage from 'components/MethodologyPage';
 
 function AppSkeleton() {
   return (

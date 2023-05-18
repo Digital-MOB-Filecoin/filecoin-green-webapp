@@ -1,7 +1,9 @@
 import cn from 'classnames';
-import { CHART_SCALE } from 'constant';
 import { ReactElement, useCallback } from 'react';
 import { ObjectParam, useQueryParam } from 'use-query-params';
+
+import { CHART_SCALE } from 'constant';
+
 import { getNormalizedScale } from 'utils/string';
 
 import s from './s.module.css';
@@ -19,7 +21,7 @@ export const TimeIntervalButtons = ({ chartId }: ITimeIntervalButtons): ReactEle
         [chartId]: value,
       }));
     },
-    [chartId, setChartsQuery]
+    [chartId, setChartsQuery],
   );
 
   return (

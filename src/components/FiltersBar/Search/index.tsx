@@ -53,7 +53,7 @@ export function Search(): ReactElement {
         ?.filter(Boolean)
         .filter(
           (item, idx, self) =>
-            self.indexOf(item) === idx && item?.toLowerCase() !== minerId?.toLowerCase()
+            self.indexOf(item) === idx && item?.toLowerCase() !== minerId?.toLowerCase(),
         );
 
       return filteredQuery?.length ? filteredQuery : undefined;

@@ -13,7 +13,7 @@ type TFormatBytesOptions<AsObject> = {
 
 export function formatBytes<AsObject extends string>(
   size: string,
-  options: TFormatBytesOptions<AsObject> = {}
+  options: TFormatBytesOptions<AsObject> = {},
 ): AsObject extends 'object' ? { unit: string; value: number } : string {
   const { precision, output, inputUnit, iec } = options;
   // let l = 0;

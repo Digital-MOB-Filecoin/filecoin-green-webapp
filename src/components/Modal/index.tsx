@@ -23,23 +23,25 @@ interface IModalChildren {
   className: IModal['className'];
   onClose: IModal['onClose'];
 }
-const ModalChildren = forwardRef(
-  ({ header, children, className, onClose }: IModalChildren, ref: ForwardedRef<any>) =>
-    ReactDOM.createPortal(
-      <div className={s.wrap}>
-        <div className={cn(s.inner, className)} ref={ref}>
-          <div className={s.header}>
-            {header}
-            <button className={s.closeButton} type="button" onClick={() => onClose()}>
-              <Svg id="close" />
-            </button>
-          </div>
-          {children}
+
+const ModalChildren = forwardRef((props: IModalChildren, ref: ForwardedRef<any>) => {
+  const { header, children, className, onClose } = props;
+
+  return ReactDOM.createPortal(
+    <div className={s.wrap}>
+      <div className={cn(s.inner, className)} ref={ref}>
+        <div className={s.header}>
+          {header}
+          <button className={s.closeButton} type="button" onClick={() => onClose()}>
+            <Svg id="close" />
+          </button>
         </div>
-      </div>,
-      rootModal,
-    ),
-);
+        {children}
+      </div>
+    </div>,
+    rootModal,
+  );
+});
 ModalChildren.displayName = 'ModalChildren';
 
 export const Modal = ({

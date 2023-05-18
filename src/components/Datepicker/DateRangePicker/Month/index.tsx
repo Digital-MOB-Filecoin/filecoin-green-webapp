@@ -1,5 +1,4 @@
 import cn from 'classnames';
-import { MAX_DATEPICKER_DATE } from 'constant';
 import {
   add,
   addDays,
@@ -14,6 +13,8 @@ import {
   sub,
 } from 'date-fns';
 import { Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
+
+import { MAX_DATEPICKER_DATE } from 'constant';
 
 import { Svg } from 'components/Svg';
 
@@ -115,7 +116,7 @@ export const Month = ({
         seconds: 59,
         milliseconds: 999,
       }),
-      interval as Interval
+      interval as Interval,
     );
   };
 
@@ -142,7 +143,7 @@ export const Month = ({
 
       Number(interval.start) > Number(endDate)
         ? ({ start: endDate, end: interval.start } as Interval)
-        : ({ start: interval.start, end: endDate } as Interval)
+        : ({ start: interval.start, end: endDate } as Interval),
     );
   };
 
@@ -192,7 +193,9 @@ export const Month = ({
     }
 
     onChange(
-      isIntervalDatesValid ? { start: dayDate, end: null } : { start: interval.start, end: dayDate }
+      isIntervalDatesValid
+        ? { start: dayDate, end: null }
+        : { start: interval.start, end: dayDate },
     );
   };
 

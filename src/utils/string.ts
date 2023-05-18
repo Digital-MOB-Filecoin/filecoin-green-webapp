@@ -26,7 +26,7 @@ export const getCategoryName = (category: string): string => {
 
 export const getNormalizedScale = (keyFromQuery?: string): TChartFiler => {
   const isScaleValid = CHART_SCALE.find(
-    (item) => item.queryKey === String(keyFromQuery).toLowerCase()
+    (item) => item.queryKey === String(keyFromQuery).toLowerCase(),
   );
 
   if (isScaleValid && keyFromQuery) {

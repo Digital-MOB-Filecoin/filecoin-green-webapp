@@ -46,6 +46,6 @@ export function parseIntervalFromQuery(
   };
 }
 
-export function encodeDateToQueryDate(date: Date | number): typeof QUERY_DATE_FORMAT {
-  return dateLightFormat(date, QUERY_DATE_FORMAT) as typeof QUERY_DATE_FORMAT;
+export function encodeDateToQueryDate(date: Date | number): string {
+  return dateLightFormat(date, QUERY_DATE_FORMAT);
 }

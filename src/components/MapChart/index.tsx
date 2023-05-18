@@ -54,7 +54,7 @@ export function MapChart(): ReactElement {
       })
         .then((data) => {
           const filteredData = data.filter(
-            (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos
+            (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos,
           );
 
           setCountryMiners(
@@ -65,7 +65,7 @@ export function MapChart(): ReactElement {
                 inputUnit: 'GiB',
                 iec: true,
               }),
-            }))
+            })),
           );
         })
         .finally(() => setIsDataLoading(false));
@@ -103,7 +103,7 @@ export function MapChart(): ReactElement {
                 inputUnit: 'GiB',
                 iec: true,
               }),
-            }))
+            })),
           );
         })
         .finally(() => setIsDataLoading(false));
@@ -163,7 +163,7 @@ export function MapChart(): ReactElement {
 
     if (query.miners?.length) {
       const filteredData = minerMarkers.filter(
-        (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos
+        (item, pos, self) => self.findIndex((v) => v.miner === item.miner) === pos,
       );
 
       return filteredData.map((item) => ({

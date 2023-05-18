@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
 
-import { fetchChartModels, fetchMinerData, TChartModel } from 'api';
+import { TChartModel, fetchChartModels, fetchMinerData } from 'api';
 import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
 import { getNormalizedScale } from 'utils/string';
 
@@ -36,7 +36,7 @@ export default function DataPage(): ReactElement {
   const [minersData, setMinersData] = useState<MinerData[]>([]);
 
   const [dateInterval, setDateInterval] = useState<Interval>(
-    parseIntervalFromQuery(query.start, query.end)
+    parseIntervalFromQuery(query.start, query.end),
   );
 
   const handlerSetDateInterval = (newDateInterval: Interval) => {

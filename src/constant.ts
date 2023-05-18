@@ -1,6 +1,6 @@
 import sub from 'date-fns/sub';
 
-import { TChartFiler } from './api';
+import { TChartFiler } from 'api';
 
 export const QUERY_DATE_FORMAT = 'yyyy-MM-dd'; // date-fns format
 

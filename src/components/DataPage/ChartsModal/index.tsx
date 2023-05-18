@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+import { TChartModel } from 'api';
 import { getCategoryName } from 'utils/string';
 
 import { Modal } from 'components/Modal';
@@ -9,7 +10,6 @@ import { Pagination } from 'components/Pagination';
 import { Spinner } from 'components/Spinner';
 import { Svg } from 'components/Svg';
 
-import { TChartModel } from 'api';
 import s from './s.module.css';
 
 const MODELS_PER_PAGE = 6;
@@ -39,7 +39,7 @@ export const ChartsModal = ({
       onClose(arr);
       setModelDetails(null);
     },
-    [onClose]
+    [onClose],
   );
 
   useEffect(() => {

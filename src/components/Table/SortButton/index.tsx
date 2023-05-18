@@ -1,7 +1,9 @@
 import cn from 'classnames';
 import { ReactElement, ReactNode } from 'react';
-import { StringParam, useQueryParams } from 'use-query-params';
+import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
+
 import { Svg } from 'components/Svg';
+
 import s from './s.module.css';
 
 interface ISortButton {
@@ -13,6 +15,7 @@ export const SortButton = ({ children, sortKey }: ISortButton): ReactElement => 
   const [query, setQuery] = useQueryParams({
     sortBy: StringParam,
     order: StringParam,
+    offset: NumberParam,
   });
 
   const handlerSort = (direction) => {

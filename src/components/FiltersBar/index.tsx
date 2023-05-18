@@ -80,7 +80,7 @@ function useConsumption(dateInterval: Interval) {
             ? formatWatts(estimateData[estimateData.length - 1].value, {
                 precision: 2,
               }) + 'h'
-            : null
+            : null,
         );
         setConsumptionLoading(false);
       })

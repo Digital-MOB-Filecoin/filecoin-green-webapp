@@ -1,7 +1,7 @@
 import cn from 'classnames';
+import { ReactElement } from 'react';
 
 import s from './s.module.css';
-import { ReactElement } from 'react';
 
 type TFilters = {
   items: {

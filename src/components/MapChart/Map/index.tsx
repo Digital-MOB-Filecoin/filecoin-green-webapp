@@ -11,7 +11,7 @@ import {
   ZoomableGroup,
 } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
-import { feature } from 'topojson-client';
+import * as topojson from 'topojson-client';
 import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
 
 import {
@@ -56,9 +56,13 @@ const projection = geoEqualEarth()
 
 const path = geoPath(projection);
 
-const geos: Feature[] = feature(
+const geos = topojson.feature(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   geography,
   geography.objects[Object.keys(geography.objects)[0]],
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
 ).features;
 
 const getGeoByCountryCode = (countryCode?: string | null): Feature | undefined => {
@@ -89,10 +93,6 @@ const getBounds = (geo?: Feature): [[number, number], [number, number]] | undefi
   return path.bounds(geo);
 };
 
-// props?: {
-//   title: string;
-//   data: { value: string; title: string }[];
-// }
 const handleTooltipContent = (props) => {
   if (!props) return null;
 
@@ -341,9 +341,7 @@ export function Map({ loading, countries, countryMiners, minerMarkers }: TMap): 
       }}
     >
       <ComposableMap
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        projection={projection}
+        projection={() => projection}
         width={width}
         height={height}
         style={{ width: '100%', height: '100%' }}

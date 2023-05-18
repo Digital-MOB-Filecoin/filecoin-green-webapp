@@ -17,13 +17,13 @@ type TExportButton = {
   filter: TChartFiler;
 };
 
-export const ExportButton = ({
+export function ExportButton({
   className,
   id,
   filename,
   interval,
   filter,
-}: TExportButton): ReactElement => {
+}: TExportButton): ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [query] = useQueryParams({
     miners: DelimitedArrayParam,
@@ -179,4 +179,4 @@ export const ExportButton = ({
       ) : null}
     </button>
   );
-};
+}

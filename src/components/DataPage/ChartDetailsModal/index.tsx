@@ -1,10 +1,11 @@
 import { ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
+
+import { TChartModel } from 'api';
 import { getCategoryName } from 'utils/string';
 
 import { Modal } from 'components/Modal';
 
-import { TChartModel } from 'api';
 import s from './s.module.css';
 
 type TChartDetailsModal = {

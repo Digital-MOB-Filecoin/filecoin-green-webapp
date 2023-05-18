@@ -21,9 +21,10 @@ type TFormatWattsOptions = {
   output?: 'object';
   inputUnit?: TWattsUnit;
 };
+
 export function formatWatts(
   size: string,
-  options: TFormatWattsOptions = {}
+  options: TFormatWattsOptions = {},
 ):
   | string
   | {
@@ -71,7 +72,7 @@ type TFormatCO2Options = {
 
 export function formatCO2(
   size: string | number,
-  options: TFormatCO2Options = {}
+  options: TFormatCO2Options = {},
 ):
   | string
   | {
