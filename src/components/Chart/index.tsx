@@ -93,11 +93,11 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
               ...item,
               ...newItem,
               [`value${y}`]: Number(item.value),
-              ...(response.data.length > 2
-                ? {
-                    value_mid: response.data.length === y + 1 ? midValue / response.data.length : 0,
-                  }
-                : {}),
+              // ...(response.data.length > 2
+              //   ? {
+              //       value_mid: response.data.length === y + 1 ? midValue / response.data.length : 0,
+              //     }
+              //   : {}),
             };
           }
           normalizedChartData.push(newItem);
