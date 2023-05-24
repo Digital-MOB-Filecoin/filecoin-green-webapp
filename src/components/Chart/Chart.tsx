@@ -29,6 +29,7 @@ import { Svg } from 'components/Svg';
 
 import { ExportButton } from './ExportButton';
 import { TimeIntervalButtons } from './TimeIntervalButtons';
+import { TNormalizedChartData } from './index';
 import s from './s.module.css';
 
 type TGetFormattedValue = {
@@ -80,15 +81,28 @@ const getFormattedValue = ({ type, value, precision = 2, filter }: TGetFormatted
 const renderLegend = (payload: Payload[] | undefined, showMethodologyLink?: boolean) => {
   if (!payload) return null;
 
-  const midValue = payload.find((item) => item['dataKey'] === 'value_mid');
+  let sortedPayload = payload;
+
+  const compareStr = (str1, str2) => str1.toLowerCase().includes(str2);
+  if (
+    payload.some(({ value }) => compareStr(value, 'lower')) &&
+    payload.some(({ value }) => compareStr(value, 'upper'))
+  ) {
+    sortedPayload = payload.reduce((acc, item) => {
+      if (compareStr(item.value, 'lower')) {
+        acc[2] = item;
+      }
+      if (compareStr(item.value, 'upper')) {
+        acc[0] = item;
+      }
+      acc[1] = item;
+      return acc;
+    }, [] as Payload[]);
+  }
 
   return (
     <div className={s.legend}>
-      {payload.map((entry, idx) => {
-        if (entry['dataKey'] === 'value_mid') {
-          return null;
-        }
-
+      {sortedPayload.map((entry, idx) => {
         return (
           <span
             key={idx}
@@ -99,12 +113,6 @@ const renderLegend = (payload: Payload[] | undefined, showMethodologyLink?: bool
           </span>
         );
       })}
-
-      {midValue ? (
-        <span className={s.legendItem} style={{ '--color': midValue.color } as CSSProperties}>
-          {midValue.value}
-        </span>
-      ) : null}
 
       {showMethodologyLink ? (
         <Link to="/methodology" className={s.legendLink}>
@@ -119,7 +127,7 @@ const StyledTooltip = (props: any) => {
   const { payload, filter, type: dataFormatType } = props;
   if (!payload) return null;
 
-  const midValue = payload.find((item) => item['dataKey'] === 'value_mid');
+  let sortedPayload = payload;
 
   const formattedStartDate =
     getFormattedValue({
@@ -135,14 +143,27 @@ const StyledTooltip = (props: any) => {
   const date =
     filter === 'day' ? formattedStartDate : `${formattedStartDate} – ${formattedEndDate}`;
 
+  const compareStr = (str1, str2) => str1.toLowerCase().includes(str2);
+  if (
+    payload.some(({ name }) => compareStr(name, 'lower')) &&
+    payload.some(({ name }) => compareStr(name, 'upper'))
+  ) {
+    sortedPayload = payload.reduce((acc, item) => {
+      if (compareStr(item.name, 'lower')) {
+        acc[2] = item;
+      }
+      if (compareStr(item.name, 'upper')) {
+        acc[0] = item;
+      }
+      acc[1] = item;
+      return acc;
+    }, [] as Payload[]);
+  }
+
   return (
     <div className={s.tooltip}>
       <div className={s.tooltipDate}>{date}</div>
-      {payload.map((item, idx) => {
-        if (item['dataKey'] === 'value_mid') {
-          return null;
-        }
-
+      {sortedPayload.map((item, idx) => {
         return (
           <div className={s.tooltipItem} key={idx}>
             <span className={s.tooltipItemName} style={{ '--color': item.color } as CSSProperties}>
@@ -151,31 +172,13 @@ const StyledTooltip = (props: any) => {
             <span className={s.tooltipItemValue}>
               {getFormattedValue({
                 type: dataFormatType,
-                value: item.value,
+                value: item.payload[item.dataKey.replace('range', 'value')],
                 precision: 3,
               })}
             </span>
           </div>
         );
       })}
-
-      {midValue ? (
-        <div className={s.tooltipItem}>
-          <span
-            className={s.tooltipItemName}
-            style={{ '--color': midValue.color } as CSSProperties}
-          >
-            {midValue.name}
-          </span>
-          <span className={s.tooltipItemValue}>
-            {getFormattedValue({
-              type: dataFormatType,
-              value: midValue.value,
-              precision: 3,
-            })}
-          </span>
-        </div>
-      ) : null}
     </div>
   );
 };
@@ -185,8 +188,8 @@ interface IChartComponent {
   x: string;
   y: string;
   filter: TChartFiler;
-  data: any[];
-  meta: { title: string; color: string }[];
+  data: TNormalizedChartData['data'];
+  meta: TNormalizedChartData['meta'];
   loading: boolean;
   failed: boolean;
   interval: Interval;
@@ -209,6 +212,8 @@ export const ChartComponent = ({
   model,
 }: IChartComponent): ReactElement => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const withEstimateValue = Boolean(meta?.some(({ isEstimate }) => isEstimate));
 
   const colors = useMemo(
     () => ({
@@ -293,7 +298,11 @@ export const ChartComponent = ({
                 {Object.values(colors).map((color) => (
                   <linearGradient key={color.id} id={color.id} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0" stopColor={color.stroke} stopOpacity={0.12} />
-                    <stop offset="100%" stopColor={color.stroke} stopOpacity={0} />
+                    <stop
+                      offset="100%"
+                      stopColor={color.stroke}
+                      stopOpacity={withEstimateValue ? 0.12 : 0}
+                    />
                   </linearGradient>
                 ))}
               </defs>
@@ -315,9 +324,8 @@ export const ChartComponent = ({
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                domain={[0, 'auto']}
+                domain={['dataMin', 'auto']}
                 tickFormatter={(value) => getFormattedValue({ type: y, value, precision: 3 })}
-                // hide={meta.length >= 3 ? true : undefined}
                 stroke="var(--color-nepal)"
               />
               <Tooltip
@@ -334,30 +342,20 @@ export const ChartComponent = ({
                 position={{ y: -100 }}
               />
 
-              {meta && data[0]?.['value_mid'] ? (
-                <Line
-                  strokeWidth={2}
-                  type="monotone"
-                  dataKey="value_mid"
-                  stroke="var(--color-solitude-dark)"
-                  activeDot={false}
-                  dot={false}
-                  isAnimationActive={false}
-                  name={'Average'}
-                />
-              ) : null}
-
               {meta?.map((item, idx) => {
                 const color = colors[item.color] || colors.green;
 
+                if (item.isEstimate) {
+                  return null;
+                }
+
                 return (
                   <Area
-                    // stackId={meta.length >= 3 ? model.id : undefined}
                     key={`area-${idx}`}
-                    dataKey={`value${idx}`}
+                    dataKey={withEstimateValue ? `range${idx}` : `value${idx}`}
                     name={item.title}
                     stroke={color.stroke}
-                    strokeWidth={2}
+                    strokeWidth={withEstimateValue && !item.isEstimate ? 0 : 2}
                     isAnimationActive={false}
                     activeDot={{
                       stroke: color.stroke,
@@ -370,6 +368,25 @@ export const ChartComponent = ({
                   />
                 );
               })}
+
+              {withEstimateValue ? (
+                <Line
+                  strokeWidth={2}
+                  type="linear"
+                  dataKey={`value${1}`}
+                  stroke={colors.silver.stroke}
+                  activeDot={{
+                    stroke: colors.silver.stroke,
+                    fill: colors.silver.fill,
+                    strokeWidth: 2,
+                    r: 5,
+                  }}
+                  dot={false}
+                  isAnimationActive={false}
+                  name={'Estimate'}
+                />
+              ) : null}
+
               <Legend
                 content={({ payload }) => {
                   return renderLegend(payload, showMethodologyLink);

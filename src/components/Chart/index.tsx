@@ -11,17 +11,17 @@ type TNormalizedChartDataData = {
   start_date: string;
   value: string;
   end_date: string;
-  value0: number;
+  value0?: number | number[];
   value1?: number;
-  value2?: number;
+  value2?: number | number[];
 };
 
-type TNormalizedChartData = {
+export type TNormalizedChartData = {
   name: string;
   x: string;
   y: string;
   data: TNormalizedChartDataData[];
-  meta: { title: string; color: string }[];
+  meta: { title: string; color: string; isEstimate: boolean }[];
 };
 
 type TChart = {
@@ -80,29 +80,47 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
           setFailed(false);
           return;
         }
+
         const normalizedChartData: TNormalizedChartDataData[] = [];
+
         for (let i = 0; i < response.data[0].data.length; i++) {
-          let newItem: any = {};
-          let midValue = 0;
+          let newItem = {} as TNormalizedChartDataData;
 
           for (let y = 0; y < response.data.length; y++) {
             const item = response.data[y].data[i];
-            midValue += Number(item.value);
+            const withEstimate = Boolean(response.data.some(({ title }) => title === 'Estimate'));
+            const isEstimate = response.data[y].title === 'Estimate';
+
+            const getRange = () => {
+              if (withEstimate) {
+                if (isEstimate) {
+                  return Number(item.value);
+                }
+
+                if (response.data[y + 1]) {
+                  return [
+                    Number(response.data[y].data[i].value),
+                    Number(response.data[y + 1].data[i].value),
+                  ];
+                }
+                return [
+                  Number(response.data[y - 1].data[i].value),
+                  Number(response.data[y].data[i].value),
+                ];
+              }
+
+              return Number(item.value);
+            };
 
             newItem = {
               ...item,
               ...newItem,
               [`value${y}`]: Number(item.value),
-              // ...(response.data.length > 2
-              //   ? {
-              //       value_mid: response.data.length === y + 1 ? midValue / response.data.length : 0,
-              //     }
-              //   : {}),
+              ...(withEstimate ? { [`range${y}`]: getRange() } : {}),
             };
           }
           normalizedChartData.push(newItem);
-          newItem = {};
-          midValue = 0;
+          newItem = {} as TNormalizedChartDataData;
         }
 
         setNormalizedData({
@@ -111,9 +129,14 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
           y: response.y,
           data: normalizedChartData,
           meta: normalizedChartData.length
-            ? response.data.map(({ title, color }) => ({ title, color }))
+            ? response.data.map(({ title, color }) => ({
+                title,
+                color,
+                isEstimate: title === 'Estimate',
+              }))
             : [],
         });
+
         setLoading(false);
         setFailed(false);
       })
