@@ -218,16 +218,19 @@ export const ChartComponent = ({
   const colors = useMemo(
     () => ({
       green: {
+        key: 'green',
         id: nanoid(),
         stroke: 'var(--theme-color-primary)',
         fill: 'var(--theme-background-secondary)',
       },
       orange: {
+        key: 'orange',
         id: nanoid(),
         stroke: 'var(--theme-color-secondary)',
         fill: 'var(--theme-background-secondary)',
       },
       silver: {
+        key: 'silver',
         id: nanoid(),
         stroke: 'var(--color-nepal)',
         fill: 'var(--theme-background-secondary)',
@@ -295,17 +298,26 @@ export const ChartComponent = ({
           <ResponsiveContainer width="100%" aspect={2.5}>
             <ComposedChart data={data}>
               <defs>
-                {Object.values(colors).map((color) => (
-                  <linearGradient key={color.id} id={color.id} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor={color.stroke} stopOpacity={0.12} />
-                    <stop
-                      offset="100%"
-                      stopColor={color.stroke}
-                      stopOpacity={withEstimateValue ? 0.12 : 0}
-                    />
-                  </linearGradient>
-                ))}
+                {Object.values(colors).map((color) => {
+                  // const revertGradient = withEstimateValue && color.key === 'orange';
+
+                  return (
+                    <linearGradient key={color.id} id={color.id} x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0"
+                        stopColor={color.stroke}
+                        stopOpacity={withEstimateValue ? 0.05 : 0.12}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={color.stroke}
+                        stopOpacity={withEstimateValue ? 0.05 : 0}
+                      />
+                    </linearGradient>
+                  );
+                })}
               </defs>
+
               <CartesianGrid
                 strokeDasharray="5 7"
                 vertical={false}
@@ -365,6 +377,7 @@ export const ChartComponent = ({
                     }}
                     fillOpacity={1}
                     fill={`url(#${color.id})`}
+                    isRange={withEstimateValue}
                   />
                 );
               })}
