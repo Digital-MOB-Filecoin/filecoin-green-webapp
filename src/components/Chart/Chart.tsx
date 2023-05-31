@@ -299,19 +299,17 @@ export const ChartComponent = ({
             <ComposedChart data={data}>
               <defs>
                 {Object.values(colors).map((color) => {
-                  // const revertGradient = withEstimateValue && color.key === 'orange';
-
                   return (
                     <linearGradient key={color.id} id={color.id} x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="0"
                         stopColor={color.stroke}
-                        stopOpacity={withEstimateValue ? 0.05 : 0.12}
+                        stopOpacity={withEstimateValue ? 0.08 : 0.12}
                       />
                       <stop
                         offset="100%"
                         stopColor={color.stroke}
-                        stopOpacity={withEstimateValue ? 0.05 : 0}
+                        stopOpacity={withEstimateValue ? 0.08 : 0}
                       />
                     </linearGradient>
                   );
