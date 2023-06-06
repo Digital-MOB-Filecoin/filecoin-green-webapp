@@ -304,12 +304,12 @@ export const ChartComponent = ({
                       <stop
                         offset="0"
                         stopColor={color.stroke}
-                        stopOpacity={withEstimateValue ? 0.08 : 0.12}
+                        stopOpacity={withEstimateValue ? 0.16 : 0.12}
                       />
                       <stop
                         offset="100%"
                         stopColor={color.stroke}
-                        stopOpacity={withEstimateValue ? 0.08 : 0}
+                        stopOpacity={withEstimateValue ? 0.16 : 0}
                       />
                     </linearGradient>
                   );
