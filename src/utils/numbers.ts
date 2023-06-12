@@ -61,8 +61,8 @@ export function formatWatts(
     : `${n} ${unit}`;
 }
 
-type TCO2Unit = 'kgCO2' | 'tCO2' | 'MtCO2' | 'GtCO2';
-const CO2Units: TCO2Unit[] = ['kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
+type TCO2Unit = 'gC02' | 'kgCO2' | 'tCO2' | 'MtCO2' | 'GtCO2';
+const CO2Units: TCO2Unit[] = ['gC02', 'kgCO2', 'tCO2', 'MtCO2', 'GtCO2'];
 
 type TFormatCO2Options = {
   precision?: number;
