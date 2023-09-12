@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { ReactElement, useState } from 'react';
-import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { TChartFiler, fetchExportData, fetchExportDataHeader } from 'api';
 import { encodeDateToQueryDate } from 'utils/dates';
@@ -25,10 +25,7 @@ export function ExportButton({
   filter,
 }: TExportButton): ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
-  const [query] = useQueryParams({
-    miners: DelimitedArrayParam,
-    country: StringParam,
-  });
+  const [query] = useQueryParams();
   const [error, setError] = useState<string>('');
 
   const handlerExport = async () => {
@@ -115,7 +112,7 @@ export function ExportButton({
                   .map((fieldKey) => {
                     return `"${item[fieldKey]}"`;
                   })
-                  .join(',')
+                  .join(','),
               )
               .join('\r\n');
         } else {
@@ -126,7 +123,7 @@ export function ExportButton({
                 .map((fieldKey) => {
                   return `"${item[fieldKey]}"`;
                 })
-                .join(',')
+                .join(','),
             )
             .join('\r\n');
         }

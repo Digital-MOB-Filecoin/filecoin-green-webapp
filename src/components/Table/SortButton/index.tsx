@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { ReactElement, ReactNode } from 'react';
-import { NumberParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { Svg } from 'components/Svg';
 
@@ -12,11 +12,7 @@ interface ISortButton {
 }
 
 export const SortButton = ({ children, sortKey }: ISortButton): ReactElement => {
-  const [query, setQuery] = useQueryParams({
-    sortBy: StringParam,
-    order: StringParam,
-    offset: NumberParam,
-  });
+  const [query, setQuery] = useQueryParams();
 
   const handlerSort = (direction) => {
     const clearSort = sortKey === query.sortBy && direction === query.order;

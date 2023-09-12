@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { nanoid } from 'nanoid';
 import { ReactElement, useEffect, useState } from 'react';
-import { DelimitedArrayParam, NumberParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { TFetchMinersResponseMiners, fetchMiners } from 'api';
 import { formatBytes } from 'utils/bytes';
@@ -15,15 +15,7 @@ export const MinersTable = (): ReactElement => {
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [total, setTotal] = useState(0);
-  const [query, setQuery] = useQueryParams({
-    miners: DelimitedArrayParam,
-    limit: NumberParam,
-    offset: NumberParam,
-    start: StringParam,
-    end: StringParam,
-    sortBy: StringParam,
-    order: StringParam,
-  });
+  const [query, setQuery] = useQueryParams();
 
   useEffect(() => {
     const abortController = new AbortController();

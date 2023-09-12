@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useMemo, useState } from 'react';
-import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { TChartModel, fetchChart } from 'api';
 import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
@@ -43,13 +43,7 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const [query] = useQueryParams({
-    charts: ObjectParam,
-    miners: DelimitedArrayParam,
-    country: StringParam,
-    start: StringParam,
-    end: StringParam,
-  });
+  const [query] = useQueryParams();
 
   const interval = useMemo(() => {
     return parseIntervalFromQuery(query.start, query.end);

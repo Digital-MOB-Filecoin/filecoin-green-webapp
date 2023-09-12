@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { Interval } from 'date-fns';
 import { ReactElement, useEffect, useState } from 'react';
-import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { fetchChart } from 'api';
 import { encodeDateToQueryDate } from 'utils/dates';
@@ -48,11 +48,7 @@ export const FiltersBar = ({
 };
 
 function useConsumption(dateInterval: Interval) {
-  const [query] = useQueryParams({
-    charts: ObjectParam,
-    miners: DelimitedArrayParam,
-    country: StringParam,
-  });
+  const [query] = useQueryParams();
   const [consumption, setConsumption] = useState<string | null>(null);
   const [consumptionLoading, setConsumptionLoading] = useState<boolean>(false);
 

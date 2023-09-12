@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useMemo, useState } from 'react';
-import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import {
   TFetchMapChartCountries,
@@ -17,10 +17,7 @@ import { MapChartTable, TMapChartTableRow } from './Table';
 import s from './s.module.css';
 
 export function MapChart(): ReactElement {
-  const [query, setQuery] = useQueryParams({
-    miners: DelimitedArrayParam,
-    country: StringParam,
-  });
+  const [query, setQuery] = useQueryParams();
   const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
   const [countries, setCountries] = useState<TFetchMapChartCountries[]>([]);
   const [countryMiners, setCountryMiners] = useState<TFetchMapChartCountryMiners[]>([]);

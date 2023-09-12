@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { DelimitedArrayParam, ObjectParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import { TChartModel, fetchChartModels, fetchMinerData } from 'api';
 import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
@@ -21,12 +21,7 @@ type MinerData = {
 };
 
 export default function DataPage(): ReactElement {
-  const [query, setQuery] = useQueryParams({
-    charts: ObjectParam,
-    miners: DelimitedArrayParam,
-    start: StringParam,
-    end: StringParam,
-  });
+  const [query, setQuery] = useQueryParams();
 
   const [chartModels, setChartModels] = useState<TChartModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

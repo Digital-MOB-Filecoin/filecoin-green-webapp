@@ -12,7 +12,7 @@ import {
 } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
 import { feature } from 'topojson-client';
-import { DelimitedArrayParam, StringParam, useQueryParams } from 'use-query-params';
+import { useQueryParams } from 'use-query-params';
 
 import {
   TFetchMapChartCountries,
@@ -119,10 +119,7 @@ type TMap = {
 };
 
 export function Map({ loading, countries, countryMiners, minerMarkers }: TMap): ReactElement {
-  const [query, setQuery] = useQueryParams({
-    country: StringParam,
-    miners: DelimitedArrayParam,
-  });
+  const [query, setQuery] = useQueryParams();
   const [zoom, setZoom] = useState(defaultZoom);
   const [center, setCenter] = useState<Point>(defaultCenter);
   const [domain, setDomain] = useState<Point>([0, 0]);
