@@ -241,7 +241,7 @@ export const ChartComponent = ({
 
   return (
     <>
-      <div className={s.wrap}>
+      <section className={s.wrap}>
         <div className={cn(s.header /* , { [s.withMeta]: meta } */)}>
           <hgroup className={s.hgroup}>
             {!loading ? (
@@ -422,7 +422,7 @@ export const ChartComponent = ({
             </div>
           ) : null}
         </div>
-      </div>
+      </section>
 
       <ChartDetailsModal
         model={model}

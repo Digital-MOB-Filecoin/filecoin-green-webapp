@@ -58,6 +58,5 @@ root.render(
         <App />
       </QueryParamProvider>
     </Router>
-    , ,
   </React.StrictMode>,
 );
