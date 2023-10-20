@@ -35,6 +35,7 @@ root.render(
             offset: NumberParam,
             sortBy: StringParam,
             order: StringParam,
+            country: StringParam,
           },
           searchStringToObject: (str) => {
             const searchParams = new URLSearchParams(str);
