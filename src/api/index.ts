@@ -7,7 +7,7 @@ export type TChartFiler = 'day' | 'week' | 'month';
 
 export const api = async (
   url: string,
-  { headers = {}, ...restOptions }: RequestInit = {}
+  { headers = {}, ...restOptions }: RequestInit = {},
 ): Promise<any> => {
   const requestHeaders = Object.entries({
     'Content-Type': 'application/json',
@@ -191,15 +191,6 @@ type TFetchMinerDataResponse = {
   }[];
   total: number;
   count: number;
-};
-export const fetchMinerData = async ({
-  abortController,
-}: {
-  abortController: AbortController;
-}): Promise<TFetchMinerDataResponse> => {
-  return api(`https://proofs-api.zerolabs.green/api/partners/filecoin/nodes`, {
-    signal: abortController?.signal,
-  });
 };
 
 export type TFetchMapChartCountries = {

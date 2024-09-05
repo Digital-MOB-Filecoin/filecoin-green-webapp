@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useQueryParams } from 'use-query-params';
 
-import { TChartModel, fetchChartModels, fetchMinerData } from 'api';
+import { TChartModel, fetchChartModels } from 'api';
 import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
 import { getNormalizedScale } from 'utils/string';
 
@@ -11,6 +11,7 @@ import { FiltersBar } from 'components/FiltersBar';
 import { MapChart } from 'components/MapChart';
 import { Spinner } from 'components/Spinner';
 
+import { zeroLabsMinerLinks } from '../../resources/zero-labs-miner-links';
 import { ChartsModal } from './ChartsModal';
 import { MinersTable } from './MinersTable';
 import s from './s.module.css';
@@ -71,28 +72,22 @@ export default function DataPage(): ReactElement {
   }, []);
 
   useEffect(() => {
-    const abortController = new AbortController();
     if (query.miners && query.miners.length) {
-      fetchMinerData({ abortController }).then(({ data }) => {
-        const filteredData: MinerData[] = data.reduce((acc, item) => {
-          if (item.id && query.miners?.includes(item.id)) {
-            acc.push({
-              id: item.id,
-              link: `https://proofs.zerolabs.green/partners/filecoin/nodes/${item.id}/beneficiary`,
-            });
-          }
-          return acc;
-        }, [] as MinerData[]);
+      const filteredData: MinerData[] = query.miners.reduce((acc, minerId) => {
+        const minerLink = zeroLabsMinerLinks.find((item) => item.Name === minerId);
+        if (minerLink) {
+          acc.push({
+            id: minerId,
+            link: minerLink['Energy Consumer URL'],
+          });
+        }
+        return acc;
+      }, [] as MinerData[]);
 
-        setMinersData(filteredData);
-      });
+      setMinersData(filteredData);
     } else {
       setMinersData([]);
     }
-
-    return () => {
-      abortController.abort();
-    };
   }, [query.miners]);
 
   useEffect(() => {
