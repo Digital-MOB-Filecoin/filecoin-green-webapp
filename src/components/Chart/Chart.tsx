@@ -27,6 +27,7 @@ import { ChartDetailsModal } from 'components/DataPage/ChartDetailsModal';
 import { Spinner } from 'components/Spinner';
 import { Svg } from 'components/Svg';
 
+import { prepareUtcDateForFormatting } from '../../utils/dates';
 import { ExportButton } from './ExportButton';
 import { TimeIntervalButtons } from './TimeIntervalButtons';
 import { TNormalizedChartData } from './index';
@@ -43,19 +44,19 @@ const getFormattedValue = ({ type, value, precision = 2, filter }: TGetFormatted
   switch (type) {
     case 'day':
       if (!value) return null;
-      temp = new Date(value);
+      temp = prepareUtcDateForFormatting(value);
       return isValid(temp) ? format(temp, 'MMM d, yyyy') : value;
     case 'week':
       if (!value) return null;
-      temp = new Date(value);
+      temp = prepareUtcDateForFormatting(value);
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'month':
       if (!value) return null;
-      temp = new Date(value);
+      temp = prepareUtcDateForFormatting(value);
       return isValid(temp) ? format(temp, 'MMM, yyyy') : value;
     case 'time':
       if (!value) return null;
-      temp = new Date(value);
+      temp = prepareUtcDateForFormatting(value);
       if (filter === 'month') {
         return isValid(temp) ? format(temp, 'MMMM, yyyy') : value;
       }
