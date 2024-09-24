@@ -60,7 +60,7 @@ export function MapChart(): ReactElement {
               power: formatBytes(item.power, {
                 precision: 2,
                 inputUnit: 'GiB',
-                iec: true,
+                iec: false,
               }),
             })),
           );
@@ -98,7 +98,7 @@ export function MapChart(): ReactElement {
               power: formatBytes(item.power, {
                 precision: 2,
                 inputUnit: 'GiB',
-                iec: true,
+                iec: false,
               }),
             })),
           );
