@@ -52,6 +52,13 @@ export default function DataPage(): ReactElement {
 
     fetchChartModels({ abortController })
       .then((results) => {
+        results = results.filter((item) => {
+          if (item.code_name !== 'MinersEmissionScoresModel') {
+            return true;
+          }
+
+          return query.miners?.length === 1;
+        });
         setChartModels(results);
         setFailed(false);
         setLoading(false);
@@ -69,7 +76,7 @@ export default function DataPage(): ReactElement {
         setFailed(true);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query.miners]);
 
   useEffect(() => {
     if (query.miners && query.miners.length) {
