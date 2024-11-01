@@ -197,6 +197,7 @@ interface IChartComponent {
   model: TChartModel;
   showCategory?: boolean;
   showMethodologyLink?: boolean;
+  yAxisDomain: string[] | number[];
 }
 export const ChartComponent = ({
   name,
@@ -211,6 +212,7 @@ export const ChartComponent = ({
   interval,
   showCategory,
   model,
+  yAxisDomain,
 }: IChartComponent): ReactElement => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
@@ -335,7 +337,7 @@ export const ChartComponent = ({
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                domain={['dataMin', 'auto']}
+                domain={yAxisDomain}
                 tickFormatter={(value) => getFormattedValue({ type: y, value, precision: 3 })}
                 stroke="var(--color-nepal)"
               />

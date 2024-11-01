@@ -22,6 +22,7 @@ export type TNormalizedChartData = {
   y: string;
   data: TNormalizedChartDataData[];
   meta: { title: string; color: string; isEstimate: boolean }[];
+  yAxisDomain: string[] | number[];
 };
 
 type TChart = {
@@ -36,6 +37,7 @@ const defaultNormalizedData: TNormalizedChartData = {
   meta: [],
   x: '',
   y: '',
+  yAxisDomain: ['dataMin', 'auto'],
 };
 
 export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): ReactElement => {
@@ -129,6 +131,7 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
                 isEstimate: title === 'Estimate',
               }))
             : [],
+          yAxisDomain: response.y === 'score0To1' ? [0, 1] : ['dataMin', 'auto'],
         });
 
         setLoading(false);
