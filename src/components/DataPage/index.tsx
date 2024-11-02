@@ -53,7 +53,10 @@ export default function DataPage(): ReactElement {
     fetchChartModels({ abortController })
       .then((results) => {
         results = results.filter((item) => {
-          if (item.code_name !== 'MinersEmissionScoresModel') {
+          if (
+            item.code_name !== 'MinersEmissionScoresModel' &&
+            item.code_name !== 'MinersConfidenceScoresModel'
+          ) {
             return true;
           }
 
