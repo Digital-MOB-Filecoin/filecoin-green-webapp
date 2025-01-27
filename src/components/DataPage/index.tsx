@@ -55,7 +55,8 @@ export default function DataPage(): ReactElement {
         results = results.filter((item) => {
           if (
             item.code_name !== 'MinersEmissionScoresModel' &&
-            item.code_name !== 'MinersConfidenceScoresModel'
+            item.code_name !== 'MinersConfidenceScoresModel' &&
+            item.code_name !== 'MinersLocationScoresModel' 
           ) {
             return true;
           }
