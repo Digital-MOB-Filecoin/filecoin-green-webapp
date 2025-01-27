@@ -56,7 +56,8 @@ export default function DataPage(): ReactElement {
           if (
             item.code_name !== 'MinersEmissionScoresModel' &&
             item.code_name !== 'MinersConfidenceScoresModel' &&
-            item.code_name !== 'MinersLocationScoresModel' 
+            item.code_name !== 'MinersLocationScoresModel' &&
+            item.code_name !== 'MinersGreenScoresModel' 
           ) {
             return true;
           }
