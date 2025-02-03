@@ -53,16 +53,26 @@ export default function DataPage(): ReactElement {
     fetchChartModels({ abortController })
       .then((results) => {
         results = results.filter((item) => {
+          // Display charts only if no filter is selected
           if (
-            item.code_name !== 'MinersEmissionScoresModel' &&
-            item.code_name !== 'MinersConfidenceScoresModel' &&
-            item.code_name !== 'MinersLocationScoresModel' &&
-            item.code_name !== 'MinersGreenScoresModel' 
+            ['EnergyPerTransactionModel', 'EmissionsPerTransactionModel'].includes(item.code_name)
           ) {
-            return true;
+            return !query.miners?.length && !query.country;
           }
 
-          return query.miners?.length === 1;
+          // Display charts only if single miner is selected
+          if (
+            [
+              'MinersEmissionScoresModel',
+              'MinersConfidenceScoresModel',
+              'MinersLocationScoresModel',
+              'MinersGreenScoresModel',
+            ].includes(item.code_name)
+          ) {
+            return query.miners?.length === 1;
+          }
+
+          return true;
         });
         setChartModels(results);
         setFailed(false);
