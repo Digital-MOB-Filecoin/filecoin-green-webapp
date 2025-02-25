@@ -9,6 +9,18 @@ In addition to the description below, the [filecoin-energy-estimation repository
 
 For more information about the Filecoin Green program, see this [summary video](https://www.youtube.com/watch?v=mZ4fdQIv7j4) and [Meetup recording](https://www.youtube.com/watch?v=GqtXc0pFxuk&list=PL_0VrY55uV18i8gXWcuVLK3J60cetDP6E). If you are interested in contributing to the Filecoin Green community, please join the **#fil-green** channel on [Filecoin Slack](https://filecoin.io/slack)!
 
+Energy and Emissions Per Transaction
+
+The number of transactions (ie. messages changing the blockchain state) on the Filecoin chain is determined using the Glif Lotus node API. The energy and emissions per transaction is determined by dividing the quantity of energy or emissions during a given time period by the number of transactions during that time period.
+
+Renewable Energy Share of Total Energy
+
+Renewable Energy Share was determined using energy consumption estimates at the level of individual storage providers as discussed above. Provider locations were determined using previously published methods (Pick, 2022) and aggregated to the country level. Renewable energy share was determined using the Renewable Energy share of electricity capacity for 2023, provided by the International Renewable Energy Agency (IRENASTAT, 2024). This was used to determine the renewable energy used by the Filecoin Network in each country represented.
+
+“IRENASTAT Online Data Query Tool”. International Renewable Energy Agency. 2024. Available: irena.org. Accessed: December 14th, 2024.
+
+Pick, Jim. “Documentation: Synthetic Locations [Provider.Quest]”. 2022. Available: observablehq.com. Accessed: December 15th, 2024.
+
 ## Model Design (v1.0.1)
 
 The model incorporates the three dominant processes which consume energy on Filecoin:
@@ -72,4 +84,16 @@ PUE values were used from the following sources:
 The model was backtested by comparing estimated total energy consumption to metered results for a limited number of SPs.
 
 Additional discussion is given in [filecoin-energy-estimation](https://github.com/redransil/filecoin-energy-estimation).
+
+## Energy and Emissions Per Transaction
+
+The number of transactions (ie. messages changing the blockchain state) on the Filecoin chain is determined using the Glif Lotus node API. The energy and emissions per transaction is determined by dividing the quantity of energy or emissions during a given time period by the number of transactions during that time period.
+
+## Renewable Energy Share of Total Energy
+
+Renewable Energy Share was determined using energy consumption estimates at the level of individual storage providers as discussed above. Provider locations were determined using previously published methods (Pick, 2022) and aggregated to the country level. Renewable energy share was determined using the Renewable Energy share of electricity capacity for 2023, provided by the International Renewable Energy Agency (IRENASTAT, 2024). This was used to determine the renewable energy used by the Filecoin Network in each country represented.
+
+“IRENASTAT Online Data Query Tool”. International Renewable Energy Agency. 2024. Available: irena.org. Accessed: December 14th, 2024.
+
+Pick, Jim. “Documentation: Synthetic Locations [Provider.Quest]”. 2022. Available: observablehq.com. Accessed: December 15th, 2024.
 `;
