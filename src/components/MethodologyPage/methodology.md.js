@@ -87,13 +87,13 @@ Additional discussion is given in [filecoin-energy-estimation](https://github.co
 
 ## Energy and Emissions Per Transaction
 
-The number of transactions (ie. messages changing the blockchain state) on the Filecoin chain is determined using the Glif Lotus node API. The energy and emissions per transaction is determined by dividing the quantity of energy or emissions during a given time period by the number of transactions during that time period.
+The number of transactions (ie. messages changing the blockchain state) on the Filecoin chain is determined using the [Glif Lotus node API](https://lotus.filecoin.io/lotus/developers/glif-nodes/). The energy and emissions per transaction is determined by dividing the quantity of energy or emissions during a given time period by the number of transactions during that time period.
 
 ## Renewable Energy Share of Total Energy
 
 Renewable Energy Share was determined using energy consumption estimates at the level of individual storage providers as discussed above. Provider locations were determined using previously published methods (Pick, 2022) and aggregated to the country level. Renewable energy share was determined using the Renewable Energy share of electricity capacity for 2023, provided by the International Renewable Energy Agency (IRENASTAT, 2024). This was used to determine the renewable energy used by the Filecoin Network in each country represented.
 
-“IRENASTAT Online Data Query Tool”. International Renewable Energy Agency. 2024. Available: irena.org. Accessed: December 14th, 2024.
+“IRENASTAT Online Data Query Tool”. International Renewable Energy Agency. 2024. Available: [irena.org](irena.org). Accessed: December 14th, 2024.
 
-Pick, Jim. “Documentation: Synthetic Locations [Provider.Quest]”. 2022. Available: observablehq.com. Accessed: December 15th, 2024.
+Pick, Jim. “Documentation: Synthetic Locations [Provider.Quest]”. 2022. Available: [observablehq.com](observablehq.com). Accessed: December 15th, 2024.
 `;
