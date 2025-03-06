@@ -2,7 +2,7 @@ name: Build Dev FE
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 env:
   SLACK_CHANNEL: infra-ci-filgreen
