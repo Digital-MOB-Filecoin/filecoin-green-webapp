@@ -11,7 +11,7 @@ env:
   CDN_NAME: filecoin.energy
   BUILD_ENVS: |
     REACT_APP_API_BASE_URL="https://api.filecoin.energy/"
-    REACT_APP_ENABLE_ANALYTICS="false"
+    REACT_APP_ENABLE_ANALYTICS="true"
 
 jobs:
   build:
