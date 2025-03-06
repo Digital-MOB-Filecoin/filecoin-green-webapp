@@ -11,6 +11,7 @@ env:
   CDN_NAME: filgreen.d.interplanetary.one
   BUILD_ENVS: |
     REACT_APP_API_BASE_URL="https://api.filgreen.d.interplanetary.one/"
+    REACT_APP_ENABLE_ANALYTICS="true"
 
 jobs:
   build:
