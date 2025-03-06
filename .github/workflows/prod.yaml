@@ -2,7 +2,7 @@ name: Build Production FE
 
 on:
   push:
-    branches: [production]
+    tags: ["v*"]
 
 env:
   SLACK_CHANNEL: infra-ci-filgreen
