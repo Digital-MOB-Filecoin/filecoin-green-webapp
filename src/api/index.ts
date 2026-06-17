@@ -1,64 +1,4 @@
-import queryString from 'query-string';
-import { encodeDelimitedArray } from 'use-query-params';
-
-import { config } from 'config';
-
 export type TChartFiler = 'day' | 'week' | 'month';
-
-export const api = async (
-  url: string,
-  { headers = {}, ...restOptions }: RequestInit = {},
-): Promise<any> => {
-  const requestHeaders = Object.entries({
-    'Content-Type': 'application/json',
-    ...headers,
-  }).reduce((a, [k, v]) => (v == null ? a : { ...a, [k]: v }), {});
-
-  const response = await fetch(`${url}`, {
-    headers: new Headers(requestHeaders),
-    mode: 'cors',
-    ...restOptions,
-  });
-
-  if (!response.ok) {
-    throw await response?.json();
-  }
-
-  return response.json();
-};
-
-export type TFetchMinersQuery = {
-  limit: number;
-  offset: number;
-  sortBy?: string | 'power' | 'used';
-  order?: string | 'asc' | 'desc';
-};
-export type TFetchMinersResponseMiners = {
-  miner: string;
-  power: string;
-  used: string;
-};
-type TFetchMinersResponse = {
-  pagination: {
-    total: string;
-    limit: string;
-    offset: string;
-  };
-  miners: TFetchMinersResponseMiners[];
-};
-export const fetchMiners = async ({
-  abortController,
-  data,
-}: {
-  abortController: AbortController;
-  data: TFetchMinersQuery;
-}): Promise<TFetchMinersResponse> => {
-  const queryParams = `?${queryString.stringify(data)}`;
-
-  return api(`${config.apiBaseUrl}miners${queryParams}`, {
-    signal: abortController?.signal,
-  });
-};
 
 export type TChartModel = {
   id: number;
@@ -68,14 +8,11 @@ export type TChartModel = {
   details: string;
 };
 
-export const fetchChartModels = async ({
-  abortController,
-}: {
+export const fetchChartModels = async (_opts?: {
   abortController: AbortController;
 }): Promise<TChartModel[]> => {
-  return api(`${config.apiBaseUrl}models/list`, {
-    signal: abortController?.signal,
-  });
+  const response = await fetch('/data/models-list.json');
+  return response.json();
 };
 
 type TFetchChartResponse = {
@@ -97,100 +34,24 @@ type TFetchChartResponse = {
     }[];
   }[];
 };
+
 export const fetchChart = async ({
-  abortController,
   data,
 }: {
-  abortController: AbortController;
+  abortController?: AbortController;
   data: {
     id?: number;
-    code_name?: 'CumulativeEnergyModel_v_1_0_1' | string;
-    start: string;
-    end: string;
+    code_name?: string;
+    start?: string;
+    end?: string;
     miners?: (string | null)[] | null;
     filter?: TChartFiler | null;
     country?: string | null;
   };
 }): Promise<TFetchChartResponse> => {
-  const queryParams = `?${queryString.stringify(data, {
-    arrayFormat: 'comma',
-    skipNull: true,
-    skipEmptyString: true,
-  })}`;
-
-  return api(`${config.apiBaseUrl}models/model${queryParams}`, {
-    signal: abortController?.signal,
-  });
-};
-
-type TFetchExportDataHeaderResponse = Record<string, string>[];
-export const fetchExportDataHeader = async ({
-  abortController,
-  data,
-}: {
-  abortController: AbortController;
-  data: {
-    id: number;
-    start: string;
-    end: string;
-    miners?: (string | null)[] | null;
-    country?: string | null;
-  };
-}): Promise<TFetchExportDataHeaderResponse> => {
-  const queryParams = `?${queryString.stringify(data, {
-    arrayFormat: 'comma',
-    skipNull: true,
-    skipEmptyString: true,
-  })}`;
-
-  return api(`${config.apiBaseUrl}models/export/header${queryParams}`, {
-    signal: abortController?.signal,
-  });
-};
-
-type TFetchExportDataResponse = {
-  fields: string[];
-  data: Record<string, string>[];
-};
-export const fetchExportData = async ({
-  abortController,
-  data,
-}: {
-  abortController: AbortController;
-  data: {
-    id: number;
-    offset: number;
-    limit: number;
-    start: string;
-    end: string;
-    miners?: (string | null)[] | null;
-    country?: string | null;
-    filter?: TChartFiler | null;
-  };
-}): Promise<TFetchExportDataResponse> => {
-  const queryParams = `?${queryString.stringify(data, {
-    arrayFormat: 'comma',
-    skipNull: true,
-    skipEmptyString: true,
-  })}`;
-
-  return api(`${config.apiBaseUrl}models/export${queryParams}`, {
-    signal: abortController?.signal,
-  });
-};
-
-type TFetchMinerDataResponse = {
-  data: {
-    id: string;
-    buyerId: string;
-    blockchainAddress: string;
-    region: string;
-    country: string;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-  total: number;
-  count: number;
+  const filter = data.filter || 'day';
+  const response = await fetch(`/data/model-${data.id}-${filter}.json`);
+  return response.json();
 };
 
 export type TFetchMapChartCountries = {
@@ -201,14 +62,11 @@ export type TFetchMapChartCountries = {
   power: string;
 };
 
-export const fetchMapChartCountries = async ({
-  abortController,
-}: {
+export const fetchMapChartCountries = async (_opts?: {
   abortController: AbortController;
 }): Promise<TFetchMapChartCountries[]> => {
-  return api(`${config.apiBaseUrl}map/list`, {
-    signal: abortController?.signal,
-  });
+  const response = await fetch('/data/map-list.json');
+  return response.json();
 };
 
 export type TFetchMapChartCountryMiners = {
@@ -219,16 +77,9 @@ export type TFetchMapChartCountryMiners = {
   miner: string;
   power: string;
 };
-export const fetchMapChartCountryMiners = async ({
-  abortController,
-  data,
-}: {
-  abortController: AbortController;
-  data: { country: string };
-}): Promise<TFetchMapChartCountryMiners[]> => {
-  return api(`${config.apiBaseUrl}map/list/country?country=${data.country}`, {
-    signal: abortController?.signal,
-  });
+
+export const fetchMapChartCountryMiners = async (_opts?: unknown): Promise<TFetchMapChartCountryMiners[]> => {
+  return [];
 };
 
 export type TFetchMapChartMinerMarkers = {
@@ -240,16 +91,30 @@ export type TFetchMapChartMinerMarkers = {
   power: string;
 };
 
-export const fetchMapChartMinerMarkers = async ({
-  abortController,
-  data,
-}: {
-  abortController: AbortController;
-  data: { miners: (string | null)[] | null | undefined };
-}): Promise<TFetchMapChartMinerMarkers[]> => {
-  const encodedMiners = encodeDelimitedArray(data.miners, ',');
+export const fetchMapChartMinerMarkers = async (_opts?: unknown): Promise<TFetchMapChartMinerMarkers[]> => {
+  return [];
+};
 
-  return api(`${config.apiBaseUrl}map/list/miner?miner=${encodedMiners}`, {
-    signal: abortController?.signal,
-  });
+export type TFetchMinersResponseMiners = {
+  miner: string;
+  power: string;
+  used: string;
+};
+
+export const fetchMiners = async (_opts?: unknown): Promise<{
+  pagination: { total: string; limit: string; offset: string };
+  miners: TFetchMinersResponseMiners[];
+}> => {
+  return { pagination: { total: '0', limit: '0', offset: '0' }, miners: [] };
+};
+
+export const fetchExportDataHeader = async (_opts?: unknown): Promise<Record<string, string>[]> => {
+  return [];
+};
+
+export const fetchExportData = async (_opts?: unknown): Promise<{
+  fields: string[];
+  data: Record<string, string>[];
+}> => {
+  return { fields: [], data: [] };
 };

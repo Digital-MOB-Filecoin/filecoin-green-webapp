@@ -13,7 +13,6 @@ import { Spinner } from 'components/Spinner';
 
 import { zeroLabsMinerLinks } from '../../resources/zero-labs-miner-links';
 import { ChartsModal } from './ChartsModal';
-import { MinersTable } from './MinersTable';
 import s from './s.module.css';
 
 type MinerData = {
@@ -235,8 +234,6 @@ export default function DataPage(): ReactElement {
           <div style={{ width: '100%' }}>Select more charts.</div>
         </div>
       )}
-
-      <MinersTable />
 
       <div className={s.notification}>
         These numbers are approximate projections based on the current network state and may be

@@ -267,11 +267,11 @@ export const ChartComponent = ({
           </hgroup>
           <TimeIntervalButtons chartId={Number(model.id)} />
           <ExportButton
-            interval={interval}
-            id={Number(model.id)}
             filename={camelCase(name)}
             className={s.exportButton}
             filter={filter}
+            data={data}
+            meta={meta}
           />
         </div>
         {/* {meta ? (
