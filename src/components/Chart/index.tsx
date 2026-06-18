@@ -1,8 +1,8 @@
 import { ReactElement, useEffect, useMemo, useState } from 'react';
-import { useQueryParams } from 'use-query-params';
+import { StringParam, useQueryParam, useQueryParams, withDefault } from 'use-query-params';
 
 import { TChartModel, fetchChart } from 'api';
-import { encodeDateToQueryDate, parseIntervalFromQuery } from 'utils/dates';
+import { DEFAULT_INTERVAL } from 'constant';
 import { getNormalizedScale } from 'utils/string';
 
 import { ChartComponent } from './Chart';
@@ -46,10 +46,13 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
   const [failed, setFailed] = useState(false);
 
   const [query] = useQueryParams();
+  const [intervalKey] = useQueryParam('interval', withDefault(StringParam, DEFAULT_INTERVAL));
 
-  const interval = useMemo(() => {
-    return parseIntervalFromQuery(query.start, query.end);
-  }, [query.start, query.end]);
+  const filter = useMemo(
+    () => getNormalizedScale(query.charts?.[model.id]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [query.charts?.[model.id]],
+  );
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -62,11 +65,8 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
       abortController,
       data: {
         id: model.id,
-        start: encodeDateToQueryDate(interval.start),
-        end: encodeDateToQueryDate(interval.end),
-        miners: query.miners,
-        filter: getNormalizedScale(query.charts?.[model.id]),
-        country: query.country,
+        filter,
+        interval: intervalKey,
       },
     })
       .then((response) => {
@@ -126,10 +126,10 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
           data: normalizedChartData,
           meta: normalizedChartData.length
             ? response.data.map(({ title, color }) => ({
-                title,
-                color,
-                isEstimate: title === 'Estimate',
-              }))
+              title,
+              color,
+              isEstimate: title === 'Estimate',
+            }))
             : [],
           yAxisDomain: response.y === 'score0To1' ? [0, 1] : ['dataMin', 'auto'],
         });
@@ -149,23 +149,13 @@ export const Chart = ({ model, showMethodologyLink, showCategory }: TChart): Rea
     return () => {
       abortController.abort('refetch');
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    interval.start,
-    interval.end,
-    model.id,
-    query.charts?.[model.id],
-    query.miners,
-    query.miners?.length,
-    query.country,
-  ]);
+  }, [model.id, filter, intervalKey]);
 
   return (
     <ChartComponent
       {...normalizedData}
-      interval={interval}
       model={model}
-      filter={getNormalizedScale(query.charts?.[model.id])}
+      filter={filter}
       loading={loading}
       failed={failed}
       showMethodologyLink={showMethodologyLink}

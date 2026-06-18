@@ -193,7 +193,6 @@ interface IChartComponent {
   meta: TNormalizedChartData['meta'];
   loading: boolean;
   failed: boolean;
-  interval: Interval;
   model: TChartModel;
   showCategory?: boolean;
   showMethodologyLink?: boolean;
@@ -209,7 +208,6 @@ export const ChartComponent = ({
   showMethodologyLink,
   loading,
   failed,
-  interval,
   showCategory,
   model,
   yAxisDomain,

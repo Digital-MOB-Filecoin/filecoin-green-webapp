@@ -47,10 +47,12 @@ export const fetchChart = async ({
     miners?: (string | null)[] | null;
     filter?: TChartFiler | null;
     country?: string | null;
+    interval?: string | null;
   };
 }): Promise<TFetchChartResponse> => {
   const filter = data.filter || 'day';
-  const response = await fetch(`/data/model-${data.id}-${filter}.json`);
+  const interval = data.interval || '6m';
+  const response = await fetch(`/data/model-${data.id}-${filter}-${interval}.json`);
   return response.json();
 };
 
